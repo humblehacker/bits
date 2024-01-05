@@ -13,5 +13,8 @@ struct CalcApp: App {
         WindowGroup {
             ContentView()
         }
+        .windowStyle(.automatic)
+        .windowToolbarStyle(.unified)
+        .windowResizability(.contentSize)
     }
 }
