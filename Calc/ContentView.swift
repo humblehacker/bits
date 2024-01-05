@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum focusedField {
+enum FocusedField {
     case hex
     case dec
     case bin
@@ -39,43 +39,13 @@ struct ContentView: View {
     @State var hexText: String = "0"
     @State var decText: String = "0"
     @State var binText: String = integerToPaddedBinaryString(0, bits: defaultBits.rawValue)
-    @FocusState var focusedField: focusedField?
+    @FocusState var focusedField: FocusedField?
 
     var body: some View {
-        VStack {
-            HStack {
-                Button("HEX") { focusedField = .hex }
-                    .frame(width: 45, height: 20)
-                    .buttonStyle(.plain)
-                    .background(buttonBackgroundColor(for: .hex))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-
-                TextField("", text: $hexText)
-                    .fontDesign(.monospaced)
-                    .focused($focusedField, equals: .hex)
-            }
-            HStack {
-                Button("DEC") { focusedField = .dec }
-                    .frame(width: 45, height: 20)
-                    .buttonStyle(.plain)
-                    .background(buttonBackgroundColor(for: .dec))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                TextField("", text: $decText)
-                    .fontDesign(.monospaced)
-                    .focused($focusedField, equals: .dec)
-            }
-            HStack {
-                Button("BIN") { focusedField = .bin }
-                    .frame(width: 45, height: 20)
-                    .buttonStyle(.plain)
-                    .background(buttonBackgroundColor(for: .bin))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                TextField("", text: $binText)
-                    .fontDesign(.monospaced)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.5)
-                    .focused($focusedField, equals: .bin)
-            }
+        VStack(alignment: .leading) {
+            Entry("DEC", entryType: .dec, text: $decText, focusedField: _focusedField)
+            Entry("HEX", entryType: .hex, text: $hexText, focusedField: _focusedField)
+            Entry("BIN", entryType: .bin, text: $binText, focusedField: _focusedField)
         }
         .padding()
         .toolbar{
@@ -121,10 +91,6 @@ struct ContentView: View {
             hexText = String(value, radix: 16).uppercased()
             decText = String(value, radix: 10)
         }
-    }
-
-    func buttonBackgroundColor(for field: focusedField?) -> Color {
-        focusedField == field ? Color.accentColor: Color(nsColor: .controlColor)
     }
 }
 
