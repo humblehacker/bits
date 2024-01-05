@@ -45,8 +45,9 @@ struct ContentView: View {
         VStack {
             HStack {
                 Button("HEX") { focusedField = .hex }
-                    .buttonStyle(.bordered)
-                    .background(focusedField == .hex ? Color.accentColor: Color.clear)
+                    .frame(width: 45, height: 20)
+                    .buttonStyle(.plain)
+                    .background(buttonBackgroundColor(for: .hex))
                     .clipShape(RoundedRectangle(cornerRadius: 4))
 
                 TextField("", text: $hexText)
@@ -55,8 +56,9 @@ struct ContentView: View {
             }
             HStack {
                 Button("DEC") { focusedField = .dec }
-                    .buttonStyle(.bordered)
-                    .background(focusedField == .dec ? Color.accentColor: Color.clear)
+                    .frame(width: 45, height: 20)
+                    .buttonStyle(.plain)
+                    .background(buttonBackgroundColor(for: .dec))
                     .clipShape(RoundedRectangle(cornerRadius: 4))
                 TextField("", text: $decText)
                     .fontDesign(.monospaced)
@@ -64,8 +66,9 @@ struct ContentView: View {
             }
             HStack {
                 Button("BIN") { focusedField = .bin }
-                    .buttonStyle(.bordered)
-                    .background(focusedField == .bin ? Color.accentColor: Color.clear)
+                    .frame(width: 45, height: 20)
+                    .buttonStyle(.plain)
+                    .background(buttonBackgroundColor(for: .bin))
                     .clipShape(RoundedRectangle(cornerRadius: 4))
                 TextField("", text: $binText)
                     .fontDesign(.monospaced)
@@ -118,6 +121,10 @@ struct ContentView: View {
             hexText = String(value, radix: 16).uppercased()
             decText = String(value, radix: 10)
         }
+    }
+
+    func buttonBackgroundColor(for field: focusedField?) -> Color {
+        focusedField == field ? Color.accentColor: Color(nsColor: .controlColor)
     }
 }
 
