@@ -15,6 +15,7 @@
 		6310473C2B488DA800AC4460 /* HexCalcUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310473B2B488DA800AC4460 /* HexCalcUITests.swift */; };
 		6310473E2B488DA800AC4460 /* HexCalcUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310473D2B488DA800AC4460 /* HexCalcUITestsLaunchTests.swift */; };
 		6310474B2B48C0D000AC4460 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310474A2B48C0D000AC4460 /* Entry.swift */; };
+		635F4AA22B510C3F001DD64A /* Parsing in Frameworks */ = {isa = PBXBuildFile; productRef = 635F4AA12B510C3F001DD64A /* Parsing */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				635F4AA22B510C3F001DD64A /* Parsing in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,6 +151,7 @@
 			);
 			name = HexCalc;
 			packageProductDependencies = (
+				635F4AA12B510C3F001DD64A /* Parsing */,
 			);
 			productName = Calc;
 			productReference = 6310471C2B488DA600AC4460 /* HexCalc.app */;
@@ -223,6 +226,7 @@
 			);
 			mainGroup = 631047132B488DA600AC4460;
 			packageReferences = (
+				635F4AA02B510C3F001DD64A /* XCRemoteSwiftPackageReference "swift-parsing" */,
 			);
 			productRefGroup = 6310471D2B488DA600AC4460 /* Products */;
 			projectDirPath = "";
@@ -589,6 +593,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		635F4AA02B510C3F001DD64A /* XCRemoteSwiftPackageReference "swift-parsing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-parsing";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.13.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		635F4AA12B510C3F001DD64A /* Parsing */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 635F4AA02B510C3F001DD64A /* XCRemoteSwiftPackageReference "swift-parsing" */;
+			productName = Parsing;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 631047142B488DA600AC4460 /* Project object */;
 }
