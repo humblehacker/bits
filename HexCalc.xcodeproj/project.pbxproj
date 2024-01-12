@@ -17,6 +17,7 @@
 		6310474B2B48C0D000AC4460 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310474A2B48C0D000AC4460 /* Entry.swift */; };
 		635F4AA22B510C3F001DD64A /* Parsing in Frameworks */ = {isa = PBXBuildFile; productRef = 635F4AA12B510C3F001DD64A /* Parsing */; };
 		635F4AA52B511139001DD64A /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 635F4AA42B511139001DD64A /* ComposableArchitecture */; };
+		635F4AA72B5111D1001DD64A /* ContentReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 635F4AA62B5111D1001DD64A /* ContentReducer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		6310473B2B488DA800AC4460 /* HexCalcUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexCalcUITests.swift; sourceTree = "<group>"; };
 		6310473D2B488DA800AC4460 /* HexCalcUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexCalcUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		6310474A2B48C0D000AC4460 /* Entry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entry.swift; sourceTree = "<group>"; };
+		635F4AA62B5111D1001DD64A /* ContentReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentReducer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +109,7 @@
 				631047232B488DA700AC4460 /* Assets.xcassets */,
 				631047282B488DA800AC4460 /* HexCalc.entitlements */,
 				631047252B488DA800AC4460 /* Preview Content */,
+				635F4AA62B5111D1001DD64A /* ContentReducer.swift */,
 			);
 			path = HexCalc;
 			sourceTree = "<group>";
@@ -274,6 +277,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				635F4AA72B5111D1001DD64A /* ContentReducer.swift in Sources */,
 				6310474B2B48C0D000AC4460 /* Entry.swift in Sources */,
 				631047222B488DA700AC4460 /* ContentView.swift in Sources */,
 				631047202B488DA600AC4460 /* HexCalcApp.swift in Sources */,
@@ -611,8 +615,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.6.0;
+				branch = "observation-beta";
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
