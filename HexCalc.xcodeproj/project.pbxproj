@@ -16,6 +16,7 @@
 		6310473E2B488DA800AC4460 /* HexCalcUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310473D2B488DA800AC4460 /* HexCalcUITestsLaunchTests.swift */; };
 		6310474B2B48C0D000AC4460 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310474A2B48C0D000AC4460 /* Entry.swift */; };
 		635F4AA22B510C3F001DD64A /* Parsing in Frameworks */ = {isa = PBXBuildFile; productRef = 635F4AA12B510C3F001DD64A /* Parsing */; };
+		635F4AA52B511139001DD64A /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 635F4AA42B511139001DD64A /* ComposableArchitecture */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				635F4AA52B511139001DD64A /* ComposableArchitecture in Frameworks */,
 				635F4AA22B510C3F001DD64A /* Parsing in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -152,6 +154,7 @@
 			name = HexCalc;
 			packageProductDependencies = (
 				635F4AA12B510C3F001DD64A /* Parsing */,
+				635F4AA42B511139001DD64A /* ComposableArchitecture */,
 			);
 			productName = Calc;
 			productReference = 6310471C2B488DA600AC4460 /* HexCalc.app */;
@@ -227,6 +230,7 @@
 			mainGroup = 631047132B488DA600AC4460;
 			packageReferences = (
 				635F4AA02B510C3F001DD64A /* XCRemoteSwiftPackageReference "swift-parsing" */,
+				635F4AA32B511139001DD64A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 			);
 			productRefGroup = 6310471D2B488DA600AC4460 /* Products */;
 			projectDirPath = "";
@@ -603,6 +607,14 @@
 				minimumVersion = 0.13.0;
 			};
 		};
+		635F4AA32B511139001DD64A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -610,6 +622,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 635F4AA02B510C3F001DD64A /* XCRemoteSwiftPackageReference "swift-parsing" */;
 			productName = Parsing;
+		};
+		635F4AA42B511139001DD64A /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 635F4AA32B511139001DD64A /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
