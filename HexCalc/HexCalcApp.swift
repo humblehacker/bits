@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct CalcApp: App {
+struct HexCalcApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

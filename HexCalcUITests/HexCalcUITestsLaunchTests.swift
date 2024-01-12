@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class CalcUITestsLaunchTests: XCTestCase {
+final class HexCalcUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

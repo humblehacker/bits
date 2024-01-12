@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		631047202B488DA600AC4460 /* CalcApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310471F2B488DA600AC4460 /* CalcApp.swift */; };
+		631047202B488DA600AC4460 /* HexCalcApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310471F2B488DA600AC4460 /* HexCalcApp.swift */; };
 		631047222B488DA700AC4460 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631047212B488DA700AC4460 /* ContentView.swift */; };
 		631047242B488DA700AC4460 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 631047232B488DA700AC4460 /* Assets.xcassets */; };
 		631047272B488DA800AC4460 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 631047262B488DA800AC4460 /* Preview Assets.xcassets */; };
-		631047322B488DA800AC4460 /* CalcTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631047312B488DA800AC4460 /* CalcTests.swift */; };
-		6310473C2B488DA800AC4460 /* CalcUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310473B2B488DA800AC4460 /* CalcUITests.swift */; };
-		6310473E2B488DA800AC4460 /* CalcUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310473D2B488DA800AC4460 /* CalcUITestsLaunchTests.swift */; };
+		631047322B488DA800AC4460 /* HexCalcTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631047312B488DA800AC4460 /* HexCalcTests.swift */; };
+		6310473C2B488DA800AC4460 /* HexCalcUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310473B2B488DA800AC4460 /* HexCalcUITests.swift */; };
+		6310473E2B488DA800AC4460 /* HexCalcUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310473D2B488DA800AC4460 /* HexCalcUITestsLaunchTests.swift */; };
 		6310474B2B48C0D000AC4460 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310474A2B48C0D000AC4460 /* Entry.swift */; };
 /* End PBXBuildFile section */
 
@@ -35,17 +35,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		6310471C2B488DA600AC4460 /* Calc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Calc.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		6310471F2B488DA600AC4460 /* CalcApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcApp.swift; sourceTree = "<group>"; };
+		6310471C2B488DA600AC4460 /* HexCalc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HexCalc.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6310471F2B488DA600AC4460 /* HexCalcApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexCalcApp.swift; sourceTree = "<group>"; };
 		631047212B488DA700AC4460 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		631047232B488DA700AC4460 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		631047262B488DA800AC4460 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		631047282B488DA800AC4460 /* Calc.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Calc.entitlements; sourceTree = "<group>"; };
-		6310472D2B488DA800AC4460 /* CalcTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CalcTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		631047312B488DA800AC4460 /* CalcTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcTests.swift; sourceTree = "<group>"; };
-		631047372B488DA800AC4460 /* CalcUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CalcUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		6310473B2B488DA800AC4460 /* CalcUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcUITests.swift; sourceTree = "<group>"; };
-		6310473D2B488DA800AC4460 /* CalcUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		631047282B488DA800AC4460 /* HexCalc.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HexCalc.entitlements; sourceTree = "<group>"; };
+		6310472D2B488DA800AC4460 /* HexCalcTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HexCalcTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		631047312B488DA800AC4460 /* HexCalcTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexCalcTests.swift; sourceTree = "<group>"; };
+		631047372B488DA800AC4460 /* HexCalcUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HexCalcUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6310473B2B488DA800AC4460 /* HexCalcUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexCalcUITests.swift; sourceTree = "<group>"; };
+		6310473D2B488DA800AC4460 /* HexCalcUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexCalcUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		6310474A2B48C0D000AC4460 /* Entry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entry.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,9 +77,9 @@
 		631047132B488DA600AC4460 = {
 			isa = PBXGroup;
 			children = (
-				6310471E2B488DA600AC4460 /* Calc */,
-				631047302B488DA800AC4460 /* CalcTests */,
-				6310473A2B488DA800AC4460 /* CalcUITests */,
+				6310471E2B488DA600AC4460 /* HexCalc */,
+				631047302B488DA800AC4460 /* HexCalcTests */,
+				6310473A2B488DA800AC4460 /* HexCalcUITests */,
 				6310471D2B488DA600AC4460 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -87,24 +87,24 @@
 		6310471D2B488DA600AC4460 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6310471C2B488DA600AC4460 /* Calc.app */,
-				6310472D2B488DA800AC4460 /* CalcTests.xctest */,
-				631047372B488DA800AC4460 /* CalcUITests.xctest */,
+				6310471C2B488DA600AC4460 /* HexCalc.app */,
+				6310472D2B488DA800AC4460 /* HexCalcTests.xctest */,
+				631047372B488DA800AC4460 /* HexCalcUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6310471E2B488DA600AC4460 /* Calc */ = {
+		6310471E2B488DA600AC4460 /* HexCalc */ = {
 			isa = PBXGroup;
 			children = (
-				6310471F2B488DA600AC4460 /* CalcApp.swift */,
+				6310471F2B488DA600AC4460 /* HexCalcApp.swift */,
 				631047212B488DA700AC4460 /* ContentView.swift */,
 				6310474A2B48C0D000AC4460 /* Entry.swift */,
 				631047232B488DA700AC4460 /* Assets.xcassets */,
-				631047282B488DA800AC4460 /* Calc.entitlements */,
+				631047282B488DA800AC4460 /* HexCalc.entitlements */,
 				631047252B488DA800AC4460 /* Preview Content */,
 			);
-			path = Calc;
+			path = HexCalc;
 			sourceTree = "<group>";
 		};
 		631047252B488DA800AC4460 /* Preview Content */ = {
@@ -115,29 +115,29 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		631047302B488DA800AC4460 /* CalcTests */ = {
+		631047302B488DA800AC4460 /* HexCalcTests */ = {
 			isa = PBXGroup;
 			children = (
-				631047312B488DA800AC4460 /* CalcTests.swift */,
+				631047312B488DA800AC4460 /* HexCalcTests.swift */,
 			);
-			path = CalcTests;
+			path = HexCalcTests;
 			sourceTree = "<group>";
 		};
-		6310473A2B488DA800AC4460 /* CalcUITests */ = {
+		6310473A2B488DA800AC4460 /* HexCalcUITests */ = {
 			isa = PBXGroup;
 			children = (
-				6310473B2B488DA800AC4460 /* CalcUITests.swift */,
-				6310473D2B488DA800AC4460 /* CalcUITestsLaunchTests.swift */,
+				6310473B2B488DA800AC4460 /* HexCalcUITests.swift */,
+				6310473D2B488DA800AC4460 /* HexCalcUITestsLaunchTests.swift */,
 			);
-			path = CalcUITests;
+			path = HexCalcUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6310471B2B488DA600AC4460 /* Calc */ = {
+		6310471B2B488DA600AC4460 /* HexCalc */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 631047412B488DA800AC4460 /* Build configuration list for PBXNativeTarget "Calc" */;
+			buildConfigurationList = 631047412B488DA800AC4460 /* Build configuration list for PBXNativeTarget "HexCalc" */;
 			buildPhases = (
 				631047182B488DA600AC4460 /* Sources */,
 				631047192B488DA600AC4460 /* Frameworks */,
@@ -147,14 +147,16 @@
 			);
 			dependencies = (
 			);
-			name = Calc;
+			name = HexCalc;
+			packageProductDependencies = (
+			);
 			productName = Calc;
-			productReference = 6310471C2B488DA600AC4460 /* Calc.app */;
+			productReference = 6310471C2B488DA600AC4460 /* HexCalc.app */;
 			productType = "com.apple.product-type.application";
 		};
-		6310472C2B488DA800AC4460 /* CalcTests */ = {
+		6310472C2B488DA800AC4460 /* HexCalcTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 631047442B488DA800AC4460 /* Build configuration list for PBXNativeTarget "CalcTests" */;
+			buildConfigurationList = 631047442B488DA800AC4460 /* Build configuration list for PBXNativeTarget "HexCalcTests" */;
 			buildPhases = (
 				631047292B488DA800AC4460 /* Sources */,
 				6310472A2B488DA800AC4460 /* Frameworks */,
@@ -165,14 +167,14 @@
 			dependencies = (
 				6310472F2B488DA800AC4460 /* PBXTargetDependency */,
 			);
-			name = CalcTests;
+			name = HexCalcTests;
 			productName = CalcTests;
-			productReference = 6310472D2B488DA800AC4460 /* CalcTests.xctest */;
+			productReference = 6310472D2B488DA800AC4460 /* HexCalcTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		631047362B488DA800AC4460 /* CalcUITests */ = {
+		631047362B488DA800AC4460 /* HexCalcUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 631047472B488DA800AC4460 /* Build configuration list for PBXNativeTarget "CalcUITests" */;
+			buildConfigurationList = 631047472B488DA800AC4460 /* Build configuration list for PBXNativeTarget "HexCalcUITests" */;
 			buildPhases = (
 				631047332B488DA800AC4460 /* Sources */,
 				631047342B488DA800AC4460 /* Frameworks */,
@@ -183,9 +185,9 @@
 			dependencies = (
 				631047392B488DA800AC4460 /* PBXTargetDependency */,
 			);
-			name = CalcUITests;
+			name = HexCalcUITests;
 			productName = CalcUITests;
-			productReference = 631047372B488DA800AC4460 /* CalcUITests.xctest */;
+			productReference = 631047372B488DA800AC4460 /* HexCalcUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -211,7 +213,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 631047172B488DA600AC4460 /* Build configuration list for PBXProject "Calc" */;
+			buildConfigurationList = 631047172B488DA600AC4460 /* Build configuration list for PBXProject "HexCalc" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -220,13 +222,15 @@
 				Base,
 			);
 			mainGroup = 631047132B488DA600AC4460;
+			packageReferences = (
+			);
 			productRefGroup = 6310471D2B488DA600AC4460 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6310471B2B488DA600AC4460 /* Calc */,
-				6310472C2B488DA800AC4460 /* CalcTests */,
-				631047362B488DA800AC4460 /* CalcUITests */,
+				6310471B2B488DA600AC4460 /* HexCalc */,
+				6310472C2B488DA800AC4460 /* HexCalcTests */,
+				631047362B488DA800AC4460 /* HexCalcUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -264,7 +268,7 @@
 			files = (
 				6310474B2B48C0D000AC4460 /* Entry.swift in Sources */,
 				631047222B488DA700AC4460 /* ContentView.swift in Sources */,
-				631047202B488DA600AC4460 /* CalcApp.swift in Sources */,
+				631047202B488DA600AC4460 /* HexCalcApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,7 +276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				631047322B488DA800AC4460 /* CalcTests.swift in Sources */,
+				631047322B488DA800AC4460 /* HexCalcTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,8 +284,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6310473C2B488DA800AC4460 /* CalcUITests.swift in Sources */,
-				6310473E2B488DA800AC4460 /* CalcUITestsLaunchTests.swift in Sources */,
+				6310473C2B488DA800AC4460 /* HexCalcUITests.swift in Sources */,
+				6310473E2B488DA800AC4460 /* HexCalcUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,12 +294,12 @@
 /* Begin PBXTargetDependency section */
 		6310472F2B488DA800AC4460 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 6310471B2B488DA600AC4460 /* Calc */;
+			target = 6310471B2B488DA600AC4460 /* HexCalc */;
 			targetProxy = 6310472E2B488DA800AC4460 /* PBXContainerItemProxy */;
 		};
 		631047392B488DA800AC4460 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 6310471B2B488DA600AC4460 /* Calc */;
+			target = 6310471B2B488DA600AC4460 /* HexCalc */;
 			targetProxy = 631047382B488DA800AC4460 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -424,11 +428,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Calc/Calc.entitlements;
+				CODE_SIGN_ENTITLEMENTS = HexCalc/HexCalc.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Calc/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"HexCalc/Preview Content\"";
 				DEVELOPMENT_TEAM = QLUUJVNCEC;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -439,7 +443,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.humblehacker.Calc;
+				PRODUCT_BUNDLE_IDENTIFIER = com.humblehacker.HexCalc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -451,11 +455,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Calc/Calc.entitlements;
+				CODE_SIGN_ENTITLEMENTS = HexCalc/HexCalc.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Calc/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"HexCalc/Preview Content\"";
 				DEVELOPMENT_TEAM = QLUUJVNCEC;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -466,7 +470,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.humblehacker.Calc;
+				PRODUCT_BUNDLE_IDENTIFIER = com.humblehacker.HexCalc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -488,7 +492,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Calc.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Calc";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HexCalc.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HexCalc";
 			};
 			name = Debug;
 		};
@@ -507,7 +511,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Calc.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Calc";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HexCalc.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HexCalc";
 			};
 			name = Release;
 		};
@@ -548,7 +552,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		631047172B488DA600AC4460 /* Build configuration list for PBXProject "Calc" */ = {
+		631047172B488DA600AC4460 /* Build configuration list for PBXProject "HexCalc" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6310473F2B488DA800AC4460 /* Debug */,
@@ -557,7 +561,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		631047412B488DA800AC4460 /* Build configuration list for PBXNativeTarget "Calc" */ = {
+		631047412B488DA800AC4460 /* Build configuration list for PBXNativeTarget "HexCalc" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				631047422B488DA800AC4460 /* Debug */,
@@ -566,7 +570,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		631047442B488DA800AC4460 /* Build configuration list for PBXNativeTarget "CalcTests" */ = {
+		631047442B488DA800AC4460 /* Build configuration list for PBXNativeTarget "HexCalcTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				631047452B488DA800AC4460 /* Debug */,
@@ -575,7 +579,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		631047472B488DA800AC4460 /* Build configuration list for PBXNativeTarget "CalcUITests" */ = {
+		631047472B488DA800AC4460 /* Build configuration list for PBXNativeTarget "HexCalcUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				631047482B488DA800AC4460 /* Debug */,
