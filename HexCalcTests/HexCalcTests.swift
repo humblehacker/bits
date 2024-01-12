@@ -1,10 +1,3 @@
-//
-//  CalcTests.swift
-//  CalcTests
-//
-//  Created by David Whetstone on 1/5/24.
-//
-
 import XCTest
 @testable import HexCalc
 

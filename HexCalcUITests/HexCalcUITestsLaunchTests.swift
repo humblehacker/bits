@@ -1,10 +1,3 @@
-//
-//  CalcUITestsLaunchTests.swift
-//  CalcUITests
-//
-//  Created by David Whetstone on 1/5/24.
-//
-
 import XCTest
 
 final class HexCalcUITestsLaunchTests: XCTestCase {
