@@ -49,16 +49,17 @@ struct ContentReducer {
 
             case .onAppear:
                 state.bits = loadBits()
-                state.focusedField = .dec
+                state.focusedField = .exp
                 return .none
 
             case .expTextChanged(let new):
+                state.expText = new
                 let value: Int
                 do {
                     value = try evaluateExpression(new)
                 } catch {
                     print(error)
-                    value = 0
+                    return .none
                 }
                 state.hexText = String(value, radix: 16).uppercased()
                 state.decText = String(value, radix: 10)

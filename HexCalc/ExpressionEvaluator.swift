@@ -9,7 +9,10 @@ struct ExpressionEvaluator {
 
 extension ExpressionEvaluator: DependencyKey {
     static let liveValue = ExpressionEvaluator(
-        evaluate: { return Int($0) ?? 0 }
+        evaluate: { expression in
+            let parser = ExpressionParser()
+            return try parser.parse(expression)
+        }
     )
 }
 
