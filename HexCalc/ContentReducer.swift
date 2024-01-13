@@ -8,10 +8,10 @@ private let minWidth = 450.0
 private let maxWidth = 730.0
 
 enum FocusedField {
-    case hex
-    case dec
+    case exp
     case bin
-
+    case dec
+    case hex
 }
 
 @Reducer
@@ -21,6 +21,7 @@ struct ContentReducer {
     struct State {
         var idealWidth: Double = idealWindowWidth(bits: defaultBits)
         var bits: Bits = defaultBits
+        var expText: String = ""
         var hexText: String = "0"
         var decText: String = "0"
         var binText: String = integerToPaddedBinaryString(0, bits: defaultBits.rawValue)
@@ -30,11 +31,14 @@ struct ContentReducer {
     enum Action: BindableAction {
         case binding(BindingAction<State>)
         case onAppear
+        case expTextChanged(String)
         case decTextChanged(String)
         case hexTextChanged(String)
         case binTextChanged(String)
         case selectedBitWidthChanged(Bits)
     }
+
+    @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
 
     var body: some ReducerOf<Self> {
         BindingReducer()
@@ -46,6 +50,19 @@ struct ContentReducer {
             case .onAppear:
                 state.bits = loadBits()
                 state.focusedField = .dec
+                return .none
+
+            case .expTextChanged(let new):
+                let value: Int
+                do {
+                    value = try evaluateExpression(new)
+                } catch {
+                    print(error)
+                    value = 0
+                }
+                state.hexText = String(value, radix: 16).uppercased()
+                state.decText = String(value, radix: 10)
+                state.binText = integerToPaddedBinaryString(value, bits: state.bits.rawValue)
                 return .none
 
             case .decTextChanged(let new):

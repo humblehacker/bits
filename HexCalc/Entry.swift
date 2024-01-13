@@ -24,25 +24,12 @@ struct Entry: View {
 
             ZStack {
                 TextField("", text: $text)
-                    .textFieldStyle(.plain)
-                    .padding([.leading, .trailing], 3)
-                    .padding([.top, .bottom], 2)
-                    .background(Color(nsColor: .unemphasizedSelectedTextBackgroundColor))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                    .fontDesign(.monospaced)
+                    .entryTextStyle()
                     .focused($focusedField, equals: entryType)
                     .zIndex(focusedField == entryType ? 1 : 0)
-                    .frame(maxWidth: .infinity)
 
                 Text(text)
-                    .lineLimit(1)
-                    .padding([.leading, .trailing], 3)
-                    .padding([.top, .bottom], 2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .multilineTextAlignment(.leading)
-                    .background(Color(nsColor: .unemphasizedSelectedTextBackgroundColor))
-                    .fontDesign(.monospaced)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .entryTextStyle()
                     .onTapGesture { focusedField = entryType }
                     .zIndex(focusedField != entryType ? 1 : 0)
             }
@@ -51,6 +38,27 @@ struct Entry: View {
 
     func buttonBackgroundColor(for field: FocusedField?) -> Color {
         focusedField == field ? Color.accentColor: Color(nsColor: .controlColor)
+    }
+}
+
+struct EntryTextStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .lineLimit(1)
+            .textFieldStyle(.plain)
+            .padding([.leading, .trailing], 3)
+            .padding([.top, .bottom], 2)
+            .background(Color(nsColor: .unemphasizedSelectedTextBackgroundColor))
+            .fontDesign(.monospaced)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+extension View {
+    func entryTextStyle() -> some View {
+        self.modifier(EntryTextStyle())
     }
 }
 

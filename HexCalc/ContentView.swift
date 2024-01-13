@@ -6,7 +6,8 @@ struct ContentView: View {
     @FocusState var focusedField: FocusedField?
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack {
+            Entry("exp", entryType: .exp, text: $store.expText.sending(\.expTextChanged), focusedField: _focusedField)
             Entry("DEC", entryType: .dec, text: $store.decText.sending(\.decTextChanged), focusedField: _focusedField)
             Entry("HEX", entryType: .hex, text: $store.hexText.sending(\.hexTextChanged), focusedField: _focusedField)
             Entry("BIN", entryType: .bin, text: $store.binText.sending(\.binTextChanged), focusedField: _focusedField)
