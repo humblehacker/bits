@@ -19,12 +19,12 @@ struct ContentReducer {
 
     @ObservableState
     struct State {
-        var idealWidth: Double = idealWindowWidth(bits: defaultBits)
-        var selectedBitWidth: Bits = defaultBits
+        var idealWidth: Double = minWidth
+        var selectedBitWidth: Bits = ._8
         var expText: String = ""
-        var hexText: String = "0"
-        var decText: String = "0"
-        var binText: String = integerToPaddedBinaryString(0, bits: defaultBits.rawValue)
+        var hexText: String = ""
+        var decText: String = ""
+        var binText: String = ""
         var focusedField: FocusedField?
     }
 
@@ -41,7 +41,10 @@ struct ContentReducer {
             switch action {
             case .onAppear:
                 state.selectedBitWidth = loadBits()
+                state.idealWidth = idealWindowWidth(bits: state.selectedBitWidth)
                 state.focusedField = .exp
+                state.expText = ""
+                update(&state, from: 0)
                 return .none
 
             case .binding(\.expText):
@@ -52,37 +55,30 @@ struct ContentReducer {
                     print(error)
                     return .none
                 }
-                state.hexText = String(value, radix: 16).uppercased()
-                state.decText = String(value, radix: 10)
-                state.binText = integerToPaddedBinaryString(value, bits: state.selectedBitWidth.rawValue)
+                update(&state, from: value)
                 return .none
 
             case .binding(\.decText):
                 guard state.focusedField == .dec else { return .none }
                 let value = Int(state.decText, radix: 10) ?? 0
-                state.hexText = String(value, radix: 16).uppercased()
-                state.binText = integerToPaddedBinaryString(value, bits: state.selectedBitWidth.rawValue)
+                update(&state, from: value)
                 return .none
 
             case .binding(\.hexText):
                 guard state.focusedField == .hex else { return .none }
                 let value = Int(state.hexText, radix: 16) ?? 0
-                state.decText = String(value, radix: 10)
-                state.binText = integerToPaddedBinaryString(value, bits: state.selectedBitWidth.rawValue)
+                update(&state, from: value)
                 return .none
 
             case .binding(\.binText):
                 guard state.focusedField == .bin else { return .none }
                 let value = Int(state.binText.filter { !$0.isWhitespace }, radix: 2) ?? 0
-                state.hexText = String(value, radix: 16).uppercased()
-                state.decText = String(value, radix: 10)
+                update(&state, from: value)
                 return .none
 
             case .binding(\.selectedBitWidth):
                 let value = Int(state.decText, radix: 10) ?? 0
-                state.hexText = String(value, radix: 16).uppercased()
-                state.decText = String(value, radix: 10)
-                state.binText = integerToPaddedBinaryString(value, bits: state.selectedBitWidth.rawValue)
+                update(&state, from: value)
                 saveBits(state.selectedBitWidth)
                 state.idealWidth = idealWindowWidth(bits: state.selectedBitWidth)
                 return .none
@@ -92,6 +88,12 @@ struct ContentReducer {
             }
         }
         ._printChanges()
+    }
+
+    func update(_ state: inout State, from value: Int) {
+        state.hexText = String(value, radix: 16).uppercased()
+        state.decText = String(value, radix: 10)
+        state.binText = integerToPaddedBinaryString(value, bits: state.selectedBitWidth.rawValue)
     }
 
     func saveBits(_ bits: Bits) {
