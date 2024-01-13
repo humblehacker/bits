@@ -20,7 +20,7 @@ struct ContentReducer {
     @ObservableState
     struct State {
         var idealWidth: Double = idealWindowWidth(bits: defaultBits)
-        var bits: Bits = defaultBits
+        var selectedBitWidth: Bits = defaultBits
         var expText: String = ""
         var hexText: String = "0"
         var decText: String = "0"
@@ -31,11 +31,6 @@ struct ContentReducer {
     enum Action: BindableAction {
         case binding(BindingAction<State>)
         case onAppear
-        case expTextChanged(String)
-        case decTextChanged(String)
-        case hexTextChanged(String)
-        case binTextChanged(String)
-        case selectedBitWidthChanged(Bits)
     }
 
     @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
@@ -44,57 +39,55 @@ struct ContentReducer {
         BindingReducer()
         Reduce { state, action in
             switch action {
-            case .binding:
-                return .none
-
             case .onAppear:
-                state.bits = loadBits()
+                state.selectedBitWidth = loadBits()
                 state.focusedField = .exp
                 return .none
 
-            case .expTextChanged(let new):
-                state.expText = new
+            case .binding(\.expText):
                 let value: Int
                 do {
-                    value = try evaluateExpression(new)
+                    value = try evaluateExpression(state.expText)
                 } catch {
                     print(error)
                     return .none
                 }
                 state.hexText = String(value, radix: 16).uppercased()
                 state.decText = String(value, radix: 10)
-                state.binText = integerToPaddedBinaryString(value, bits: state.bits.rawValue)
+                state.binText = integerToPaddedBinaryString(value, bits: state.selectedBitWidth.rawValue)
                 return .none
 
-            case .decTextChanged(let new):
+            case .binding(\.decText):
                 guard state.focusedField == .dec else { return .none }
-                let value = Int(new, radix: 10) ?? 0
+                let value = Int(state.decText, radix: 10) ?? 0
                 state.hexText = String(value, radix: 16).uppercased()
-                state.binText = integerToPaddedBinaryString(value, bits: state.bits.rawValue)
+                state.binText = integerToPaddedBinaryString(value, bits: state.selectedBitWidth.rawValue)
                 return .none
 
-            case .hexTextChanged(let new):
+            case .binding(\.hexText):
                 guard state.focusedField == .hex else { return .none }
-                let value = Int(new, radix: 16) ?? 0
+                let value = Int(state.hexText, radix: 16) ?? 0
                 state.decText = String(value, radix: 10)
-                state.binText = integerToPaddedBinaryString(value, bits: state.bits.rawValue)
+                state.binText = integerToPaddedBinaryString(value, bits: state.selectedBitWidth.rawValue)
                 return .none
 
-            case .binTextChanged(let new):
+            case .binding(\.binText):
                 guard state.focusedField == .bin else { return .none }
-                let value = Int(new.filter { !$0.isWhitespace }, radix: 2) ?? 0
+                let value = Int(state.binText.filter { !$0.isWhitespace }, radix: 2) ?? 0
                 state.hexText = String(value, radix: 16).uppercased()
                 state.decText = String(value, radix: 10)
                 return .none
 
-            case .selectedBitWidthChanged(let newBits):
+            case .binding(\.selectedBitWidth):
                 let value = Int(state.decText, radix: 10) ?? 0
                 state.hexText = String(value, radix: 16).uppercased()
                 state.decText = String(value, radix: 10)
-                state.binText = integerToPaddedBinaryString(value, bits: newBits.rawValue)
-                state.bits = newBits
-                saveBits(state.bits)
-                state.idealWidth = idealWindowWidth(bits: state.bits)
+                state.binText = integerToPaddedBinaryString(value, bits: state.selectedBitWidth.rawValue)
+                saveBits(state.selectedBitWidth)
+                state.idealWidth = idealWindowWidth(bits: state.selectedBitWidth)
+                return .none
+
+            case .binding:
                 return .none
             }
         }

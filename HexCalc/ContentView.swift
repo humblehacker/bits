@@ -7,14 +7,14 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            Entry("exp", entryType: .exp, text: $store.expText.sending(\.expTextChanged), focusedField: _focusedField)
-            Entry("DEC", entryType: .dec, text: $store.decText.sending(\.decTextChanged), focusedField: _focusedField)
-            Entry("HEX", entryType: .hex, text: $store.hexText.sending(\.hexTextChanged), focusedField: _focusedField)
-            Entry("BIN", entryType: .bin, text: $store.binText.sending(\.binTextChanged), focusedField: _focusedField)
+            Entry("exp", entryType: .exp, text: $store.expText, focusedField: _focusedField)
+            Entry("DEC", entryType: .dec, text: $store.decText, focusedField: _focusedField)
+            Entry("HEX", entryType: .hex, text: $store.hexText, focusedField: _focusedField)
+            Entry("BIN", entryType: .bin, text: $store.binText, focusedField: _focusedField)
         }
         .padding()
         .toolbar{
-            Picker("", selection: $store.bits.sending(\.selectedBitWidthChanged)) {
+            Picker("", selection: $store.selectedBitWidth) {
                 Text("8").tag(Bits._8)
                 Text("16").tag(Bits._16)
                 Text("32").tag(Bits._32)
