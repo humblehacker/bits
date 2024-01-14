@@ -1,9 +1,9 @@
-import Parsing
 import Foundation
+import Parsing
 
 struct ExpressionParser: Parser {
-    var body: some Parser<Substring, Int> {
-        Shifts()
+    var body: some Parser<Substring.UTF8View, Int> {
+        BitwiseOr()
     }
 }
 
@@ -96,12 +96,12 @@ struct Factor: Parser {
 }
 
 public struct InfixOperator<Input, Operator: Parser, Operand: Parser>: Parser
-where
-Operator.Input == Input,
-Operand.Input == Input,
-Operator.Output == (Operand.Output, Operand.Output) -> Operand.Output
+    where
+    Operator.Input == Input,
+    Operand.Input == Input,
+    Operator.Output == (Operand.Output, Operand.Output) -> Operand.Output
 {
-    public let `associativity`: Associativity
+    public let associativity: Associativity
     public let operand: Operand
     public let `operator`: Operator
 
@@ -111,7 +111,7 @@ Operator.Output == (Operand.Output, Operand.Output) -> Operand.Output
         @ParserBuilder<Input> _ operator: () -> Operator,
         @ParserBuilder<Input> follows operand: () -> Operand
     ) {
-        self.associativity = `associativity`
+        self.associativity = associativity
         self.operand = operand()
         self.operator = `operator`()
     }
@@ -120,12 +120,12 @@ Operator.Output == (Operand.Output, Operand.Output) -> Operand.Output
     public func parse(_ input: inout Input) rethrows -> Operand.Output {
         switch associativity {
         case .left:
-            var lhs = try self.operand.parse(&input)
+            var lhs = try operand.parse(&input)
             var rest = input
             while true {
                 do {
                     let operation = try self.operator.parse(&input)
-                    let rhs = try self.operand.parse(&input)
+                    let rhs = try operand.parse(&input)
                     rest = input
                     lhs = operation(lhs, rhs)
                 } catch {
@@ -136,7 +136,7 @@ Operator.Output == (Operand.Output, Operand.Output) -> Operand.Output
         case .right:
             var lhs: [(Operand.Output, Operator.Output)] = []
             while true {
-                let rhs = try self.operand.parse(&input)
+                let rhs = try operand.parse(&input)
                 do {
                     let operation = try self.operator.parse(&input)
                     lhs.append((rhs, operation))
