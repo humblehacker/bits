@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Dependencies
+import ExpressionEvaluator
 import Foundation
 import Observation
 
@@ -7,7 +8,7 @@ private let defaultBits: Bits = ._32
 private let minWidth = 450.0
 private let maxWidth = 730.0
 
-enum FocusedField {
+public enum FocusedField {
     case exp
     case bin
     case dec
@@ -15,27 +16,46 @@ enum FocusedField {
 }
 
 @Reducer
-struct ContentReducer {
-
+public struct ContentReducer {
     @ObservableState
-    struct State {
-        var idealWidth: Double = minWidth
-        var selectedBitWidth: Bits = ._8
-        var expText: String = ""
-        var hexText: String = ""
-        var decText: String = ""
-        var binText: String = ""
+    public struct State {
+        var idealWidth: Double
+        var selectedBitWidth: Bits
+        var expText: String
+        var hexText: String
+        var decText: String
+        var binText: String
         var focusedField: FocusedField?
+
+        public init(
+            idealWidth: Double = 0.0,
+            selectedBitWidth: Bits = ._8,
+            expText: String = "",
+            hexText: String = "",
+            decText: String = "",
+            binText: String = "",
+            focusedField: FocusedField? = nil
+        ) {
+            self.idealWidth = idealWidth
+            self.selectedBitWidth = selectedBitWidth
+            self.expText = expText
+            self.hexText = hexText
+            self.decText = decText
+            self.binText = binText
+            self.focusedField = focusedField
+        }
     }
 
-    enum Action: BindableAction {
+    public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case onAppear
     }
 
     @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
 
-    var body: some ReducerOf<Self> {
+    public init() {}
+
+    public var body: some ReducerOf<Self> {
         BindingReducer()
         Reduce { state, action in
             switch action {
@@ -106,7 +126,7 @@ struct ContentReducer {
     }
 }
 
-enum Bits: Int {
+public enum Bits: Int {
     case _8 = 8
     case _16 = 16
     case _32 = 32

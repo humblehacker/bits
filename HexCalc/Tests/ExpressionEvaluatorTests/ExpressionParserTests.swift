@@ -1,5 +1,4 @@
-@testable import HexCalc
-@testable import Parsing
+@testable import ExpressionEvaluator
 import XCTest
 
 final class ExpressionParserTests: XCTestCase {

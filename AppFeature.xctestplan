@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "32647826-4367-40D5-B4A5-D7782258DDF8",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "ContentFeatureTests",
+        "name" : "ContentFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "ExpressionEvaluatorTests",
+        "name" : "ExpressionEvaluatorTests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -1,7 +1,6 @@
 import XCTest
-@testable import HexCalc
 
-final class HexCalcTests: XCTestCase {
+final class ContentFeatureTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

@@ -3,12 +3,12 @@ import DependenciesMacros
 import Foundation
 
 @DependencyClient
-struct ExpressionEvaluator {
-    var evaluate: (_ expression: String) throws -> Int
+public struct ExpressionEvaluator {
+    public var evaluate: (_ expression: String) throws -> Int
 }
 
 extension ExpressionEvaluator: DependencyKey {
-    static let liveValue = ExpressionEvaluator(
+    public static let liveValue = ExpressionEvaluator(
         evaluate: { expression in
             let parser = ExpressionParser()
             return try parser.parse(expression)
@@ -17,7 +17,7 @@ extension ExpressionEvaluator: DependencyKey {
 }
 
 extension DependencyValues {
-    var expressionEvaluator: ExpressionEvaluator {
+    public var expressionEvaluator: ExpressionEvaluator {
         get { self[ExpressionEvaluator.self] }
         set { self[ExpressionEvaluator.self] = newValue }
     }

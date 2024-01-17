@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "5BB28D90-3263-4608-90B0-D9404E5FFEC0",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:HexCalc",
+        "identifier" : "ContentFeatureTests",
+        "name" : "ContentFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:HexCalc",
+        "identifier" : "ExpressionEvaluatorTests",
+        "name" : "ExpressionEvaluatorTests"
+      }
+    }
+  ],
+  "version" : 1
+}

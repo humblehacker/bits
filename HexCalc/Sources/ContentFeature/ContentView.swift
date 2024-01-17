@@ -1,11 +1,15 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct ContentView: View {
+public struct ContentView: View {
     @State var store: StoreOf<ContentReducer>
     @FocusState var focusedField: FocusedField?
 
-    var body: some View {
+    public init(store: StoreOf<ContentReducer>) {
+        self.store = store
+    }
+
+    public var body: some View {
         VStack {
             Entry("exp", entryType: .exp, text: $store.expText, focusedField: _focusedField)
             Entry("DEC", entryType: .dec, text: $store.decText, focusedField: _focusedField)
@@ -13,7 +17,7 @@ struct ContentView: View {
             Entry("BIN", entryType: .bin, text: $store.binText, focusedField: _focusedField)
         }
         .padding()
-        .toolbar{
+        .toolbar {
             Picker("", selection: $store.selectedBitWidth) {
                 Text("8").tag(Bits._8)
                 Text("16").tag(Bits._16)
@@ -24,7 +28,7 @@ struct ContentView: View {
         }
         .frame(minWidth: 450, idealWidth: store.idealWidth, maxWidth: 730)
         .onAppear { store.send(.onAppear) }
-        .onChange(of: store.idealWidth, initial: true) { old, new in
+        .onChange(of: store.idealWidth, initial: true) { _, new in
             let window = NSApplication.shared.windows.first!
             let height = window.frame.height
             window.setContentSize(NSSize(width: new, height: height))
