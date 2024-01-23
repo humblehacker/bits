@@ -42,7 +42,7 @@
       "location" : "https://github.com/pointfreeco/swift-composable-architecture",
       "state" : {
         "branch" : "observation-beta",
-        "revision" : "31fa2a9f5dc065b2282025d6b92a142d57194be9"
+        "revision" : "4e8f1f38efca6c46ca9ad338b97caae8b57e25ef"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-dependencies",
       "state" : {
-        "revision" : "c31b1445c4fae49e6fdb75496b895a3653f6aefc",
-        "version" : "1.1.5"
+        "revision" : "adb04a8e35f07edc001877af9f9f97fcc21d409e",
+        "version" : "1.2.0"
       }
     },
     {
@@ -95,17 +95,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-perception",
       "state" : {
-        "revision" : "e5ef37397b8be4db26f87bd2d41d1b26c948f17d",
-        "version" : "1.0.0"
+        "revision" : "42240120b2a8797595433288ab4118f8042214c3",
+        "version" : "1.1.1"
       }
     },
     {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-syntax.git",
+      "location" : "https://github.com/apple/swift-syntax",
       "state" : {
-        "revision" : "43c802fb7f96e090dde015344a94b5e85779eff1",
-        "version" : "509.1.0"
+        "revision" : "64889f0c732f210a935a0ad7cda38f77f876262d",
+        "version" : "509.1.1"
       }
     },
     {
@@ -122,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
       "state" : {
-        "revision" : "23cbf2294e350076ea4dbd7d5d047c1e76b03631",
-        "version" : "1.0.2"
+        "revision" : "89a3632e62e817436df2900f6caf86c965a93501",
+        "version" : "1.0.3"
       }
     }
   ],
