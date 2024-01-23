@@ -3,11 +3,13 @@ import Dependencies
 import SwiftUI
 
 struct Entry: View {
+    @State var width: Double
     @FocusState var focusedField: FocusedField?
 
     @State var store: StoreOf<EntryReducer>
 
     init(store: StoreOf<EntryReducer>) {
+        width = 100
         self.store = store
     }
 
@@ -29,11 +31,24 @@ struct Entry: View {
                         store.send(.delegate(.replaceEvaluatedExpression))
                         return .handled
                     }
+                    .onKeyPress(.upArrow) {
+                        store.send(.historyInvoked)
+                        return .handled
+                    }
 
                 Text(store.text)
                     .entryTextStyle()
                     .onTapGesture { focusedField = store.kind }
                     .zIndex(focusedField != store.kind ? 1 : 0)
+            }
+            .overlay {
+                GeometryReader { geo in
+                    Color.clear.onAppear { width = geo.size.width }
+                }
+            }
+            .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in
+                HistoryPicker(store: store)
+                    .frame(width: width)
             }
             .bind($store.focusedField, to: $focusedField)
         }
