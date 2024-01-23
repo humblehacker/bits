@@ -15,7 +15,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
         .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.13.0"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.1.0"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.2.0"),
     ],
     targets: [
         .target(
