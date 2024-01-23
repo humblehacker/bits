@@ -1,43 +1,42 @@
+import ComposableArchitecture
+import Dependencies
 import SwiftUI
 
 struct Entry: View {
-    let title: String
-    let entryType: FocusedField
-    @Binding var text: String
     @FocusState var focusedField: FocusedField?
 
-    init(_ title: String, entryType: FocusedField, text: Binding<String>, focusedField: FocusState<FocusedField?>) {
-        self.title = title
-        self.entryType = entryType
-        self._text = text
-        self._focusedField = focusedField
+    @State var store: StoreOf<EntryReducer>
+
+    init(store: StoreOf<EntryReducer>) {
+        self.store = store
     }
 
     var body: some View {
         HStack {
-            Button(title) { focusedField = entryType }
+            Button(store.title) { focusedField = store.kind }
                 .frame(width: 45, height: 20)
                 .buttonStyle(.plain)
-                .background(buttonBackgroundColor(for: entryType))
+                .background(buttonBackgroundColor(for: store.kind))
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .focusable(false)
 
             ZStack {
-                TextField("", text: $text)
+                TextField("", text: $store.text)
                     .entryTextStyle()
-                    .focused($focusedField, equals: entryType)
-                    .zIndex(focusedField == entryType ? 1 : 0)
+                    .focused($focusedField, equals: store.kind)
+                    .zIndex(focusedField == store.kind ? 1 : 0)
 
-                Text(text)
+                Text(store.text)
                     .entryTextStyle()
-                    .onTapGesture { focusedField = entryType }
-                    .zIndex(focusedField != entryType ? 1 : 0)
+                    .onTapGesture { focusedField = store.kind }
+                    .zIndex(focusedField != store.kind ? 1 : 0)
             }
+            .bind($store.focusedField, to: $focusedField)
         }
     }
 
     func buttonBackgroundColor(for field: FocusedField?) -> Color {
-        focusedField == field ? Color.accentColor: Color(nsColor: .controlColor)
+        focusedField == field ? Color.accentColor : Color(nsColor: .controlColor)
     }
 }
 
@@ -58,12 +57,14 @@ struct EntryTextStyle: ViewModifier {
 
 extension View {
     func entryTextStyle() -> some View {
-        self.modifier(EntryTextStyle())
+        modifier(EntryTextStyle())
     }
 }
 
 #Preview {
-    Entry("FOO", entryType: .bin, text: .constant("0"), focusedField: FocusState<FocusedField?>())
-        .padding()
-        .frame(maxWidth: .infinity)
+    Entry(store: Store(initialState: EntryReducer.State(kind: .exp)) {
+        EntryReducer()
+    })
+    .padding()
+    .frame(maxWidth: .infinity)
 }

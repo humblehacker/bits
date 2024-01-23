@@ -11,10 +11,10 @@ public struct ContentView: View {
 
     public var body: some View {
         VStack {
-            Entry("exp", entryType: .exp, text: $store.expText, focusedField: _focusedField)
-            Entry("DEC", entryType: .dec, text: $store.decText, focusedField: _focusedField)
-            Entry("HEX", entryType: .hex, text: $store.hexText, focusedField: _focusedField)
-            Entry("BIN", entryType: .bin, text: $store.binText, focusedField: _focusedField)
+            Entry(store: store.scope(state: \.expEntry, action: \.expEntry))
+            Entry(store: store.scope(state: \.decEntry, action: \.decEntry))
+            Entry(store: store.scope(state: \.hexEntry, action: \.hexEntry))
+            Entry(store: store.scope(state: \.binEntry, action: \.binEntry))
         }
         .padding()
         .toolbar {
