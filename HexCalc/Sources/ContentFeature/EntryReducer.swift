@@ -26,6 +26,12 @@ public struct EntryReducer {
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+        case delegate(Delegate)
+
+        @CasePathable
+        public enum Delegate {
+            case replaceEvaluatedExpression
+        }
     }
 
     public var body: some ReducerOf<Self> {
@@ -36,6 +42,9 @@ public struct EntryReducer {
                 return .none
 
             case .binding:
+                return .none
+
+            case .delegate:
                 return .none
             }
         }

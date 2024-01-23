@@ -25,6 +25,10 @@ struct Entry: View {
                     .entryTextStyle()
                     .focused($focusedField, equals: store.kind)
                     .zIndex(focusedField == store.kind ? 1 : 0)
+                    .onKeyPress(keys: [.return, KeyEquivalent("=")]) { _ in
+                        store.send(.delegate(.replaceEvaluatedExpression))
+                        return .handled
+                    }
 
                 Text(store.text)
                     .entryTextStyle()

@@ -92,6 +92,17 @@ public struct ContentReducer {
                 state.focusedField = state.expEntry.focusedField
                 return .none
 
+            case .expEntry(.delegate(.replaceEvaluatedExpression)):
+                let value: Int
+                do {
+                    value = try evaluateExpression(state.expEntry.text)
+                } catch {
+                    print(error)
+                    return .none
+                }
+                state.expEntry.text = String(value, radix: 10)
+                return .none
+
             case .expEntry:
                 return .none
 
