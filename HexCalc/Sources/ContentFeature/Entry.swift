@@ -19,6 +19,7 @@ struct Entry: View {
                 .frame(width: 45, height: 20)
                 .buttonStyle(.plain)
                 .background(buttonBackgroundColor(for: store.kind))
+                .foregroundColor(buttonForegroundColor(for: store.kind))
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .focusable(false)
 
@@ -56,6 +57,10 @@ struct Entry: View {
 
     func buttonBackgroundColor(for field: FocusedField?) -> Color {
         focusedField == field ? Color.accentColor : Color(nsColor: .controlColor)
+    }
+
+    func buttonForegroundColor(for field: FocusedField?) -> Color {
+        focusedField == field ? Color.white : Color(nsColor: .controlTextColor)
     }
 }
 
