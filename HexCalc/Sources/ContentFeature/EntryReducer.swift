@@ -31,6 +31,7 @@ public struct EntryReducer {
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
         case historyInvoked
+        case historyLoaded([HistoryItem])
         case destination(PresentationAction<Destination.Action>)
         case delegate(Delegate)
 
@@ -45,7 +46,19 @@ public struct EntryReducer {
         Reduce { state, action in
             switch action {
             case .historyInvoked:
-                state.destination = .history(HistoryReducer.State())
+                return .run { send in
+                    let history = [
+                        "Foo", "Bar", "Baz", "Qux", "Quux", "Corge", "Grault", "Garply", "Waldo", "Fred", "Plugh", "Xyzzy", "Thud",
+                    ]
+                    .enumerated()
+                    .map { HistoryItem(id: $0.0, text: $0.1) }
+                    .reversed()
+                    await send(.historyLoaded(Array(history)))
+                }
+
+            case let .historyLoaded(history):
+                guard state.destination == nil else { return .none }
+                state.destination = .history(HistoryReducer.State(history: history))
                 return .none
 
             case .destination:
