@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Dependencies
+import HistoryFeature
 import SwiftUI
 
 struct Entry: View {

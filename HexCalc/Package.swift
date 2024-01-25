@@ -10,7 +10,9 @@ let package = Package(
     products: [
         .library(name: "AppFeature", targets: ["AppFeature"]),
         .library(name: "ContentFeature", targets: ["ContentFeature"]),
+        .library(name: "HistoryFeature", targets: ["HistoryFeature"]),
         .library(name: "ExpressionEvaluator", targets: ["ExpressionEvaluator"]),
+        .library(name: "UI", targets: ["UI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
@@ -22,12 +24,22 @@ let package = Package(
             name: "AppFeature",
             dependencies: [
                 "ContentFeature",
+                "HistoryFeature",
             ]
         ),
         .target(
             name: "ContentFeature",
             dependencies: [
                 "ExpressionEvaluator",
+                "HistoryFeature",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "DependenciesMacros", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "HistoryFeature",
+            dependencies: [
+                "UI",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
             ]
@@ -40,7 +52,9 @@ let package = Package(
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
             ]
         ),
+        .target(name: "UI"),
         .testTarget(name: "ContentFeatureTests", dependencies: ["ContentFeature"]),
         .testTarget(name: "ExpressionEvaluatorTests", dependencies: ["ExpressionEvaluator"]),
+        .testTarget(name: "HistoryFeatureTests", dependencies: ["HistoryFeature"]),
     ]
 )

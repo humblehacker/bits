@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Dependencies
+import HistoryFeature
 
 @Reducer
 public struct EntryReducer {

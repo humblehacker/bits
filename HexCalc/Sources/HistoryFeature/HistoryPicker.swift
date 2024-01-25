@@ -1,16 +1,21 @@
 import ComposableArchitecture
 import Dependencies
 import SwiftUI
+import UI
 
 private let historyListPadding = 4.0
 private let maxVisibleHistoryItems = 5
 
-struct HistoryPicker: View {
+public struct HistoryPicker: View {
     @State var store: StoreOf<HistoryReducer>
     @State var selection: Int?
     @State var rowHeight: Double = 0
 
-    var body: some View {
+    public init(store: StoreOf<HistoryReducer>) {
+        self.store = store
+    }
+
+    public var body: some View {
         ZStack {
             Color(nsColor: .controlBackgroundColor).scaleEffect(1.5)
 
@@ -46,41 +51,6 @@ struct HistoryPicker: View {
         return rowHeight * Double(visibleItems)
             + 2 * historyListPadding
             + 2 * UIDefault.List.internalPadding
-    }
-}
-
-public struct HistoryItem: Identifiable, Equatable, Hashable {
-    public var id: Int
-    public var text: String
-}
-
-@Reducer
-public struct HistoryReducer {
-    @Dependency(\.dismiss) var dismiss
-
-    @ObservableState
-    public struct State: Equatable {
-        var history: [HistoryItem] = []
-    }
-
-    public enum Action: BindableAction, Equatable {
-        case binding(BindingAction<State>)
-        case historySelected
-    }
-
-    public var body: some ReducerOf<Self> {
-        Reduce { _, action in
-            switch action {
-            case .binding(\.history):
-                return .none
-
-            case .binding:
-                return .none
-
-            case .historySelected:
-                return .run { _ in await dismiss() }
-            }
-        }
     }
 }
 
