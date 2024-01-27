@@ -35,6 +35,7 @@ public struct EntryReducer {
         case binding(BindingAction<State>)
         case upArrowPressed
         case historyLoaded([HistoryItem])
+        case historyItemSelected(HistoryItem)
         case destination(PresentationAction<Destination.Action>)
         case delegate(Delegate)
 
@@ -44,6 +45,7 @@ public struct EntryReducer {
         }
     }
 
+    @Dependency(\.dismiss) var dismiss
     @Dependency(\.historyStore) var historyStore
     @Dependency(\.mainQueue) var mainQueue
 
@@ -66,9 +68,25 @@ public struct EntryReducer {
                 state.destination = .history(HistoryReducer.State(history: history))
                 return .none
 
-            case let .destination(.presented(.history(.delegate(.historySelected(item))))):
+            case let .destination(.presented(.history(.delegate(.historySelected(id))))):
+                return .run { send in
+                    guard let item = try await historyStore.item(id: id) else { return }
+                    await send(.historyItemSelected(item))
+                }
+
+            case let .historyItemSelected(item):
                 state.text = item.text
                 return .none
+
+            case let .destination(.presented(.history(.delegate(.historyDeleted(item))))):
+                return .run { send in
+                    try await historyStore.removeItem(item)
+                    let history = try await historyStore.items()
+                    await send(.destination(.presented(.history(.historyUpdated(history)))))
+                    if history.isEmpty {
+                        await dismiss()
+                    }
+                }
 
             case .destination:
                 return .none

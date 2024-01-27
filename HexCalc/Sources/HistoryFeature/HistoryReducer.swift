@@ -22,12 +22,12 @@ public struct HistoryReducer {
         case delegate(Delegate)
 
         public enum Delegate: Equatable {
-            case historySelected(HistoryItem)
+            case historySelected(HistoryItem.ID)
+            case historyDeleted(HistoryItem.ID)
         }
     }
 
     @Dependency(\.dismiss) var dismiss
-    @Dependency(\.historyStore) var historyStore
     @Dependency(\.mainQueue) var mainQueue
 
     enum CancelID { case returnKey, deleteKey }
@@ -50,9 +50,7 @@ public struct HistoryReducer {
             case .returnKeyPressed:
                 return .run { [selection = state.selection] send in
                     if let selection {
-                        if let item = try await historyStore.item(id: selection) {
-                            await send(.delegate(.historySelected(item)))
-                        }
+                        await send(.delegate(.historySelected(selection)))
                     }
                     await dismiss()
                 }
@@ -64,15 +62,8 @@ public struct HistoryReducer {
 
             case .deleteKeyPressed:
                 guard let selection = state.selection else { return .none }
-                return .run { send in
-                    try await historyStore.removeItem(selection)
-                    let history = try await historyStore.items()
-                    await send(.historyUpdated(history))
-                    if history.isEmpty {
-                        await dismiss()
-                    }
-                }
-                .debounce(id: CancelID.deleteKey, for: 0.2, scheduler: self.mainQueue)
+                return .send(.delegate(.historyDeleted(selection)))
+                    .debounce(id: CancelID.deleteKey, for: 0.2, scheduler: self.mainQueue)
             }
         }
         ._printChanges()
