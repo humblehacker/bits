@@ -47,7 +47,7 @@ public struct EntryReducer {
     @Dependency(\.historyStore) var historyStore
     @Dependency(\.mainQueue) var mainQueue
 
-    enum CancelID { case history, upArrow }
+    enum CancelID { case upArrow }
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -66,7 +66,7 @@ public struct EntryReducer {
                 state.destination = .history(HistoryReducer.State(history: history))
                 return .none
 
-            case .destination(.presented(.history(.delegate(.historySelected(let item))))):
+            case let .destination(.presented(.history(.delegate(.historySelected(item))))):
                 state.text = item.text
                 return .none
 
@@ -74,11 +74,7 @@ public struct EntryReducer {
                 return .none
 
             case .binding(\.text):
-                return .run { [text = state.text] _ in
-                    print("new history: \(text)")
-                    try await historyStore.addItem(text: text)
-                }
-                .debounce(id: CancelID.history, for: 1.0, scheduler: self.mainQueue)
+                return .none
 
             case .binding:
                 return .none

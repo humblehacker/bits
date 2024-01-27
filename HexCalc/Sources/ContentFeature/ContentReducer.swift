@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import DataStore
 import Dependencies
 import ExpressionEvaluator
 import Foundation
@@ -53,9 +54,14 @@ public struct ContentReducer {
         case hexEntry(EntryReducer.Action)
         case binEntry(EntryReducer.Action)
         case onAppear
+        case expressionUpdated
     }
 
     @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
+    @Dependency(\.historyStore) var historyStore
+    @Dependency(\.mainQueue) var mainQueue
+
+    enum CancelID { case history }
 
     public init() {}
 
@@ -86,7 +92,7 @@ public struct ContentReducer {
                     return .none
                 }
                 update(&state, from: value)
-                return .none
+                return .send(.expressionUpdated)
 
             case .expEntry(.binding(\.focusedField)):
                 state.focusedField = state.expEntry.focusedField
@@ -154,6 +160,13 @@ public struct ContentReducer {
 
             case .binding:
                 return .none
+
+            case .expressionUpdated:
+                return .run { [text = state.expEntry.text] _ in
+                    print("new history: \(text)")
+                    try await historyStore.addItem(text: text)
+                }
+                .debounce(id: CancelID.history, for: 1.0, scheduler: self.mainQueue)
             }
         }
         ._printChanges()
