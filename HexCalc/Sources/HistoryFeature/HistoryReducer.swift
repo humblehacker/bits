@@ -22,8 +22,9 @@ public struct HistoryReducer {
         case delegate(Delegate)
 
         public enum Delegate: Equatable {
-            case historySelected(HistoryItem.ID)
-            case historyDeleted(HistoryItem.ID)
+            case selectionChanged(HistoryItem.ID?)
+            case itemSelected(HistoryItem.ID)
+            case itemDeleted(HistoryItem.ID)
         }
     }
 
@@ -38,8 +39,8 @@ public struct HistoryReducer {
         BindingReducer()
         Reduce { state, action in
             switch action {
-            case .binding(\.history):
-                return .none
+            case .binding(\.selection):
+                return .send(.delegate(.selectionChanged(state.selection)))
 
             case .binding:
                 return .none
@@ -50,7 +51,7 @@ public struct HistoryReducer {
             case .returnKeyPressed:
                 return .run { [selection = state.selection] send in
                     if let selection {
-                        await send(.delegate(.historySelected(selection)))
+                        await send(.delegate(.itemSelected(selection)))
                     }
                     await dismiss()
                 }
@@ -62,7 +63,7 @@ public struct HistoryReducer {
 
             case .deleteKeyPressed:
                 guard let selection = state.selection else { return .none }
-                return .send(.delegate(.historyDeleted(selection)))
+                return .send(.delegate(.itemDeleted(selection)))
                     .debounce(id: CancelID.deleteKey, for: 0.2, scheduler: self.mainQueue)
             }
         }

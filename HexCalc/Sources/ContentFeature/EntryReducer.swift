@@ -41,6 +41,7 @@ public struct EntryReducer {
 
         @CasePathable
         public enum Delegate {
+            case historyItemSelected(HistoryItem)
             case confirmationKeyPressed
         }
     }
@@ -68,17 +69,19 @@ public struct EntryReducer {
                 state.destination = .history(HistoryReducer.State(history: history))
                 return .none
 
-            case let .destination(.presented(.history(.delegate(.historySelected(id))))):
+            case let .destination(.presented(.history(.delegate(.selectionChanged(id))))):
                 return .run { send in
-                    guard let item = try await historyStore.item(id: id) else { return }
+                    guard
+                        let id,
+                        let item = try await historyStore.item(id: id) else { return }
                     await send(.historyItemSelected(item))
                 }
 
             case let .historyItemSelected(item):
                 state.text = item.text
-                return .none
+                return .send(.delegate(.historyItemSelected(item)))
 
-            case let .destination(.presented(.history(.delegate(.historyDeleted(item))))):
+            case let .destination(.presented(.history(.delegate(.itemDeleted(item))))):
                 return .run { send in
                     try await historyStore.removeItem(item)
                     let history = try await historyStore.items()

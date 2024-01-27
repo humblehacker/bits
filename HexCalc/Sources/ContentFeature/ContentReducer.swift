@@ -49,6 +49,7 @@ public struct ContentReducer {
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
+        case expEntryUpdated(String)
         case expEntry(EntryReducer.Action)
         case decEntry(EntryReducer.Action)
         case hexEntry(EntryReducer.Action)
@@ -83,16 +84,22 @@ public struct ContentReducer {
                 update(&state, from: 0)
                 return .none
 
-            case .expEntry(.binding(\.text)):
+            case let .expEntryUpdated(text):
                 let value: Int
                 do {
-                    value = try evaluateExpression(state.expEntry.text)
+                    value = try evaluateExpression(text)
                 } catch {
                     print(error)
                     return .none
                 }
                 update(&state, from: value)
                 return .send(.expressionUpdated)
+
+            case let .expEntry(.delegate(.historyItemSelected(item))):
+                return .send(.expEntryUpdated(item.text))
+
+            case .expEntry(.binding(\.text)):
+                return .send(.expEntryUpdated(state.expEntry.text))
 
             case .expEntry(.binding(\.focusedField)):
                 state.focusedField = state.expEntry.focusedField
