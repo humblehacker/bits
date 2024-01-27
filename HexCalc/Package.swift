@@ -13,18 +13,19 @@ let package = Package(
         .library(name: "HistoryFeature", targets: ["HistoryFeature"]),
         .library(name: "ExpressionEvaluator", targets: ["ExpressionEvaluator"]),
         .library(name: "UI", targets: ["UI"]),
+        .library(name: "Utils", targets: ["Utils"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
         .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.13.0"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.2.0"),
+        .package(url: "https://github.com/groue/GRDB.swift", from: "6.24.2"),
     ],
     targets: [
         .target(
             name: "AppFeature",
             dependencies: [
                 "ContentFeature",
-                "HistoryFeature",
             ]
         ),
         .target(
@@ -40,8 +41,10 @@ let package = Package(
             name: "HistoryFeature",
             dependencies: [
                 "UI",
+                "Utils",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
+                .product(name: "GRDB", package: "GRDB.swift"),
             ]
         ),
         .target(
@@ -53,6 +56,7 @@ let package = Package(
             ]
         ),
         .target(name: "UI"),
+        .target(name: "Utils"),
         .testTarget(name: "ContentFeatureTests", dependencies: ["ContentFeature"]),
         .testTarget(name: "ExpressionEvaluatorTests", dependencies: ["ExpressionEvaluator"]),
         .testTarget(name: "HistoryFeatureTests", dependencies: ["HistoryFeature"]),

@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Dependencies
+import Foundation
 import SwiftUI
 import UI
 
@@ -7,7 +8,6 @@ private let historyListPadding = 4.0
 private let maxVisibleHistoryItems = 5
 
 public struct HistoryPicker: View {
-    @State var selection: Int?
     @Bindable var store: StoreOf<HistoryReducer>
     @State var rowHeight: Double = 0
 
@@ -20,7 +20,7 @@ public struct HistoryPicker: View {
             Color(nsColor: .controlBackgroundColor).scaleEffect(1.5)
 
             ScrollViewReader { scroller in
-                List(store.history, selection: $selection) { item in
+                List(store.history, selection: $store.selection) { item in
                     Text(item.text)
                         .listRowSeparator(.hidden)
                         .overlay {
@@ -33,14 +33,17 @@ public struct HistoryPicker: View {
                 }
                 .onChange(of: store.history, initial: true) {
                     guard let last = store.history.last else { return }
-                    selection = last.id
+                    store.selection = last.id
                     scroller.scrollTo(last.id, anchor: .bottom)
+                }
+                .onDeleteCommand {
+                    store.send(.deleteKeyPressed)
                 }
             }
             .padding(historyListPadding)
         }
         .onKeyPress(.return) {
-            store.send(.historySelected)
+            store.send(.returnKeyPressed)
             return .handled
         }
         .frame(height: frameHeight)
@@ -58,12 +61,9 @@ public struct HistoryPicker: View {
     HistoryPicker(
         store: Store(
             initialState: HistoryReducer.State(
-                history: [
-                    "Foo", "Bar", "Baz", "Qux", "Quux", "Corge", "Grault", "Garply", "Waldo", "Fred", "Plugh", "Xyzzy", "Thud",
-                ]
-                .enumerated()
-                .map { HistoryItem(id: $0.0, text: $0.1) }
-                .reversed()
+                history: ["Foo", "Bar", "Baz", "Qux", "Quux", "Corge", "Grault", "Garply"]
+                    .enumerated()
+                    .map { HistoryItem(id: UUID(), addedOn: .now + Double($0.0), text: $0.1) }
             )
         ) {
             HistoryReducer()

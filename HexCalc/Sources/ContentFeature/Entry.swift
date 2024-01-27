@@ -15,6 +15,7 @@ struct Entry: View {
     }
 
     var body: some View {
+        let _ = Self._printChanges()
         HStack {
             Button(store.title) { focusedField = store.kind }
                 .frame(width: 45, height: 20)
@@ -30,11 +31,11 @@ struct Entry: View {
                     .focused($focusedField, equals: store.kind)
                     .zIndex(focusedField == store.kind ? 1 : 0)
                     .onKeyPress(keys: [.return, KeyEquivalent("=")]) { _ in
-                        store.send(.delegate(.replaceEvaluatedExpression))
+                        store.send(.delegate(.confirmationKeyPressed))
                         return .handled
                     }
                     .onKeyPress(.upArrow) {
-                        store.send(.historyInvoked)
+                        store.send(.upArrowPressed)
                         return .handled
                     }
 

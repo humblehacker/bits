@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import Dependencies
 import HistoryFeature
+import Utils
 
 @Reducer
 public struct EntryReducer {
@@ -31,42 +32,52 @@ public struct EntryReducer {
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case historyInvoked
+        case upArrowPressed
         case historyLoaded([HistoryItem])
         case destination(PresentationAction<Destination.Action>)
         case delegate(Delegate)
 
         @CasePathable
         public enum Delegate {
-            case replaceEvaluatedExpression
+            case confirmationKeyPressed
         }
     }
+
+    @Dependency(\.historyStore) var historyStore
+    @Dependency(\.mainQueue) var mainQueue
+
+    enum CancelID { case history, upArrow }
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
         Reduce { state, action in
             switch action {
-            case .historyInvoked:
+            case .upArrowPressed:
                 return .run { send in
-                    let history = [
-                        "Foo", "Bar", "Baz", "Qux", "Quux", "Corge", "Grault", "Garply", "Waldo", "Fred", "Plugh", "Xyzzy", "Thud",
-                    ]
-                    .enumerated()
-                    .map { HistoryItem(id: $0.0, text: $0.1) }
-                    .reversed()
-                    await send(.historyLoaded(Array(history)))
+                    let history = try await historyStore.items()
+                    guard history.isNotEmpty else { return }
+                    await send(.historyLoaded(history))
                 }
+                .debounce(id: CancelID.upArrow, for: 0.2, scheduler: self.mainQueue)
 
             case let .historyLoaded(history):
                 guard state.destination == nil else { return .none }
                 state.destination = .history(HistoryReducer.State(history: history))
                 return .none
 
+            case .destination(.presented(.history(.delegate(.historySelected(let item))))):
+                state.text = item.text
+                return .none
+
             case .destination:
                 return .none
 
             case .binding(\.text):
-                return .none
+                return .run { [text = state.text] _ in
+                    print("new history: \(text)")
+                    try await historyStore.addItem(text: text)
+                }
+                .debounce(id: CancelID.history, for: 1.0, scheduler: self.mainQueue)
 
             case .binding:
                 return .none
@@ -78,6 +89,7 @@ public struct EntryReducer {
         .ifLet(\.$destination, action: \.destination) {
             Destination()
         }
+        ._printChanges()
     }
 
     @Reducer
