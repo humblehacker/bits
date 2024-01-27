@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 
 public struct ContentView: View {
-    @State var store: StoreOf<ContentReducer>
+    @Bindable var store: StoreOf<ContentReducer>
     @FocusState var focusedField: FocusedField?
 
     public init(store: StoreOf<ContentReducer>) {

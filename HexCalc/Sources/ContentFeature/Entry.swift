@@ -7,7 +7,7 @@ struct Entry: View {
     @State var width: Double
     @FocusState var focusedField: FocusedField?
 
-    @State var store: StoreOf<EntryReducer>
+    @Bindable var store: StoreOf<EntryReducer>
 
     init(store: StoreOf<EntryReducer>) {
         width = 100

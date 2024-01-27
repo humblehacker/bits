@@ -7,8 +7,8 @@ private let historyListPadding = 4.0
 private let maxVisibleHistoryItems = 5
 
 public struct HistoryPicker: View {
-    @State var store: StoreOf<HistoryReducer>
     @State var selection: Int?
+    @Bindable var store: StoreOf<HistoryReducer>
     @State var rowHeight: Double = 0
 
     public init(store: StoreOf<HistoryReducer>) {
