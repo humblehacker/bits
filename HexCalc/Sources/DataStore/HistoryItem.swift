@@ -1,5 +1,4 @@
 import Foundation
-import GRDB
 
 public struct HistoryItem: Identifiable, Equatable, Hashable {
     public var id: UUID
@@ -13,4 +12,4 @@ public struct HistoryItem: Identifiable, Equatable, Hashable {
     }
 }
 
-extension HistoryItem: Codable, FetchableRecord, PersistableRecord {}
+extension HistoryItem: Codable {}

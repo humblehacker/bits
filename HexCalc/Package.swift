@@ -10,8 +10,10 @@ let package = Package(
     products: [
         .library(name: "AppFeature", targets: ["AppFeature"]),
         .library(name: "ContentFeature", targets: ["ContentFeature"]),
-        .library(name: "HistoryFeature", targets: ["HistoryFeature"]),
+        .library(name: "DataStore", targets: ["DataStore"]),
+        .library(name: "DataStoreLive", targets: ["DataStoreLive"]),
         .library(name: "ExpressionEvaluator", targets: ["ExpressionEvaluator"]),
+        .library(name: "HistoryFeature", targets: ["HistoryFeature"]),
         .library(name: "UI", targets: ["UI"]),
         .library(name: "Utils", targets: ["Utils"]),
     ],
@@ -26,6 +28,7 @@ let package = Package(
             name: "AppFeature",
             dependencies: [
                 "ContentFeature",
+                "DataStoreLive",
             ]
         ),
         .target(
@@ -40,11 +43,10 @@ let package = Package(
         .target(
             name: "HistoryFeature",
             dependencies: [
+                "DataStore",
                 "UI",
                 "Utils",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "DependenciesMacros", package: "swift-dependencies"),
-                .product(name: "GRDB", package: "GRDB.swift"),
             ]
         ),
         .target(
@@ -53,6 +55,20 @@ let package = Package(
                 .product(name: "Parsing", package: "swift-parsing"),
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "DataStore",
+            dependencies: [
+                .product(name: "DependenciesMacros", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "DataStoreLive",
+            dependencies: [
+                "DataStore",
+                "Utils",
+                .product(name: "GRDB", package: "GRDB.swift"),
             ]
         ),
         .target(name: "UI"),
