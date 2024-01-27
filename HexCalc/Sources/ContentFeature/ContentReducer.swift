@@ -28,7 +28,7 @@ public struct ContentReducer {
         var focusedField: FocusedField?
 
         public init(
-            idealWidth: Double = 100.0,
+            idealWidth: Double = 500.0,
             selectedBitWidth: Bits = ._8,
             expEntry: EntryReducer.State = EntryReducer.State(kind: .exp),
             hexEntry: EntryReducer.State = EntryReducer.State(kind: .hex),
