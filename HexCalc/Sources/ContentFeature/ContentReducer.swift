@@ -5,6 +5,7 @@ import ExpressionEvaluator
 import Foundation
 import HistoryFeature
 import Observation
+import Utils
 
 private let defaultBits: Bits = ._32
 private let minWidth = 450.0
@@ -23,6 +24,7 @@ public struct ContentReducer {
     public struct State {
         var idealWidth: Double
         var selectedBitWidth: Bits
+        var expTextTemp: String?
         var expEntry: EntryReducer.State
         var hexEntry: EntryReducer.State
         var decEntry: EntryReducer.State
@@ -51,7 +53,7 @@ public struct ContentReducer {
 
     public enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case expEntryUpdated(String)
+        case expEntryUpdated(String, updateHistory: Bool)
         case expEntry(EntryReducer.Action)
         case decEntry(EntryReducer.Action)
         case hexEntry(EntryReducer.Action)
@@ -60,6 +62,7 @@ public struct ContentReducer {
         case expressionUpdated
         case upArrowPressed
         case historyItemSelected(HistoryItem)
+        case historyItemConfirmed(HistoryItem)
         case historyLoaded([HistoryItem])
         case destination(PresentationAction<Destination.Action>)
     }
@@ -91,21 +94,29 @@ public struct ContentReducer {
                 update(&state, from: 0)
                 return .none
 
-            case let .expEntryUpdated(text):
+            case let .expEntryUpdated(text, updateHistory):
                 let value: Int
                 do {
-                    value = try evaluateExpression(text)
+                    if text.isNotEmpty {
+                        value = try evaluateExpression(text)
+                    } else {
+                        value = 0
+                    }
                 } catch {
-                    print(error)
+                    print("Error: \(error)")
                     return .none
                 }
+                print("Updating from value: \(value)")
                 update(&state, from: value)
-                return .send(.expressionUpdated)
+                if updateHistory {
+                    return .send(.expressionUpdated)
+                }
+                return .none
 
             case let .expEntry(entryAction):
                 switch entryAction {
                 case .binding(\.text):
-                    return .send(.expEntryUpdated(state.expEntry.text))
+                    return .send(.expEntryUpdated(state.expEntry.text, updateHistory: true))
 
                 case .binding(\.focusedField):
                     state.focusedField = state.expEntry.focusedField
@@ -192,6 +203,7 @@ public struct ContentReducer {
                 .debounce(id: CancelID.history, for: 1.0, scheduler: self.mainQueue)
 
             case .upArrowPressed:
+                state.expTextTemp = state.expEntry.text
                 return .run { send in
                     let history = try await historyStore.items()
                     guard history.isNotEmpty else { return }
@@ -204,17 +216,34 @@ public struct ContentReducer {
                 state.destination = .history(HistoryReducer.State(history: history))
                 return .none
 
+            case let .historyItemSelected(item):
+                state.expEntry.text = item.text
+                return .send(.expEntryUpdated(item.text, updateHistory: false))
+
+            case let .historyItemConfirmed(item):
+                state.expEntry.text = item.text
+                state.expTextTemp = nil
+                return .send(.expEntryUpdated(item.text, updateHistory: true))
+
             case let .destination(.presented(.history(.delegate(.selectionChanged(id))))):
                 return .run { send in
-                    guard
-                        let id,
-                        let item = try await historyStore.item(id: id) else { return }
+                    guard let id, let item = try await historyStore.item(id: id) else { return }
                     await send(.historyItemSelected(item))
                 }
 
-            case let .historyItemSelected(item):
-                state.expEntry.text = item.text
-                return .send(.expEntryUpdated(item.text))
+            case let .destination(.presented(.history(.delegate(.selectionConfirmed(id))))):
+                return .run { send in
+                    guard let item = try await historyStore.item(id: id) else { return }
+                    await send(.historyItemSelected(item))
+                }
+
+            case .destination(.dismiss):
+                if let expText = state.expTextTemp {
+                    state.expEntry.text = expText
+                    state.expTextTemp = nil
+                    return .send(.expEntryUpdated(expText, updateHistory: false))
+                }
+                return .none
 
             case let .destination(.presented(.history(.delegate(.itemDeleted(item))))):
                 return .run { send in

@@ -23,7 +23,7 @@ public struct HistoryReducer {
 
         public enum Delegate: Equatable {
             case selectionChanged(HistoryItem.ID?)
-            case itemSelected(HistoryItem.ID)
+            case selectionConfirmed(HistoryItem.ID)
             case itemDeleted(HistoryItem.ID)
         }
     }
@@ -51,7 +51,7 @@ public struct HistoryReducer {
             case .returnKeyPressed:
                 return .run { [selection = state.selection] send in
                     if let selection {
-                        await send(.delegate(.itemSelected(selection)))
+                        await send(.delegate(.selectionConfirmed(selection)))
                     }
                     await dismiss()
                 }
