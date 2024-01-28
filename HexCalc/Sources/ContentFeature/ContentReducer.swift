@@ -3,6 +3,7 @@ import DataStore
 import Dependencies
 import ExpressionEvaluator
 import Foundation
+import HistoryFeature
 import Observation
 
 private let defaultBits: Bits = ._32
@@ -27,6 +28,7 @@ public struct ContentReducer {
         var decEntry: EntryReducer.State
         var binEntry: EntryReducer.State
         var focusedField: FocusedField?
+        @Presents var destination: Destination.State?
 
         public init(
             idealWidth: Double = 500.0,
@@ -56,13 +58,18 @@ public struct ContentReducer {
         case binEntry(EntryReducer.Action)
         case onAppear
         case expressionUpdated
+        case upArrowPressed
+        case historyItemSelected(HistoryItem)
+        case historyLoaded([HistoryItem])
+        case destination(PresentationAction<Destination.Action>)
     }
 
     @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
+    @Dependency(\.dismiss) var dismiss
     @Dependency(\.historyStore) var historyStore
     @Dependency(\.mainQueue) var mainQueue
 
-    enum CancelID { case history }
+    enum CancelID { case history, upArrow }
 
     public init() {}
 
@@ -103,9 +110,6 @@ public struct ContentReducer {
                 case .binding(\.focusedField):
                     state.focusedField = state.expEntry.focusedField
                     return .none
-
-                case let .delegate(.historyItemSelected(item)):
-                    return .send(.expEntryUpdated(item.text))
 
                 case .delegate(.confirmationKeyPressed):
                     let value: Int
@@ -186,9 +190,68 @@ public struct ContentReducer {
                     try await historyStore.addItem(text: text)
                 }
                 .debounce(id: CancelID.history, for: 1.0, scheduler: self.mainQueue)
+
+            case .upArrowPressed:
+                return .run { send in
+                    let history = try await historyStore.items()
+                    guard history.isNotEmpty else { return }
+                    await send(.historyLoaded(history))
+                }
+                .debounce(id: CancelID.upArrow, for: 0.2, scheduler: self.mainQueue)
+
+            case let .historyLoaded(history):
+                guard state.destination == nil else { return .none }
+                state.destination = .history(HistoryReducer.State(history: history))
+                return .none
+
+            case let .destination(.presented(.history(.delegate(.selectionChanged(id))))):
+                return .run { send in
+                    guard
+                        let id,
+                        let item = try await historyStore.item(id: id) else { return }
+                    await send(.historyItemSelected(item))
+                }
+
+            case let .historyItemSelected(item):
+                state.expEntry.text = item.text
+                return .send(.expEntryUpdated(item.text))
+
+            case let .destination(.presented(.history(.delegate(.itemDeleted(item))))):
+                return .run { send in
+                    try await historyStore.removeItem(item)
+                    let history = try await historyStore.items()
+                    await send(.destination(.presented(.history(.historyUpdated(history)))))
+                    if history.isEmpty {
+                        await dismiss()
+                    }
+                }
+
+            case .destination:
+                return .none
             }
         }
+        .ifLet(\.$destination, action: \.destination) {
+            Destination()
+        }
         ._printChanges()
+    }
+
+    @Reducer
+    public struct Destination {
+        @ObservableState
+        public enum State {
+            case history(HistoryReducer.State)
+        }
+
+        public enum Action {
+            case history(HistoryReducer.Action)
+        }
+
+        public var body: some ReducerOf<Self> {
+            Scope(state: \.history, action: \.history) {
+                HistoryReducer()
+            }
+        }
     }
 
     func update(_ state: inout ContentReducer.State, from value: Int) {

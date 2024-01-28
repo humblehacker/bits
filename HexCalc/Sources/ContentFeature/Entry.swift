@@ -4,13 +4,11 @@ import HistoryFeature
 import SwiftUI
 
 struct Entry: View {
-    @State var width: Double
     @FocusState var focusedField: FocusedField?
 
     @Bindable var store: StoreOf<EntryReducer>
 
     init(store: StoreOf<EntryReducer>) {
-        width = 100
         self.store = store
     }
 
@@ -34,10 +32,6 @@ struct Entry: View {
                         store.send(.delegate(.confirmationKeyPressed))
                         return .handled
                     }
-                    .onKeyPress(.upArrow) {
-                        store.send(.upArrowPressed)
-                        return .handled
-                    }
 
                 Text(store.text)
                     .entryTextStyle()
@@ -46,12 +40,8 @@ struct Entry: View {
             }
             .overlay {
                 GeometryReader { geo in
-                    Color.clear.onAppear { width = geo.size.width }
+                    Color.clear.onAppear { store.width = geo.size.width }
                 }
-            }
-            .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in
-                HistoryPicker(store: store)
-                    .frame(width: width)
             }
             .bind($store.focusedField, to: $focusedField)
         }

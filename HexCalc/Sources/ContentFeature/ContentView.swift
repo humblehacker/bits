@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import HistoryFeature
 import SwiftUI
 
 public struct ContentView: View {
@@ -12,6 +13,14 @@ public struct ContentView: View {
     public var body: some View {
         VStack {
             Entry(store: store.scope(state: \.expEntry, action: \.expEntry))
+                .onKeyPress(.upArrow) {
+                    store.send(.upArrowPressed)
+                    return .handled
+                }
+                .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in
+                    HistoryPicker(store: store)
+                        .frame(width: self.store.expEntry.width)
+                }
             Entry(store: store.scope(state: \.decEntry, action: \.decEntry))
             Entry(store: store.scope(state: \.hexEntry, action: \.hexEntry))
             Entry(store: store.scope(state: \.binEntry, action: \.binEntry))
