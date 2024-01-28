@@ -95,68 +95,80 @@ public struct ContentReducer {
                 update(&state, from: value)
                 return .send(.expressionUpdated)
 
-            case let .expEntry(.delegate(.historyItemSelected(item))):
-                return .send(.expEntryUpdated(item.text))
+            case let .expEntry(entryAction):
+                switch entryAction {
+                case .binding(\.text):
+                    return .send(.expEntryUpdated(state.expEntry.text))
 
-            case .expEntry(.binding(\.text)):
-                return .send(.expEntryUpdated(state.expEntry.text))
+                case .binding(\.focusedField):
+                    state.focusedField = state.expEntry.focusedField
+                    return .none
 
-            case .expEntry(.binding(\.focusedField)):
-                state.focusedField = state.expEntry.focusedField
-                return .none
+                case let .delegate(.historyItemSelected(item)):
+                    return .send(.expEntryUpdated(item.text))
 
-            case .expEntry(.delegate(.confirmationKeyPressed)):
-                let value: Int
-                do {
-                    value = try evaluateExpression(state.expEntry.text)
-                } catch {
-                    print(error)
+                case .delegate(.confirmationKeyPressed):
+                    let value: Int
+                    do {
+                        value = try evaluateExpression(state.expEntry.text)
+                    } catch {
+                        print(error)
+                        return .none
+                    }
+                    state.expEntry.text = String(value, radix: 10)
+                    return .none
+
+                default:
                     return .none
                 }
-                state.expEntry.text = String(value, radix: 10)
-                return .none
 
-            case .expEntry:
-                return .none
+            case let .decEntry(entryAction):
+                switch entryAction {
+                case .binding(\.text):
+                    guard state.focusedField == .dec else { return .none }
+                    let value = Int(state.decEntry.text, radix: 10) ?? 0
+                    update(&state, from: value)
+                    return .none
 
-            case .decEntry(.binding(\.text)):
-                guard state.focusedField == .dec else { return .none }
-                let value = Int(state.decEntry.text, radix: 10) ?? 0
-                update(&state, from: value)
-                return .none
+                case .binding(\.focusedField):
+                    state.focusedField = state.decEntry.focusedField
+                    return .none
 
-            case .decEntry(.binding(\.focusedField)):
-                state.focusedField = state.decEntry.focusedField
-                return .none
+                default:
+                    return .none
+                }
 
-            case .decEntry:
-                return .none
+            case let .hexEntry(entryAction):
+                switch entryAction {
+                case .binding(\.text):
+                    guard state.focusedField == .hex else { return .none }
+                    let value = Int(state.hexEntry.text, radix: 16) ?? 0
+                    update(&state, from: value)
+                    return .none
 
-            case .hexEntry(.binding(\.text)):
-                guard state.focusedField == .hex else { return .none }
-                let value = Int(state.hexEntry.text, radix: 16) ?? 0
-                update(&state, from: value)
-                return .none
+                case .binding(\.focusedField):
+                    state.focusedField = state.hexEntry.focusedField
+                    return .none
 
-            case .hexEntry(.binding(\.focusedField)):
-                state.focusedField = state.hexEntry.focusedField
-                return .none
+                default:
+                    return .none
+                }
 
-            case .hexEntry:
-                return .none
+            case let .binEntry(entryAction):
+                switch entryAction {
+                case .binding(\.text):
+                    guard state.focusedField == .bin else { return .none }
+                    let value = Int(state.binEntry.text.filter { !$0.isWhitespace }, radix: 2) ?? 0
+                    update(&state, from: value)
+                    return .none
 
-            case .binEntry(.binding(\.text)):
-                guard state.focusedField == .bin else { return .none }
-                let value = Int(state.binEntry.text.filter { !$0.isWhitespace }, radix: 2) ?? 0
-                update(&state, from: value)
-                return .none
+                case .binding(\.focusedField):
+                    state.focusedField = state.binEntry.focusedField
+                    return .none
 
-            case .binEntry(.binding(\.focusedField)):
-                state.focusedField = state.binEntry.focusedField
-                return .none
-
-            case .binEntry:
-                return .none
+                default:
+                    return .none
+                }
 
             case .binding(\.selectedBitWidth):
                 let value = Int(state.decEntry.text, radix: 10) ?? 0
