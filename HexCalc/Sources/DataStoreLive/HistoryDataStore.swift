@@ -50,15 +50,13 @@ extension HistoryDataStore: DependencyKey {
                 guard !text.isEmpty else { return }
 
                 try await dbQueue().write { db in
-                    let lastItem = try HistoryItem
-                        .order(Column("addedOn").desc)
+                    let matchingItemID = try HistoryItem
+                        .select(Column("id"), as: UUID.self)
+                        .filter(Column("text") == text)
                         .fetchOne(db)
 
-                    // don't insert consecutive identical items
-                    guard lastItem?.text != text else { return }
-
-                    let item = HistoryItem(id: uuid(), addedOn: .now, text: text)
-                    try item.insert(db)
+                    let item = HistoryItem(id: matchingItemID ?? uuid(), addedOn: .now, text: text)
+                    try item.upsert(db)
                 }
             },
             removeItem: { id in
