@@ -21,9 +21,16 @@ public struct ContentView: View {
                     HistoryPicker(store: store)
                         .frame(width: self.store.expEntry.width)
                 }
+                .focused($focusedField, equals: .exp)
+
             Entry(store: store.scope(state: \.decEntry, action: \.decEntry))
+                .focused($focusedField, equals: .dec)
+
             Entry(store: store.scope(state: \.hexEntry, action: \.hexEntry))
+                .focused($focusedField, equals: .hex)
+
             Entry(store: store.scope(state: \.binEntry, action: \.binEntry))
+                .focused($focusedField, equals: .bin)
         }
         .padding()
         .toolbar {

@@ -4,8 +4,6 @@ import HistoryFeature
 import SwiftUI
 
 struct Entry: View {
-    @FocusState var focusedField: FocusedField?
-
     @Bindable var store: StoreOf<EntryReducer>
 
     init(store: StoreOf<EntryReducer>) {
@@ -15,19 +13,18 @@ struct Entry: View {
     var body: some View {
         let _ = Self._printChanges()
         HStack {
-            Button(store.title) { focusedField = store.kind }
+            Button(store.title) { store.isFocused = true }
                 .frame(width: 45, height: 20)
                 .buttonStyle(.plain)
-                .background(buttonBackgroundColor(for: store.kind))
-                .foregroundColor(buttonForegroundColor(for: store.kind))
+                .background(buttonBackgroundColor(store.isFocused))
+                .foregroundColor(buttonForegroundColor(store.isFocused))
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .focusable(false)
 
             ZStack {
                 TextField("", text: $store.text)
                     .entryTextStyle()
-                    .focused($focusedField, equals: store.kind)
-                    .zIndex(focusedField == store.kind ? 1 : 0)
+                    .zIndex(store.isFocused ? 1 : 0)
                     .onKeyPress(keys: [.return, KeyEquivalent("=")]) { _ in
                         store.send(.delegate(.confirmationKeyPressed))
                         return .handled
@@ -35,24 +32,23 @@ struct Entry: View {
 
                 Text(store.text)
                     .entryTextStyle()
-                    .onTapGesture { focusedField = store.kind }
-                    .zIndex(focusedField != store.kind ? 1 : 0)
+                    .onTapGesture { store.isFocused = true }
+                    .zIndex(!store.isFocused ? 1 : 0)
             }
             .overlay {
                 GeometryReader { geo in
                     Color.clear.onAppear { store.width = geo.size.width }
                 }
             }
-            .bind($store.focusedField, to: $focusedField)
         }
     }
 
-    func buttonBackgroundColor(for field: FocusedField?) -> Color {
-        focusedField == field ? Color.accentColor : Color(nsColor: .controlColor)
+    func buttonBackgroundColor(_ isFocused: Bool) -> Color {
+        isFocused ? Color.accentColor : Color(nsColor: .controlColor)
     }
 
-    func buttonForegroundColor(for field: FocusedField?) -> Color {
-        focusedField == field ? Color.white : Color(nsColor: .controlTextColor)
+    func buttonForegroundColor(_ isFocused: Bool) -> Color {
+        isFocused ? Color.white : Color(nsColor: .controlTextColor)
     }
 }
 

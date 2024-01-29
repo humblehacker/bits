@@ -58,6 +58,7 @@ public struct ContentReducer {
         case decEntry(EntryReducer.Action)
         case hexEntry(EntryReducer.Action)
         case binEntry(EntryReducer.Action)
+        case focusedFieldChanged(FocusedField?)
         case onAppear
         case expressionUpdated
         case upArrowPressed
@@ -92,7 +93,7 @@ public struct ContentReducer {
                 state.focusedField = .exp
                 state.expEntry.text = ""
                 update(&state, from: 0)
-                return .none
+                return .send(.focusedFieldChanged(state.focusedField))
 
             case let .expEntryUpdated(text, updateHistory):
                 let value: Int
@@ -118,9 +119,9 @@ public struct ContentReducer {
                 case .binding(\.text):
                     return .send(.expEntryUpdated(state.expEntry.text, updateHistory: true))
 
-                case .binding(\.focusedField):
-                    state.focusedField = state.expEntry.focusedField
-                    return .none
+                case .binding(\.isFocused):
+                    state.focusedField = .exp
+                    return .send(.focusedFieldChanged(state.focusedField))
 
                 case .delegate(.confirmationKeyPressed):
                     let value: Int
@@ -145,9 +146,9 @@ public struct ContentReducer {
                     update(&state, from: value)
                     return .none
 
-                case .binding(\.focusedField):
-                    state.focusedField = state.decEntry.focusedField
-                    return .none
+                case .binding(\.isFocused):
+                    state.focusedField = .dec
+                    return .send(.focusedFieldChanged(state.focusedField))
 
                 default:
                     return .none
@@ -161,9 +162,9 @@ public struct ContentReducer {
                     update(&state, from: value)
                     return .none
 
-                case .binding(\.focusedField):
-                    state.focusedField = state.hexEntry.focusedField
-                    return .none
+                case .binding(\.isFocused):
+                    state.focusedField = .hex
+                    return .send(.focusedFieldChanged(state.focusedField))
 
                 default:
                     return .none
@@ -177,13 +178,20 @@ public struct ContentReducer {
                     update(&state, from: value)
                     return .none
 
-                case .binding(\.focusedField):
-                    state.focusedField = state.binEntry.focusedField
-                    return .none
+                case .binding(\.isFocused):
+                    state.focusedField = .bin
+                    return .send(.focusedFieldChanged(state.focusedField))
 
                 default:
                     return .none
                 }
+
+            case let .focusedFieldChanged(newField):
+                state.expEntry.isFocused = newField == .exp
+                state.binEntry.isFocused = newField == .bin
+                state.decEntry.isFocused = newField == .dec
+                state.hexEntry.isFocused = newField == .hex
+                return .none
 
             case .binding(\.selectedBitWidth):
                 let value = Int(state.decEntry.text, radix: 10) ?? 0
@@ -191,6 +199,9 @@ public struct ContentReducer {
                 saveBits(state.selectedBitWidth)
                 state.idealWidth = idealWindowWidth(bits: state.selectedBitWidth)
                 return .none
+
+            case .binding(\.focusedField):
+                return .send(.focusedFieldChanged(state.focusedField))
 
             case .binding:
                 return .none

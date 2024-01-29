@@ -9,7 +9,7 @@ public struct EntryReducer {
         let kind: FocusedField
         var showHistory: Bool
         var text: String
-        var focusedField: FocusedField?
+        var isFocused: Bool
         var width: Double
 
         var title: String {
@@ -25,7 +25,7 @@ public struct EntryReducer {
             self.kind = kind
             showHistory = false
             text = ""
-            focusedField = nil
+            isFocused = false
             width = 100
         }
     }
