@@ -22,6 +22,7 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.13.0"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.2.0"),
         .package(url: "https://github.com/groue/GRDB.swift", from: "6.24.2"),
+        .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", from: "1.0.1"),
     ],
     targets: [
         .target(
@@ -37,6 +38,7 @@ let package = Package(
                 "ExpressionEvaluator",
                 "HistoryFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
             ]
         ),
