@@ -5,7 +5,7 @@ import Utils
 @Reducer
 public struct EntryReducer {
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         let kind: FocusedField
         var showHistory: Bool
         var text: String
@@ -30,12 +30,12 @@ public struct EntryReducer {
         }
     }
 
-    public enum Action: BindableAction {
+    public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case delegate(Delegate)
 
         @CasePathable
-        public enum Delegate {
+        public enum Delegate: Equatable {
             case confirmationKeyPressed
         }
     }

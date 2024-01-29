@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import DataStore
 import Dependencies
+import DependenciesAdditions
 import ExpressionEvaluator
 import Foundation
 import HistoryFeature
@@ -11,7 +12,7 @@ private let defaultBits: Bits = ._32
 private let minWidth = 450.0
 private let maxWidth = 730.0
 
-public enum FocusedField {
+public enum FocusedField: Equatable {
     case exp
     case bin
     case dec
@@ -21,7 +22,7 @@ public enum FocusedField {
 @Reducer
 public struct ContentReducer {
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         var idealWidth: Double
         var selectedBitWidth: Bits
         var expTextTemp: String?
@@ -51,7 +52,7 @@ public struct ContentReducer {
         }
     }
 
-    public enum Action: BindableAction {
+    public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case expEntryUpdated(String, updateHistory: Bool)
         case expEntry(EntryReducer.Action)
@@ -72,6 +73,7 @@ public struct ContentReducer {
     @Dependency(\.dismiss) var dismiss
     @Dependency(\.historyStore) var historyStore
     @Dependency(\.mainQueue) var mainQueue
+    @Dependency(\.userDefaults) var userDefaults
 
     enum CancelID { case history, upArrow }
 
@@ -279,11 +281,11 @@ public struct ContentReducer {
     @Reducer
     public struct Destination {
         @ObservableState
-        public enum State {
+        public enum State: Equatable {
             case history(HistoryReducer.State)
         }
 
-        public enum Action {
+        public enum Action: Equatable {
             case history(HistoryReducer.Action)
         }
 
@@ -301,16 +303,16 @@ public struct ContentReducer {
     }
 
     func saveBits(_ bits: Bits) {
-        UserDefaults.standard.setValue(bits.rawValue, forKey: "bits")
+        userDefaults.set(bits.rawValue, forKey: "bits")
     }
 
     func loadBits() -> Bits {
-        let bits = UserDefaults.standard.integer(forKey: "bits")
+        let bits = userDefaults.integer(forKey: "bits") ?? defaultBits.rawValue
         return Bits(rawValue: bits) ?? defaultBits
     }
 }
 
-public enum Bits: Int {
+public enum Bits: Int, Equatable {
     case _8 = 8
     case _16 = 16
     case _32 = 32
