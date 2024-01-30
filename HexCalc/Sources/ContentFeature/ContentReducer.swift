@@ -236,7 +236,7 @@ public struct ContentReducer {
             case let .historyItemConfirmed(item):
                 state.expEntry.text = item.text
                 state.expTextTemp = nil
-                return .send(.expEntryUpdated(item.text, updateHistory: true))
+                return .send(.expEntryUpdated(item.text, updateHistory: false))
 
             case let .destination(.presented(.history(.delegate(.selectionChanged(id))))):
                 return .run { send in
