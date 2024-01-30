@@ -247,7 +247,7 @@ public struct ContentReducer {
             case let .destination(.presented(.history(.delegate(.selectionConfirmed(id))))):
                 return .run { send in
                     guard let item = try await historyStore.item(id: id) else { return }
-                    await send(.historyItemSelected(item))
+                    await send(.historyItemConfirmed(item))
                 }
 
             case .destination(.dismiss):
