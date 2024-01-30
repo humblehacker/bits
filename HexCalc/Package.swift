@@ -62,6 +62,7 @@ let package = Package(
         .target(
             name: "DataStore",
             dependencies: [
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
             ]
         ),

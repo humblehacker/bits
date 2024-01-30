@@ -1,5 +1,6 @@
 import DataStore
 import Dependencies
+import DependenciesAdditions
 import DependenciesMacros
 import Foundation
 import GRDB
@@ -8,6 +9,7 @@ import Utils
 extension HistoryDataStore: DependencyKey {
     public static let liveValue: Self = {
         @Dependency(\.uuid) var uuid
+        @Dependency(\.date.now) var now
 
         var _dbQueue: DatabaseQueue? = nil
 
@@ -55,7 +57,8 @@ extension HistoryDataStore: DependencyKey {
                         .filter(Column("text") == text)
                         .fetchOne(db)
 
-                    let item = HistoryItem(id: matchingItemID ?? uuid(), addedOn: .now, text: text)
+                    let item = HistoryItem(id: matchingItemID ?? uuid(), addedOn: now, text: text)
+
                     try item.upsert(db)
                 }
             },

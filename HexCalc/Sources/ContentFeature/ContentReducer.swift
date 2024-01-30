@@ -263,9 +263,7 @@ public struct ContentReducer {
                     try await historyStore.removeItem(item)
                     let history = try await historyStore.items()
                     await send(.destination(.presented(.history(.historyUpdated(history)))))
-                    if history.isEmpty {
-                        await dismiss()
-                    }
+                    if history.isEmpty { await dismiss() }
                 }
 
             case .destination:
@@ -307,7 +305,7 @@ public struct ContentReducer {
     }
 
     func loadBits() -> Bits {
-        let bits = userDefaults.integer(forKey: "bits") ?? defaultBits.rawValue
+        guard let bits = userDefaults.integer(forKey: "bits") else { return defaultBits }
         return Bits(rawValue: bits) ?? defaultBits
     }
 }

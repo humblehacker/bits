@@ -13,13 +13,17 @@ public struct HistoryDataStore {
 
 extension HistoryDataStore: TestDependencyKey {
     public static var testValue = previewValue
-    
-    public static let previewValue = Self(
-        item: { id in HistoryItem(id: id, addedOn: .now, text: "Foo") },
-        items: { [HistoryItem(id: UUID(), addedOn: .now, text: "Foo")] },
-        addItem: { _ in },
-        removeItem: { _ in }
-    )
+
+    public static let previewValue = {
+        @Dependency(\.date.now) var now
+        @Dependency(\.uuid) var uuid
+        return Self(
+            item: { id in HistoryItem(id: id, addedOn: now, text: "123") },
+            items: { [HistoryItem(id: uuid(), addedOn: now, text: "123")] },
+            addItem: { _ in },
+            removeItem: { _ in }
+        )
+    }()
 }
 
 public extension DependencyValues {
