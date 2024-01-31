@@ -1,5 +1,6 @@
 import ComposableArchitecture
 @testable import ContentFeature
+import CustomDump
 import DataStore
 import HistoryFeature
 import XCTest
@@ -272,5 +273,32 @@ class ContentReducerTests: XCTestCase {
             $0.hexEntry.text = "0"
             $0.binEntry.text = "0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"
         }
+    }
+
+    @MainActor
+    func testTextStrippedBeforeAddingToHistory() async {
+        @Dependency(\.historyStore) var historyStore
+
+        var actual: String? = nil
+
+        var initialState = ContentReducer.State()
+        initialState.expEntry.text = " 0x55 "
+        let store = TestStore(initialState: initialState) {
+            ContentReducer()
+        } withDependencies: {
+            $0.date.now = Date(timeIntervalSinceReferenceDate: 1_234_567_890)
+            $0.historyStore.addItem = { actual = $0 }
+            $0.mainQueue = .immediate
+            $0.userDefaults = .ephemeral()
+            $0.uuid = .incrementing
+        }
+
+        store.exhaustivity = .off
+
+        await store.send(.expressionUpdated)
+
+        let expected = "0x55"
+
+        XCTAssertNoDifference(expected, actual)
     }
 }
