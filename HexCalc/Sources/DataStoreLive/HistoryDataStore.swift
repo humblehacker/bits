@@ -7,7 +7,9 @@ import GRDB
 import Utils
 
 extension HistoryDataStore: DependencyKey {
-    public static let liveValue: Self = {
+    public static let liveValue: Self = makeHistoryDataStore()
+
+    static func makeHistoryDataStore() -> HistoryDataStore {
         @Dependency(\.uuid) var uuid
         @Dependency(\.date.now) var now
 
@@ -68,5 +70,5 @@ extension HistoryDataStore: DependencyKey {
                 }
             }
         )
-    }()
+    }
 }
