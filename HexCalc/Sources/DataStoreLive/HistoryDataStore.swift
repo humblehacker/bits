@@ -9,7 +9,7 @@ import Utils
 extension HistoryDataStore: DependencyKey {
     public static let liveValue: Self = makeHistoryDataStore()
 
-    static func makeHistoryDataStore() -> HistoryDataStore {
+    static func makeHistoryDataStore(inMemory: Bool = false) -> HistoryDataStore {
         @Dependency(\.uuid) var uuid
         @Dependency(\.date.now) var now
 
@@ -18,7 +18,7 @@ extension HistoryDataStore: DependencyKey {
         func dbQueue() throws -> DatabaseQueue {
             guard _dbQueue == nil else { return _dbQueue! }
 
-            let dbPath = try FileManager.default
+            let dbPath = inMemory ? ":memory:" : try FileManager.default
                 .safeApplicationSupportURL()!
                 .appendingPathComponent("hexcalc.db")
                 .path
