@@ -19,8 +19,10 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
-        .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.13.0"),
+        .package(url: "https://github.com/pointfreeco/swift-custom-dump", from: "1.1.2"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.2.0"),
+        .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.13.0"),
+        .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "1.1.0"),
         .package(url: "https://github.com/groue/GRDB.swift", from: "6.24.2"),
         .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", from: "1.0.1"),
     ],
@@ -30,6 +32,7 @@ let package = Package(
             dependencies: [
                 "ContentFeature",
                 "DataStoreLive",
+                .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
             ]
         ),
         .target(
@@ -62,6 +65,7 @@ let package = Package(
         .target(
             name: "DataStore",
             dependencies: [
+                .product(name: "CustomDump", package: "swift-custom-dump"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
             ]
