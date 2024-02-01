@@ -28,11 +28,12 @@ public struct BinTextFieldReducer {
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
-        case bitTapped(index: Int)
-        case cursorMovementKeyPressed(KeyEquivalent)
-        case bitTyped(String)
-        case toggleBitKeyPressed
         case bitOperation(BitOp)
+        case bitTapped(index: Int)
+        case bitTyped(String)
+        case cancelTypeoverKeyPressed
+        case cursorMovementKeyPressed(KeyEquivalent)
+        case toggleBitKeyPressed
     }
 
     public init() {}
@@ -81,6 +82,10 @@ public struct BinTextFieldReducer {
 
             case let .bitTyped(bit):
                 return .send(.bitOperation(bit == "1" ? .set : .unset))
+
+            case .cancelTypeoverKeyPressed:
+                state.selectedBit = nil
+                return .none
 
             case let .cursorMovementKeyPressed(key):
                 switch key {

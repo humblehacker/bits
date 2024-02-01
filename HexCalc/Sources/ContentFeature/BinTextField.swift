@@ -39,6 +39,10 @@ struct BinTextField: View {
             store.send(.toggleBitKeyPressed)
             return .handled
         }
+        .onKeyPress(.escape) {
+            store.send(.cancelTypeoverKeyPressed)
+            return .handled
+        }
     }
 }
 
