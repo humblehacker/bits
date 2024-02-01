@@ -83,8 +83,11 @@ class ContentReducerTests: XCTestCase {
         let store = TestStore(initialState: initialState) {
             ContentReducer()
         } withDependencies: {
-            $0.userDefaults = .ephemeral()
+            var addedItemText: String? = nil
+            $0.historyStore.addItem = { addedItemText = $0 }
+            $0.historyStore.item = { id in HistoryItem(id: id, addedOn: .now, text: addedItemText!) }
             $0.mainQueue = .immediate
+            $0.userDefaults = .ephemeral()
         }
 
         await store.send(.expEntry(.binding(.set(\.text, "0xff + 1")))) {
@@ -132,10 +135,17 @@ class ContentReducerTests: XCTestCase {
         initialState.expEntry.text = "0xff"
         initialState.selectedBitWidth = ._16
 
+        let fakeItemInHistory = HistoryItem(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
+            addedOn: Date(timeIntervalSinceReferenceDate: 1_234_567_890),
+            text: "123"
+        )
+
         let store = TestStore(initialState: initialState) {
             ContentReducer()
         } withDependencies: {
             $0.date.now = Date(timeIntervalSinceReferenceDate: 1_234_567_890)
+            $0.historyStore.items = { [fakeItemInHistory] }
             $0.mainQueue = .immediate
             $0.userDefaults = .ephemeral()
             $0.uuid = .incrementing
@@ -146,17 +156,7 @@ class ContentReducerTests: XCTestCase {
         }
 
         await store.receive(\.historyLoaded) {
-            $0.destination = .history(
-                HistoryReducer.State(
-                    history: [
-                        HistoryItem(
-                            id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
-                            addedOn: Date(timeIntervalSinceReferenceDate: 1_234_567_890),
-                            text: "123"
-                        ),
-                    ]
-                )
-            )
+            $0.destination = .history(HistoryReducer.State(history: [fakeItemInHistory]))
         }
 
         // When the history picker is dismissed without a selection being confirmed
@@ -185,10 +185,18 @@ class ContentReducerTests: XCTestCase {
         initialState.expEntry.text = "0xff"
         initialState.selectedBitWidth = ._16
 
+        let fakeItemInHistory = HistoryItem(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
+            addedOn: Date(timeIntervalSinceReferenceDate: 1_234_567_890),
+            text: "123"
+        )
+
         let store = TestStore(initialState: initialState) {
             ContentReducer()
         } withDependencies: {
             $0.date.now = Date(timeIntervalSinceReferenceDate: 1_234_567_890)
+            $0.historyStore.items = { [fakeItemInHistory] }
+            $0.historyStore.item = { _ in fakeItemInHistory }
             $0.mainQueue = .immediate
             $0.userDefaults = .ephemeral()
             $0.uuid = .incrementing
@@ -199,28 +207,12 @@ class ContentReducerTests: XCTestCase {
         }
 
         await store.receive(\.historyLoaded) {
-            $0.destination = .history(
-                HistoryReducer.State(
-                    history: [
-                        HistoryItem(
-                            id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
-                            addedOn: Date(timeIntervalSinceReferenceDate: 1_234_567_890),
-                            text: "123"
-                        ),
-                    ]
-                )
-            )
+            $0.destination = .history(HistoryReducer.State(history: [fakeItemInHistory]))
         }
 
-        await store.send(.destination(.presented(.history(.delegate(.selectionConfirmed(UUID(uuidString: "00000000-0000-0000-0000-000000000000")!))))))
+        await store.send(.destination(.presented(.history(.delegate(.selectionConfirmed(fakeItemInHistory.id))))))
 
-        await store.receive(.historyItemConfirmed(
-            HistoryItem(
-                id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
-                addedOn: Date(timeIntervalSinceReferenceDate: 1_234_567_890),
-                text: "123"
-            )
-        )) {
+        await store.receive(.historyItemConfirmed(fakeItemInHistory)) {
             $0.expEntry.text = "123"
             $0.expTextTemp = nil
         }

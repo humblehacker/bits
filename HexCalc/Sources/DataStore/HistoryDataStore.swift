@@ -12,7 +12,7 @@ public struct HistoryDataStore {
 }
 
 extension HistoryDataStore: TestDependencyKey {
-    public static var testValue = previewValue
+    public static var testValue = Self()
 
     public static let previewValue = {
         @Dependency(\.date.now) var now
