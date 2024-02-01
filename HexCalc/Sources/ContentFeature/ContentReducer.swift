@@ -210,8 +210,7 @@ public struct ContentReducer {
 
             case .expressionUpdated:
                 return .run { [text = state.expEntry.text] _ in
-                    print("new history: \(text)")
-                    try await historyStore.addItem(text: text)
+                    try await historyStore.addItem(text: text.trimmingCharacters(in: .whitespacesAndNewlines))
                 }
                 .debounce(id: CancelID.history, for: 1.0, scheduler: self.mainQueue)
 
