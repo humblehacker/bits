@@ -4,7 +4,8 @@
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      buildArchitectures = "Automatic">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -14,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6310471B2B488DA600AC4460"
-               BuildableName = "HexCalc.app"
-               BlueprintName = "HexCalc"
+               BlueprintIdentifier = "6316CC322B65952C00EF5095"
+               BuildableName = "HistoryFeaturePreview.app"
+               BlueprintName = "HistoryFeaturePreview"
                ReferencedContainer = "container:HexCalc.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,48 +27,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
-      <TestPlans>
-         <TestPlanReference
-            reference = "container:HexCalc.xctestplan"
-            default = "YES">
-         </TestPlanReference>
-      </TestPlans>
-      <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "630503D22B58481A00879FAE"
-               BuildableName = "HexCalcTests.xctest"
-               BlueprintName = "HexCalcTests"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "631047362B488DA800AC4460"
-               BuildableName = "HexCalcUITests.xctest"
-               BlueprintName = "HexCalcUITests"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "630503D22B58481A00879FAE"
-               BuildableName = "HexCalcTests.xctest"
-               BlueprintName = "HexCalcTests"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-      </Testables>
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      shouldAutocreateTestPlan = "YES">
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -83,9 +44,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "6310471B2B488DA600AC4460"
-            BuildableName = "HexCalc.app"
-            BlueprintName = "HexCalc"
+            BlueprintIdentifier = "6316CC322B65952C00EF5095"
+            BuildableName = "HistoryFeaturePreview.app"
+            BlueprintName = "HistoryFeaturePreview"
             ReferencedContainer = "container:HexCalc.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -100,9 +61,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "6310471B2B488DA600AC4460"
-            BuildableName = "HexCalc.app"
-            BlueprintName = "HexCalc"
+            BlueprintIdentifier = "6316CC322B65952C00EF5095"
+            BuildableName = "HistoryFeaturePreview.app"
+            BlueprintName = "HistoryFeaturePreview"
             ReferencedContainer = "container:HexCalc.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

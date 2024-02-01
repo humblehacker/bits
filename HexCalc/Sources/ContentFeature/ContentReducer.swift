@@ -1,14 +1,18 @@
 import ComposableArchitecture
+import DataStore
 import Dependencies
+import DependenciesAdditions
 import ExpressionEvaluator
 import Foundation
+import HistoryFeature
 import Observation
+import Utils
 
 private let defaultBits: Bits = ._32
 private let minWidth = 450.0
 private let maxWidth = 730.0
 
-public enum FocusedField {
+public enum FocusedField: Equatable {
     case exp
     case bin
     case dec
@@ -18,17 +22,19 @@ public enum FocusedField {
 @Reducer
 public struct ContentReducer {
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         var idealWidth: Double
         var selectedBitWidth: Bits
+        var expTextTemp: String?
         var expEntry: EntryReducer.State
         var hexEntry: EntryReducer.State
         var decEntry: EntryReducer.State
         var binEntry: EntryReducer.State
         var focusedField: FocusedField?
+        @Presents var destination: Destination.State?
 
         public init(
-            idealWidth: Double = 100.0,
+            idealWidth: Double = 500.0,
             selectedBitWidth: Bits = ._8,
             expEntry: EntryReducer.State = EntryReducer.State(kind: .exp),
             hexEntry: EntryReducer.State = EntryReducer.State(kind: .hex),
@@ -46,16 +52,30 @@ public struct ContentReducer {
         }
     }
 
-    public enum Action: BindableAction {
+    public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
+        case expEntryUpdated(String, updateHistory: Bool)
         case expEntry(EntryReducer.Action)
         case decEntry(EntryReducer.Action)
         case hexEntry(EntryReducer.Action)
         case binEntry(EntryReducer.Action)
+        case focusedFieldChanged(FocusedField?)
         case onAppear
+        case expressionUpdated
+        case upArrowPressed
+        case historyItemSelected(HistoryItem)
+        case historyItemConfirmed(HistoryItem)
+        case historyLoaded([HistoryItem])
+        case destination(PresentationAction<Destination.Action>)
     }
 
     @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
+    @Dependency(\.dismiss) var dismiss
+    @Dependency(\.historyStore) var historyStore
+    @Dependency(\.mainQueue) var mainQueue
+    @Dependency(\.userDefaults) var userDefaults
+
+    enum CancelID { case history, upArrow }
 
     public init() {}
 
@@ -75,74 +95,104 @@ public struct ContentReducer {
                 state.focusedField = .exp
                 state.expEntry.text = ""
                 update(&state, from: 0)
-                return .none
+                return .send(.focusedFieldChanged(state.focusedField))
 
-            case .expEntry(.binding(\.text)):
+            case let .expEntryUpdated(text, updateHistory):
                 let value: Int
                 do {
-                    value = try evaluateExpression(state.expEntry.text)
+                    if text.isNotEmpty {
+                        value = try evaluateExpression(text)
+                    } else {
+                        value = 0
+                    }
                 } catch {
-                    print(error)
+                    print("Error: \(error)")
                     return .none
                 }
+                print("Updating from value: \(value)")
                 update(&state, from: value)
+                if updateHistory {
+                    return .send(.expressionUpdated)
+                }
                 return .none
 
-            case .expEntry(.binding(\.focusedField)):
-                state.focusedField = state.expEntry.focusedField
-                return .none
+            case let .expEntry(entryAction):
+                switch entryAction {
+                case .binding(\.text):
+                    return .send(.expEntryUpdated(state.expEntry.text, updateHistory: true))
 
-            case .expEntry(.delegate(.replaceEvaluatedExpression)):
-                let value: Int
-                do {
-                    value = try evaluateExpression(state.expEntry.text)
-                } catch {
-                    print(error)
+                case .binding(\.isFocused):
+                    state.focusedField = .exp
+                    return .send(.focusedFieldChanged(state.focusedField))
+
+                case .delegate(.confirmationKeyPressed):
+                    let value: Int
+                    do {
+                        value = try evaluateExpression(state.expEntry.text)
+                    } catch {
+                        print(error)
+                        return .none
+                    }
+                    state.expEntry.text = String(value, radix: 10)
+                    return .none
+
+                default:
                     return .none
                 }
-                state.expEntry.text = String(value, radix: 10)
-                return .none
 
-            case .expEntry:
-                return .none
+            case let .decEntry(entryAction):
+                switch entryAction {
+                case .binding(\.text):
+                    guard state.focusedField == .dec else { return .none }
+                    let value = Int(state.decEntry.text, radix: 10) ?? 0
+                    update(&state, from: value)
+                    return .none
 
-            case .decEntry(.binding(\.text)):
-                guard state.focusedField == .dec else { return .none }
-                let value = Int(state.decEntry.text, radix: 10) ?? 0
-                update(&state, from: value)
-                return .none
+                case .binding(\.isFocused):
+                    state.focusedField = .dec
+                    return .send(.focusedFieldChanged(state.focusedField))
 
-            case .decEntry(.binding(\.focusedField)):
-                state.focusedField = state.decEntry.focusedField
-                return .none
+                default:
+                    return .none
+                }
 
-            case .decEntry:
-                return .none
+            case let .hexEntry(entryAction):
+                switch entryAction {
+                case .binding(\.text):
+                    guard state.focusedField == .hex else { return .none }
+                    let value = Int(state.hexEntry.text, radix: 16) ?? 0
+                    update(&state, from: value)
+                    return .none
 
-            case .hexEntry(.binding(\.text)):
-                guard state.focusedField == .hex else { return .none }
-                let value = Int(state.hexEntry.text, radix: 16) ?? 0
-                update(&state, from: value)
-                return .none
+                case .binding(\.isFocused):
+                    state.focusedField = .hex
+                    return .send(.focusedFieldChanged(state.focusedField))
 
-            case .hexEntry(.binding(\.focusedField)):
-                state.focusedField = state.hexEntry.focusedField
-                return .none
+                default:
+                    return .none
+                }
 
-            case .hexEntry:
-                return .none
+            case let .binEntry(entryAction):
+                switch entryAction {
+                case .binding(\.text):
+                    guard state.focusedField == .bin else { return .none }
+                    let value = Int(state.binEntry.text.filter { !$0.isWhitespace }, radix: 2) ?? 0
+                    update(&state, from: value)
+                    return .none
 
-            case .binEntry(.binding(\.text)):
-                guard state.focusedField == .bin else { return .none }
-                let value = Int(state.binEntry.text.filter { !$0.isWhitespace }, radix: 2) ?? 0
-                update(&state, from: value)
-                return .none
+                case .binding(\.isFocused):
+                    state.focusedField = .bin
+                    return .send(.focusedFieldChanged(state.focusedField))
 
-            case .binEntry(.binding(\.focusedField)):
-                state.focusedField = state.binEntry.focusedField
-                return .none
+                default:
+                    return .none
+                }
 
-            case .binEntry:
+            case let .focusedFieldChanged(newField):
+                state.expEntry.isFocused = newField == .exp
+                state.binEntry.isFocused = newField == .bin
+                state.decEntry.isFocused = newField == .dec
+                state.hexEntry.isFocused = newField == .hex
                 return .none
 
             case .binding(\.selectedBitWidth):
@@ -152,11 +202,95 @@ public struct ContentReducer {
                 state.idealWidth = idealWindowWidth(bits: state.selectedBitWidth)
                 return .none
 
+            case .binding(\.focusedField):
+                return .send(.focusedFieldChanged(state.focusedField))
+
             case .binding:
+                return .none
+
+            case .expressionUpdated:
+                return .run { [text = state.expEntry.text] _ in
+                    try await historyStore.addItem(text: text.trimmingCharacters(in: .whitespacesAndNewlines))
+                }
+                .debounce(id: CancelID.history, for: 1.0, scheduler: self.mainQueue)
+
+            case .upArrowPressed:
+                state.expTextTemp = state.expEntry.text
+                return .run { send in
+                    let history = try await historyStore.items()
+                    guard history.isNotEmpty else { return }
+                    await send(.historyLoaded(history))
+                }
+                .debounce(id: CancelID.upArrow, for: 0.2, scheduler: self.mainQueue)
+
+            case let .historyLoaded(history):
+                guard state.destination == nil else { return .none }
+                state.destination = .history(HistoryReducer.State(history: history))
+                return .none
+
+            case let .historyItemSelected(item):
+                state.expEntry.text = item.text
+                return .send(.expEntryUpdated(item.text, updateHistory: false))
+
+            case let .historyItemConfirmed(item):
+                state.expEntry.text = item.text
+                state.expTextTemp = nil
+                return .send(.expEntryUpdated(item.text, updateHistory: false))
+
+            case let .destination(.presented(.history(.delegate(.selectionChanged(id))))):
+                return .run { send in
+                    guard let id, let item = try await historyStore.item(id: id) else { return }
+                    await send(.historyItemSelected(item))
+                }
+
+            case let .destination(.presented(.history(.delegate(.selectionConfirmed(id))))):
+                return .run { send in
+                    guard let item = try await historyStore.item(id: id) else { return }
+                    await send(.historyItemConfirmed(item))
+                }
+
+            case .destination(.dismiss):
+                if let expText = state.expTextTemp {
+                    state.expEntry.text = expText
+                    state.expTextTemp = nil
+                    return .send(.expEntryUpdated(expText, updateHistory: false))
+                }
+                return .none
+
+            case let .destination(.presented(.history(.delegate(.itemDeleted(item))))):
+                return .run { send in
+                    try await historyStore.removeItem(item)
+                    let history = try await historyStore.items()
+                    await send(.destination(.presented(.history(.historyUpdated(history)))))
+                    if history.isEmpty { await dismiss() }
+                }
+
+            case .destination:
                 return .none
             }
         }
+        .ifLet(\.$destination, action: \.destination) {
+            Destination()
+        }
         ._printChanges()
+    }
+
+    @Reducer
+    public struct Destination {
+        @ObservableState
+        public enum State: Equatable {
+            case history(HistoryReducer.State)
+        }
+
+        public enum Action: Equatable {
+            case history(HistoryReducer.Action)
+        }
+
+        public var body: some ReducerOf<Self> {
+            Scope(state: \.history, action: \.history) {
+                HistoryReducer()
+            }
+        }
     }
 
     func update(_ state: inout ContentReducer.State, from value: Int) {
@@ -166,16 +300,16 @@ public struct ContentReducer {
     }
 
     func saveBits(_ bits: Bits) {
-        UserDefaults.standard.setValue(bits.rawValue, forKey: "bits")
+        userDefaults.set(bits.rawValue, forKey: "bits")
     }
 
     func loadBits() -> Bits {
-        let bits = UserDefaults.standard.integer(forKey: "bits")
+        guard let bits = userDefaults.integer(forKey: "bits") else { return defaultBits }
         return Bits(rawValue: bits) ?? defaultBits
     }
 }
 
-public enum Bits: Int {
+public enum Bits: Int, Equatable {
     case _8 = 8
     case _16 = 16
     case _32 = 32

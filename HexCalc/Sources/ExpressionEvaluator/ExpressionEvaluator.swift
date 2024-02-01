@@ -16,8 +16,12 @@ extension ExpressionEvaluator: DependencyKey {
     )
 }
 
-extension DependencyValues {
-    public var expressionEvaluator: ExpressionEvaluator {
+extension ExpressionEvaluator: TestDependencyKey {
+    public static let testValue = liveValue
+}
+
+public extension DependencyValues {
+    var expressionEvaluator: ExpressionEvaluator {
         get { self[ExpressionEvaluator.self] }
         set { self[ExpressionEvaluator.self] = newValue }
     }

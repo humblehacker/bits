@@ -1,13 +1,16 @@
 import ComposableArchitecture
 import Dependencies
+import Utils
 
 @Reducer
 public struct EntryReducer {
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         let kind: FocusedField
+        var showHistory: Bool
         var text: String
-        var focusedField: FocusedField?
+        var isFocused: Bool
+        var width: Double
 
         var title: String {
             switch kind {
@@ -20,17 +23,20 @@ public struct EntryReducer {
 
         public init(kind: FocusedField) {
             self.kind = kind
+            showHistory = false
             text = ""
+            isFocused = false
+            width = 100
         }
     }
 
-    public enum Action: BindableAction {
+    public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case delegate(Delegate)
 
         @CasePathable
-        public enum Delegate {
-            case replaceEvaluatedExpression
+        public enum Delegate: Equatable {
+            case confirmationKeyPressed
         }
     }
 
@@ -48,5 +54,6 @@ public struct EntryReducer {
                 return .none
             }
         }
+        ._printChanges()
     }
 }

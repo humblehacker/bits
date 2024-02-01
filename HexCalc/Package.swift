@@ -10,26 +10,48 @@ let package = Package(
     products: [
         .library(name: "AppFeature", targets: ["AppFeature"]),
         .library(name: "ContentFeature", targets: ["ContentFeature"]),
+        .library(name: "DataStore", targets: ["DataStore"]),
+        .library(name: "DataStoreLive", targets: ["DataStoreLive"]),
         .library(name: "ExpressionEvaluator", targets: ["ExpressionEvaluator"]),
+        .library(name: "HistoryFeature", targets: ["HistoryFeature"]),
+        .library(name: "UI", targets: ["UI"]),
+        .library(name: "Utils", targets: ["Utils"]),
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
+        .package(url: "https://github.com/pointfreeco/swift-custom-dump", from: "1.1.2"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.2.0"),
         .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.13.0"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.1.0"),
+        .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "1.1.0"),
+        .package(url: "https://github.com/groue/GRDB.swift", from: "6.24.2"),
+        .package(url: "https://github.com/tgrapperon/swift-dependencies-additions", from: "1.0.1"),
     ],
     targets: [
         .target(
             name: "AppFeature",
             dependencies: [
                 "ContentFeature",
+                "DataStoreLive",
+                .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
             ]
         ),
         .target(
             name: "ContentFeature",
             dependencies: [
                 "ExpressionEvaluator",
+                "HistoryFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "HistoryFeature",
+            dependencies: [
+                "DataStore",
+                "UI",
+                "Utils",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
         .target(
@@ -40,7 +62,26 @@ let package = Package(
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
             ]
         ),
+        .target(
+            name: "DataStore",
+            dependencies: [
+                .product(name: "CustomDump", package: "swift-custom-dump"),
+                .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
+                .product(name: "DependenciesMacros", package: "swift-dependencies"),
+            ]
+        ),
+        .target(
+            name: "DataStoreLive",
+            dependencies: [
+                "DataStore",
+                "Utils",
+                .product(name: "GRDB", package: "GRDB.swift"),
+            ]
+        ),
+        .target(name: "UI"),
+        .target(name: "Utils"),
         .testTarget(name: "ContentFeatureTests", dependencies: ["ContentFeature"]),
         .testTarget(name: "ExpressionEvaluatorTests", dependencies: ["ExpressionEvaluator"]),
+        .testTarget(name: "HistoryFeatureTests", dependencies: ["HistoryFeature"]),
     ]
 )

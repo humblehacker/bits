@@ -1,8 +1,9 @@
 import ComposableArchitecture
+import HistoryFeature
 import SwiftUI
 
 public struct ContentView: View {
-    @State var store: StoreOf<ContentReducer>
+    @Bindable var store: StoreOf<ContentReducer>
     @FocusState var focusedField: FocusedField?
 
     public init(store: StoreOf<ContentReducer>) {
@@ -12,9 +13,24 @@ public struct ContentView: View {
     public var body: some View {
         VStack {
             Entry(store: store.scope(state: \.expEntry, action: \.expEntry))
+                .onKeyPress(.upArrow) {
+                    store.send(.upArrowPressed)
+                    return .handled
+                }
+                .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in
+                    HistoryPicker(store: store)
+                        .frame(width: self.store.expEntry.width)
+                }
+                .focused($focusedField, equals: .exp)
+
             Entry(store: store.scope(state: \.decEntry, action: \.decEntry))
+                .focused($focusedField, equals: .dec)
+
             Entry(store: store.scope(state: \.hexEntry, action: \.hexEntry))
+                .focused($focusedField, equals: .hex)
+
             Entry(store: store.scope(state: \.binEntry, action: \.binEntry))
+                .focused($focusedField, equals: .bin)
         }
         .padding()
         .toolbar {
