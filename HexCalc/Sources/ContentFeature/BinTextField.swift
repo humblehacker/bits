@@ -10,6 +10,7 @@ struct BinTextField: View {
 
     var body: some View {
         HStack(spacing: 3) {
+            Spacer()
             ForEach(store.binCharacters, id: \.index) { ic in
                 Text("\(ic.character)")
                     .background(store.selectedBits.contains(ic.index)
@@ -65,6 +66,7 @@ public struct BinTextFieldPreviewContainer: View {
             BitWidthPicker(selectedBitWidth: $binTextFieldStore.bitWidth)
 
             TextField("", text: $binTextFieldStore.text)
+                .entryTextStyle()
 
             BinTextField(store: binTextFieldStore)
         }
