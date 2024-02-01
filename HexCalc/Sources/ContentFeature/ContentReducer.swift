@@ -296,7 +296,7 @@ public struct ContentReducer {
     func update(_ state: inout ContentReducer.State, from value: Int) {
         state.hexEntry.text = String(value, radix: 16).uppercased()
         state.decEntry.text = String(value, radix: 10)
-        state.binEntry.text = integerToPaddedBinaryString(value, bits: state.selectedBitWidth.rawValue)
+        state.binEntry.text = value.paddedBinaryString(bits: state.selectedBitWidth.rawValue)
     }
 
     func saveBits(_ bits: Bits) {
@@ -314,18 +314,4 @@ func idealWindowWidth(bits: Bits) -> Double {
     case ._8, ._16, ._32: minWidth
     case ._64: maxWidth
     }
-}
-
-func integerToPaddedBinaryString(_ value: Int, bits: Int) -> String {
-    let binaryString = String(value, radix: 2)
-    let paddedString = String(repeating: "0", count: max(0, bits - binaryString.count)) + binaryString
-    let blockSize = 4
-    var result = ""
-    for (index, char) in paddedString.enumerated() {
-        if index % blockSize == 0 && index != 0 {
-            result += " "
-        }
-        result += String(char)
-    }
-    return result
 }
