@@ -54,9 +54,6 @@ struct BinTextField: View {
 }
 
 public struct BinTextFieldPreviewContainer: View {
-    @State var selectedBitWidth: Bits = ._8
-    @State var text: String = "0"
-
     @State var binTextFieldStore = Store(initialState: BinTextFieldReducer.State()) {
         BinTextFieldReducer()
     }
