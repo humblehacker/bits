@@ -32,6 +32,7 @@ struct Entry: View {
 
                 Text(store.text)
                     .entryTextStyle()
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .onTapGesture { store.isFocused = true }
                     .zIndex(!store.isFocused ? 1 : 0)
             }
@@ -63,7 +64,6 @@ struct EntryTextStyle: ViewModifier {
             .fontDesign(.monospaced)
             .clipShape(RoundedRectangle(cornerRadius: 4))
             .multilineTextAlignment(.leading)
-            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -74,9 +74,17 @@ extension View {
 }
 
 #Preview {
-    Entry(store: Store(initialState: EntryReducer.State(kind: .exp)) {
-        EntryReducer()
-    })
+    Entry(
+        store: Store(
+            initialState: {
+                var initialState = EntryReducer.State(kind: .bin)
+                initialState.text = "0000 0000"
+                return initialState
+            }()
+        ) {
+            EntryReducer()
+        }
+    )
     .padding()
     .frame(maxWidth: .infinity)
 }
