@@ -25,7 +25,7 @@ struct Entry: View {
                 TextField("", text: $store.text)
                     .entryTextStyle()
                     .zIndex(store.isFocused ? 1 : 0)
-                    .onKeyPress(keys: [.return, KeyEquivalent("=")]) { _ in
+                    .onKeyPress(keys: [.return, "="]) { _ in
                         store.send(.delegate(.confirmationKeyPressed))
                         return .handled
                     }
