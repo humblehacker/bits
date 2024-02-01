@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import SwiftUI
 
 struct IndexedCharacter: Equatable {
     let index: Int
@@ -10,6 +11,7 @@ public struct BinTextFieldReducer {
     @ObservableState
     public struct State: Equatable {
         var bitWidth: Bits = ._32
+        var selectedBit: Int? = nil
         var text: String = "0"
         var binCharacters: [IndexedCharacter] = [IndexedCharacter(index: 0, character: "0")]
 
@@ -26,6 +28,11 @@ public struct BinTextFieldReducer {
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
+        case bitTapped(index: Int)
+        case cursorMovementKeyPressed(KeyEquivalent)
+        case bitTyped(String)
+        case toggleBitKeyPressed
+        case bitOperation(BitOp)
     }
 
     public init() {}
@@ -45,11 +52,60 @@ public struct BinTextFieldReducer {
                 }
             }
 
-        Reduce { _, action in
+        Reduce { state, action in
             switch action {
             case .binding:
                 return .none
+
+            case let .bitTapped(index):
+                state.selectedBit = index
+                return .none
+
+            case let .bitOperation(bitOp):
+                guard
+                    let selectedBit = state.selectedBit,
+                    let currentValue = Int(state.text)
+                else { return .none }
+
+                let bitIndex = state.bitWidth.rawValue - selectedBit
+
+                let newValue: Int = switch bitOp {
+                case .set: currentValue | (1 << bitIndex)
+                case .unset: currentValue & ~(1 << bitIndex)
+                case .toggle: currentValue ^ (1 << bitIndex)
+                }
+
+                state.text = String(newValue)
+                state.updateBinCharacters()
+                return .none
+
+            case let .bitTyped(bit):
+                return .send(.bitOperation(bit == "1" ? .set : .unset))
+
+            case let .cursorMovementKeyPressed(key):
+                switch key {
+                case .leftArrow:
+                    let newSelectedBit = state.selectedBit ?? state.bitWidth.rawValue + 1
+                    state.selectedBit = max(1, newSelectedBit - 1)
+
+                case .rightArrow:
+                    let newSelectedBit = state.selectedBit ?? 0
+                    state.selectedBit = min(state.bitWidth.rawValue, newSelectedBit + 1)
+
+                default:
+                    ()
+                }
+                return .none
+
+            case .toggleBitKeyPressed:
+                return .send(.bitOperation(.toggle))
             }
         }
+    }
+
+    public enum BitOp {
+        case set
+        case unset
+        case toggle
     }
 }

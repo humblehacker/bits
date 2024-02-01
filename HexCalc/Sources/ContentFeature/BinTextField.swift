@@ -12,24 +12,45 @@ struct BinTextField: View {
         HStack(spacing: 3) {
             ForEach(store.binCharacters, id: \.index) { ic in
                 Text("\(ic.character)")
+                    .background(store.selectedBit == ic.index
+                        ? Color.accentColor
+                        : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
+                    )
+                    .onTapGesture {
+                        store.send(.bitTapped(index: ic.index))
+                    }
+
                 if ic.index.isMultiple(of: 4) && ic.index != store.bitWidth.rawValue {
                     Text(" ")
                 }
             }
         }
         .entryTextStyle()
+        .focusable()
+        .onKeyPress(keys: [.leftArrow, .rightArrow]) { keyPress in
+            store.send(.cursorMovementKeyPressed(keyPress.key))
+            return .handled
+        }
+        .onKeyPress(keys: ["0", "1"]) { keyPress in
+            store.send(.bitTyped(String(keyPress.key.character)))
+            return .handled
+        }
+        .onKeyPress(.space) {
+            store.send(.toggleBitKeyPressed)
+            return .handled
+        }
     }
 }
 
-struct BinTextFieldPreviewContainer: View {
+public struct BinTextFieldPreviewContainer: View {
     @State var selectedBitWidth: Bits = ._8
     @State var text: String = "0"
 
-    @Bindable var binTextFieldStore = Store(initialState: BinTextFieldReducer.State()) {
+    @State var binTextFieldStore = Store(initialState: BinTextFieldReducer.State()) {
         BinTextFieldReducer()
     }
 
-    var body: some View {
+    public var body: some View {
         VStack {
             Picker("", selection: $binTextFieldStore.bitWidth) {
                 Text("8").tag(Bits._8)
