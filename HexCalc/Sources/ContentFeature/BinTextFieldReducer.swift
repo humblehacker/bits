@@ -11,7 +11,7 @@ public struct BinTextFieldReducer {
     @ObservableState
     public struct State: Equatable {
         var bitWidth: Bits = ._32
-        var selectedBit: Int? = nil
+        var selectedBits: Set<Int> = []
         var text: String = "0"
         var binCharacters: [IndexedCharacter] = [IndexedCharacter(index: 0, character: "0")]
 
@@ -33,6 +33,7 @@ public struct BinTextFieldReducer {
         case bitTyped(String)
         case cancelTypeoverKeyPressed
         case cursorMovementKeyPressed(KeyEquivalent)
+        case selectAllShortcutPressed
         case toggleBitKeyPressed
     }
 
@@ -59,21 +60,26 @@ public struct BinTextFieldReducer {
                 return .none
 
             case let .bitTapped(index):
-                state.selectedBit = index
+                if state.selectedBits.contains(index) {
+                    state.selectedBits.removeAll()
+                } else {
+                    state.selectedBits = [index]
+                }
                 return .none
 
             case let .bitOperation(bitOp):
-                guard
-                    let selectedBit = state.selectedBit,
-                    let currentValue = Int(state.text)
-                else { return .none }
+                guard let currentValue = Int(state.text) else { return .none }
 
-                let bitIndex = state.bitWidth.rawValue - selectedBit
+                var newValue = currentValue
 
-                let newValue: Int = switch bitOp {
-                case .set: currentValue | (1 << bitIndex)
-                case .unset: currentValue & ~(1 << bitIndex)
-                case .toggle: currentValue ^ (1 << bitIndex)
+                for selectedBit in state.selectedBits {
+                    let bitIndex = state.bitWidth.rawValue - selectedBit
+
+                    newValue = switch bitOp {
+                    case .set: newValue | (1 << bitIndex)
+                    case .unset: newValue & ~(1 << bitIndex)
+                    case .toggle: newValue ^ (1 << bitIndex)
+                    }
                 }
 
                 state.text = String(newValue)
@@ -84,22 +90,26 @@ public struct BinTextFieldReducer {
                 return .send(.bitOperation(bit == "1" ? .set : .unset))
 
             case .cancelTypeoverKeyPressed:
-                state.selectedBit = nil
+                state.selectedBits.removeAll()
                 return .none
 
             case let .cursorMovementKeyPressed(key):
                 switch key {
                 case .leftArrow:
-                    let newSelectedBit = state.selectedBit ?? state.bitWidth.rawValue + 1
-                    state.selectedBit = max(1, newSelectedBit - 1)
+                    let newSelectedBit = state.selectedBits.sorted().first ?? state.bitWidth.rawValue + 1
+                    state.selectedBits = [max(1, newSelectedBit - 1)]
 
                 case .rightArrow:
-                    let newSelectedBit = state.selectedBit ?? 0
-                    state.selectedBit = min(state.bitWidth.rawValue, newSelectedBit + 1)
+                    let newSelectedBit = state.selectedBits.sorted().last ?? 0
+                    state.selectedBits = [min(state.bitWidth.rawValue, newSelectedBit + 1)]
 
                 default:
                     ()
                 }
+                return .none
+
+            case .selectAllShortcutPressed:
+                state.selectedBits = Set(1 ... state.bitWidth.rawValue)
                 return .none
 
             case .toggleBitKeyPressed:

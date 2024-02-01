@@ -12,7 +12,7 @@ struct BinTextField: View {
         HStack(spacing: 3) {
             ForEach(store.binCharacters, id: \.index) { ic in
                 Text("\(ic.character)")
-                    .background(store.selectedBit == ic.index
+                    .background(store.selectedBits.contains(ic.index)
                         ? Color.accentColor
                         : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
                     )
@@ -41,6 +41,11 @@ struct BinTextField: View {
         }
         .onKeyPress(.escape) {
             store.send(.cancelTypeoverKeyPressed)
+            return .handled
+        }
+        .onKeyPress(keys: ["a"]) { keyPress in
+            guard keyPress.modifiers.contains(.command) else { return .ignored }
+            store.send(.selectAllShortcutPressed)
             return .handled
         }
     }
