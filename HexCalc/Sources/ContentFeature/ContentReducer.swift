@@ -309,13 +309,6 @@ public struct ContentReducer {
     }
 }
 
-public enum Bits: Int, Equatable {
-    case _8 = 8
-    case _16 = 16
-    case _32 = 32
-    case _64 = 64
-}
-
 func idealWindowWidth(bits: Bits) -> Double {
     return switch bits {
     case ._8, ._16, ._32: minWidth
