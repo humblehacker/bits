@@ -1,28 +1,24 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct IndexedCharacter: Equatable {
-    let index: Int
-    let character: Character
-}
-
 @Reducer
 public struct BinTextFieldReducer {
     @ObservableState
     public struct State: Equatable {
-        var bitWidth: Bits = ._32
+        var bitWidth: Bits = ._8
         var selectedBits: Set<Int> = []
         var text: String = "0"
-        var binCharacters: [IndexedCharacter] = [IndexedCharacter(index: 0, character: "0")]
+        var digits: [BinaryDigitState] = []
 
         init() {
             updateBinCharacters()
         }
 
         mutating func updateBinCharacters() {
-            let value = Int(text) ?? 0
-            let binString = value.paddedBinaryString(bits: bitWidth.rawValue, blockSize: 0)
-            binCharacters = binString.enumerated().map { IndexedCharacter(index: $0.0 + 1, character: $0.1) }
+            digits = (Int(text) ?? 0)
+                .paddedBinaryString(bits: bitWidth.rawValue, blockSize: 0)
+                .enumerated()
+                .map { BinaryDigitState(index: $0.0 + 1, value: $0.1) }
         }
     }
 

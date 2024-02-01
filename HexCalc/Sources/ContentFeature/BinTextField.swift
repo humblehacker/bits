@@ -11,8 +11,8 @@ struct BinTextField: View {
     var body: some View {
         HStack(spacing: 3) {
             Spacer()
-            ForEach(store.binCharacters, id: \.index) { ic in
-                Text("\(ic.character)")
+            ForEach(store.digits, id: \.index) { ic in
+                Text("\(ic.value)")
                     .background(store.selectedBits.contains(ic.index)
                         ? Color.accentColor
                         : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
