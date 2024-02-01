@@ -28,7 +28,8 @@ struct BinTextField: View {
         .entryTextStyle()
         .focusable()
         .onKeyPress(keys: [.leftArrow, .rightArrow]) { keyPress in
-            store.send(.cursorMovementKeyPressed(keyPress.key))
+            let shiftDown = keyPress.modifiers.contains(.shift)
+            store.send(.cursorMovementKeyPressed(keyPress.key, extend: shiftDown))
             return .handled
         }
         .onKeyPress(keys: ["0", "1"]) { keyPress in
