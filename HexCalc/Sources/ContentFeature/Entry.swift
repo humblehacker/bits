@@ -21,21 +21,12 @@ struct Entry: View {
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .focusable(false)
 
-            ZStack {
-                TextField("", text: $store.text)
-                    .entryTextStyle()
-                    .zIndex(store.isFocused ? 1 : 0)
-                    .onKeyPress(keys: [.return, "="]) { _ in
-                        store.send(.confirmationKeyPressed)
-                        return .handled
-                    }
-
-                Text(store.text)
-                    .entryTextStyle()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .onTapGesture { store.isFocused = true }
-                    .zIndex(!store.isFocused ? 1 : 0)
-            }
+            TextField("", text: $store.text)
+                .entryTextStyle()
+                .onKeyPress(keys: [.return, "="]) { _ in
+                    store.send(.confirmationKeyPressed)
+                    return .handled
+                }
         }
     }
 
