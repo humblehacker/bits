@@ -4,7 +4,7 @@ import SwiftUI
 
 public struct ContentView: View {
     @Bindable var store: StoreOf<ContentReducer>
-    @FocusState var focusedField: FocusedField?
+    @FocusState var focusedField: EntryKind?
 
     public init(store: StoreOf<ContentReducer>) {
         self.store = store

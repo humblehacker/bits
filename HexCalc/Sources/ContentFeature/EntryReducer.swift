@@ -8,15 +8,15 @@ public struct EntryReducer {
 
     @ObservableState
     public struct State: Equatable, Identifiable {
-        let kind: FocusedField
+        let kind: EntryKind
         var text: String
         var value: Int
         var isFocused: Bool
 
-        public var id: String { String(describing: kind) }
+        public var id: EntryKind { kind }
         var title: String { kind.title }
 
-        public init(kind: FocusedField) {
+        public init(kind: EntryKind) {
             value = 0
             self.kind = kind
             text = ""
@@ -38,7 +38,7 @@ public struct EntryReducer {
         @CasePathable
         public enum Delegate: Equatable {
             case valueUpdated(Int)
-            case focusChanged(FocusedField)
+            case focusChanged(EntryKind)
         }
     }
 
@@ -84,7 +84,7 @@ public struct EntryReducer {
     }
 }
 
-extension FocusedField {
+extension EntryKind {
     var title: String {
         switch self {
         case .exp: "exp"
@@ -95,7 +95,7 @@ extension FocusedField {
     }
 }
 
-extension FocusedField {
+extension EntryKind {
     var base: Int {
         switch self {
         case .exp: 10

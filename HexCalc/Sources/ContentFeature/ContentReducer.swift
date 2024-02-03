@@ -12,7 +12,7 @@ private let defaultBits: Bits = ._32
 private let minWidth = 450.0
 private let maxWidth = 730.0
 
-public enum FocusedField: Equatable {
+public enum EntryKind: Equatable {
     case exp
     case bin
     case dec
@@ -29,7 +29,7 @@ public struct ContentReducer {
         var expTextTemp: String?
         var entries: IdentifiedArrayOf<EntryReducer.State>
         var value: Int
-        var focusedField: FocusedField?
+        var focusedField: EntryKind?
         @Presents var destination: Destination.State?
 
         public init(
@@ -40,7 +40,7 @@ public struct ContentReducer {
                 .init(kind: .exp), .init(kind: .hex), .init(kind: .dec), .init(kind: .bin),
             ],
             value: Int = 0,
-            focusedField: FocusedField? = nil
+            focusedField: EntryKind? = nil
         ) {
             self.idealWidth = idealWidth
             self.entryWidth = entryWidth
@@ -58,7 +58,7 @@ public struct ContentReducer {
             )
         }
 
-        mutating func updateFocusedField(newField: FocusedField?) -> Effect<ContentReducer.Action> {
+        mutating func updateFocusedField(newField: EntryKind?) -> Effect<ContentReducer.Action> {
             for entryID in entries.ids {
                 let thisKind = entries[id: entryID]?.kind
                 entries[id: entryID]?.isFocused = newField == thisKind
@@ -111,7 +111,7 @@ public struct ContentReducer {
             state.selectedBitWidth = loadBits()
             state.idealWidth = idealWindowWidth(bits: state.selectedBitWidth)
             state.focusedField = .exp
-            state.entries[id: FocusedField.exp.title]?.text = ""
+            state.entries[id: .exp]?.text = ""
             return .merge(
                 state.updateValues(newValue: 0),
                 state.updateFocusedField(newField: state.focusedField)
@@ -158,7 +158,7 @@ public struct ContentReducer {
             return .none
 
         case .expressionUpdated:
-            guard let text = state.entries[id: FocusedField.exp.title]?.text else { return .none }
+            guard let text = state.entries[id: .exp]?.text else { return .none }
             return .run { _ in
                 try await historyStore.addItem(text: text.trimmingCharacters(in: .whitespacesAndNewlines))
             }
@@ -167,7 +167,7 @@ public struct ContentReducer {
         case .upArrowPressed:
             guard
                 let field = state.focusedField, field == .exp,
-                let text = state.entries[id: field.title]?.text
+                let text = state.entries[id: field]?.text
             else { return .none }
 
             state.expTextTemp = text
@@ -185,11 +185,11 @@ public struct ContentReducer {
             return .none
 
         case let .historyItemSelected(item):
-            state.entries[id: FocusedField.exp.title]?.text = item.text
+            state.entries[id: .exp]?.text = item.text
             return .send(.expEntryUpdated(item.text, updateHistory: false))
 
         case let .historyItemConfirmed(item):
-            state.entries[id: FocusedField.exp.title]?.text = item.text
+            state.entries[id: .exp]?.text = item.text
             state.expTextTemp = nil
             return .send(.expEntryUpdated(item.text, updateHistory: false))
 
@@ -207,7 +207,7 @@ public struct ContentReducer {
 
         case .destination(.dismiss):
             if let expText = state.expTextTemp {
-                state.entries[id: FocusedField.exp.title]?.text = expText
+                state.entries[id: .exp]?.text = expText
                 state.expTextTemp = nil
                 return .send(.expEntryUpdated(expText, updateHistory: false))
             }

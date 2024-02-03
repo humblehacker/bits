@@ -4,8 +4,8 @@ import Foundation
 
 @DependencyClient
 struct EntryConverter {
-    var text: (_ integer: Int, _ kind: FocusedField) throws -> String = { _, _ in "" }
-    var integer: (_ text: String, _ kind: FocusedField) throws -> Int? = { _, _ in 0 }
+    var text: (_ integer: Int, _ kind: EntryKind) throws -> String = { _, _ in "" }
+    var integer: (_ text: String, _ kind: EntryKind) throws -> Int? = { _, _ in 0 }
 }
 
 extension EntryConverter: DependencyKey {
