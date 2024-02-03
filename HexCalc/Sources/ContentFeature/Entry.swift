@@ -26,7 +26,7 @@ struct Entry: View {
                     .entryTextStyle()
                     .zIndex(store.isFocused ? 1 : 0)
                     .onKeyPress(keys: [.return, "="]) { _ in
-                        store.send(.delegate(.confirmationKeyPressed))
+                        store.send(.confirmationKeyPressed)
                         return .handled
                     }
 
@@ -35,11 +35,6 @@ struct Entry: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .onTapGesture { store.isFocused = true }
                     .zIndex(!store.isFocused ? 1 : 0)
-            }
-            .overlay {
-                GeometryReader { geo in
-                    Color.clear.onAppear { store.width = geo.size.width }
-                }
             }
         }
     }

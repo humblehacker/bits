@@ -12,25 +12,19 @@ public struct ContentView: View {
 
     public var body: some View {
         VStack {
-            Entry(store: store.scope(state: \.expEntry, action: \.expEntry))
-                .onKeyPress(.upArrow) {
-                    store.send(.upArrowPressed)
-                    return .handled
+            ForEach(store.scope(state: \.entries, action: \.entries)) { store in
+                Entry(store: store)
+                    .focused($focusedField, equals: store.kind)
+            }
+            .onKeyPress(.upArrow) {
+                store.send(.upArrowPressed)
+                return .handled
+            }
+            .overlay {
+                GeometryReader { geo in
+                    Color.clear.onAppear { store.entryWidth = geo.size.width }
                 }
-                .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in
-                    HistoryPicker(store: store)
-                        .frame(width: self.store.expEntry.width)
-                }
-                .focused($focusedField, equals: .exp)
-
-            Entry(store: store.scope(state: \.decEntry, action: \.decEntry))
-                .focused($focusedField, equals: .dec)
-
-            Entry(store: store.scope(state: \.hexEntry, action: \.hexEntry))
-                .focused($focusedField, equals: .hex)
-
-            Entry(store: store.scope(state: \.binEntry, action: \.binEntry))
-                .focused($focusedField, equals: .bin)
+            }
         }
         .padding()
         .toolbar {
@@ -42,6 +36,10 @@ public struct ContentView: View {
             let window = NSApplication.shared.windows.first!
             let height = window.frame.height
             window.setContentSize(NSSize(width: new, height: height))
+        }
+        .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in
+            HistoryPicker(store: store)
+                .frame(width: self.store.entryWidth)
         }
         .bind($store.focusedField, to: $focusedField)
     }
