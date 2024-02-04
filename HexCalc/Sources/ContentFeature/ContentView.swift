@@ -3,7 +3,7 @@ import HistoryFeature
 import SwiftUI
 
 public struct ContentView: View {
-    @Bindable var store: StoreOf<ContentReducer>
+    @State var store: StoreOf<ContentReducer>
     @FocusState var focusedField: EntryKind?
 
     public init(store: StoreOf<ContentReducer>) {
@@ -13,8 +13,13 @@ public struct ContentView: View {
     public var body: some View {
         VStack {
             ForEach(store.scope(state: \.entries, action: \.entries)) { store in
-                Entry(store: store)
-                    .focused($focusedField, equals: store.kind)
+                if store.kind == .bin {
+                    BinaryTextEntry(store: store)
+                        .focused($focusedField, equals: store.kind)
+                } else {
+                    Entry(store: store)
+                        .focused($focusedField, equals: store.kind)
+                }
             }
             .onKeyPress(.upArrow) {
                 store.send(.upArrowPressed)
@@ -30,7 +35,7 @@ public struct ContentView: View {
         .toolbar {
             BitWidthPicker(selectedBitWidth: $store.selectedBitWidth)
         }
-        .frame(minWidth: 450, idealWidth: store.idealWidth, maxWidth: 730)
+        .frame(minWidth: minWidth, idealWidth: store.idealWidth, maxWidth: maxWidth)
         .onAppear { store.send(.onAppear) }
         .onChange(of: store.idealWidth, initial: true) { _, new in
             let window = NSApplication.shared.windows.first!

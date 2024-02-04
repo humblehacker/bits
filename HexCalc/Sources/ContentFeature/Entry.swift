@@ -4,7 +4,7 @@ import HistoryFeature
 import SwiftUI
 
 struct Entry<TextFieldContent: View>: View {
-    @Bindable var store: StoreOf<EntryReducer>
+    @State var store: StoreOf<EntryReducer>
     let textField: (Binding<String>) -> TextFieldContent
 
     init(
@@ -16,7 +16,6 @@ struct Entry<TextFieldContent: View>: View {
     }
 
     var body: some View {
-        let _ = Self._printChanges()
         HStack {
             Button(store.title) { store.isFocused = true }
                 .frame(width: 45, height: 20)
@@ -47,7 +46,7 @@ struct Entry<TextFieldContent: View>: View {
 extension Entry where TextFieldContent == TextField<Text> {
     init(store: StoreOf<EntryReducer>) {
         self.store = store
-        self.textField = { text in
+        textField = { text in
             TextField("", text: text)
         }
     }
@@ -75,13 +74,7 @@ extension View {
 
 #Preview {
     Entry(
-        store: Store(
-            initialState: {
-                var initialState = EntryReducer.State(kind: .bin)
-                initialState.text = "0000 0000"
-                return initialState
-            }()
-        ) {
+        store: Store(initialState: .init(.bin, text: "0000 0000")) {
             EntryReducer()
         }
     )

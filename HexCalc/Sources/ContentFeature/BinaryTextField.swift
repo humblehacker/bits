@@ -2,14 +2,18 @@ import ComposableArchitecture
 import SwiftUI
 
 struct BinaryTextField: View {
-    @Bindable var store: StoreOf<BinaryTextFieldReducer>
+    @State var store: StoreOf<BinaryTextFieldReducer>
+    @Binding var text: String
 
-    init(store: StoreOf<BinaryTextFieldReducer>) {
+    init(text: Binding<String>, store: StoreOf<BinaryTextFieldReducer>) {
         self.store = store
+        _text = text
     }
 
     var body: some View {
         HStack(spacing: 3) {
+            let _ = Self._printChanges()
+
             Spacer()
             ForEach(store.digits, id: \.index) { ic in
                 Text("\(ic.value)")
@@ -50,6 +54,12 @@ struct BinaryTextField: View {
             store.send(.selectAllShortcutPressed)
             return .handled
         }
+        .onChange(of: text) {
+            store.send(.binding(.set(\.text, text)))
+        }
+        .onChange(of: store.text) {
+            self.text = store.text
+        }
     }
 }
 
@@ -65,7 +75,7 @@ public struct BinaryTextFieldPreviewContainer: View {
             TextField("", text: $binTextFieldStore.text)
                 .entryTextStyle()
 
-            BinaryTextField(store: binTextFieldStore)
+            BinaryTextField(text: .constant(""), store: binTextFieldStore)
         }
         .padding()
     }

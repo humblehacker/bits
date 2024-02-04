@@ -9,8 +9,8 @@ import Observation
 import Utils
 
 private let defaultBits: Bits = ._32
-private let minWidth = 450.0
-private let maxWidth = 730.0
+let minWidth = 440.0
+let maxWidth = 900.0
 
 public enum EntryKind: Equatable {
     case exp
@@ -65,11 +65,15 @@ public struct ContentReducer {
             }
             return .none
         }
+
+        mutating func updateText(_ text: String, for entryID: EntryKind) -> EffectOf<ContentReducer> {
+            entries[id: entryID]?.updateText(text).map(Action.entries) ?? .none
+        }
     }
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
-        case expEntryUpdated(String, updateHistory: Bool)
+        case expEntryUpdated(updateHistory: Bool)
         case entries(IdentifiedActionOf<EntryReducer>)
         case onAppear
         case expressionUpdated
@@ -102,7 +106,6 @@ public struct ContentReducer {
         .forEach(\.entries, action: \.entries) {
             EntryReducer()
         }
-        ._printChanges()
     }
 
     func reduce(state: inout State, action: Action) -> Effect<Action> {
@@ -121,35 +124,31 @@ public struct ContentReducer {
             state.focusedField = newFocusedField
             return state.updateFocusedField(newField: state.focusedField)
 
-        case let .entries(.element(_, .delegate(.valueUpdated(value)))):
+        case let .entries(.element(id, .delegate(.valueUpdated(value)))):
             state.value = value
-            return state.updateValues(newValue: value)
+            return .merge(
+                state.updateValues(newValue: value),
+                id == .exp ? .send(.expEntryUpdated(updateHistory: true)) : .none
+            )
 
         case .entries:
             return .none
 
-        case let .expEntryUpdated(text, updateHistory):
-            let value: Int
-            do {
-                if text.isNotEmpty {
-                    value = try evaluateExpression(text)
-                } else {
-                    value = 0
-                }
-            } catch {
-                print("Error: \(error)")
-                return .none
-            }
+        case let .expEntryUpdated(updateHistory):
+            guard let value = state.entries[id: .exp]?.value else { return .none }
             print("Updating from value: \(value)")
             if updateHistory {
-                return .send(.expressionUpdated)
+                return .send(.expressionUpdated) // TODO: replace this with function
             }
             return state.updateValues(newValue: value)
 
         case .binding(\.selectedBitWidth):
             saveBits(state.selectedBitWidth)
             state.idealWidth = idealWindowWidth(bits: state.selectedBitWidth)
-            return state.updateValues(newValue: state.value)
+            return .merge(
+                state.updateValues(newValue: state.value),
+                .send(.entries(.element(id: .bin, action: .binText(.binding(.set(\.bitWidth, state.selectedBitWidth))))))
+            )
 
         case .binding(\.focusedField):
             return state.updateFocusedField(newField: state.focusedField)
@@ -185,13 +184,17 @@ public struct ContentReducer {
             return .none
 
         case let .historyItemSelected(item):
-            state.entries[id: .exp]?.text = item.text
-            return .send(.expEntryUpdated(item.text, updateHistory: false))
+            return .merge(
+                state.updateText(item.text, for: .exp),
+                .send(.expEntryUpdated(updateHistory: false))
+            )
 
         case let .historyItemConfirmed(item):
-            state.entries[id: .exp]?.text = item.text
             state.expTextTemp = nil
-            return .send(.expEntryUpdated(item.text, updateHistory: false))
+            return .merge(
+                state.updateText(item.text, for: .exp),
+                .send(.expEntryUpdated(updateHistory: false))
+            )
 
         case let .destination(.presented(.history(.delegate(.selectionChanged(id))))):
             return .run { send in
@@ -206,12 +209,12 @@ public struct ContentReducer {
             }
 
         case .destination(.dismiss):
-            if let expText = state.expTextTemp {
-                state.entries[id: .exp]?.text = expText
-                state.expTextTemp = nil
-                return .send(.expEntryUpdated(expText, updateHistory: false))
-            }
-            return .none
+            guard let expText = state.expTextTemp else { return .none }
+            state.expTextTemp = nil
+            return .merge(
+                state.updateText(expText, for: .exp),
+                .send(.expEntryUpdated(updateHistory: false))
+            )
 
         case let .destination(.presented(.history(.delegate(.itemDeleted(item))))):
             return .run { send in
@@ -256,7 +259,8 @@ public struct ContentReducer {
 
 func idealWindowWidth(bits: Bits) -> Double {
     return switch bits {
-    case ._8, ._16, ._32: minWidth
+    case ._8, ._16: minWidth
+    case ._32: minWidth + 100
     case ._64: maxWidth
     }
 }

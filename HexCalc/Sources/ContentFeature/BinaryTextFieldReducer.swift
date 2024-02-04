@@ -10,12 +10,21 @@ public struct BinaryTextFieldReducer {
         var text: String = "0"
         var digits: [BinaryDigitState] = []
 
-        init() {
+        public init(
+            bitWidth: Bits = ._8,
+            selectedBits: Set<Int> = [],
+            text: String = "0",
+            digits: [BinaryDigitState] = []
+        ) {
+            self.bitWidth = bitWidth
+            self.selectedBits = selectedBits
+            self.text = text
+            self.digits = digits
             updateBinCharacters()
         }
 
         mutating func updateBinCharacters() {
-            digits = (Int(text) ?? 0)
+            digits = (Int(text, radix: 2) ?? 0)
                 .paddedBinaryString(bits: bitWidth.rawValue, blockSize: 0)
                 .enumerated()
                 .map { BinaryDigitState(index: $0.0 + 1, value: $0.1) }
@@ -69,7 +78,7 @@ public struct BinaryTextFieldReducer {
             return .none
 
         case let .bitOperation(bitOp):
-            guard let currentValue = Int(state.text) else { return .none }
+            guard let currentValue = Int(state.text, radix: 2) else { return .none }
 
             var newValue = currentValue
 
@@ -83,7 +92,7 @@ public struct BinaryTextFieldReducer {
                 }
             }
 
-            state.text = String(newValue)
+            state.text = String(newValue, radix: 2)
             state.updateBinCharacters()
             return .none
 

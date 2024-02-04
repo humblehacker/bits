@@ -10,28 +10,41 @@ public struct EntryReducer {
     public struct State: Equatable, Identifiable {
         let kind: EntryKind
         var text: String
+        var binText: BinaryTextFieldReducer.State?
         var value: Int
         var isFocused: Bool
 
         public var id: EntryKind { kind }
         var title: String { kind.title }
 
-        public init(kind: EntryKind) {
-            value = 0
+        public init(
+            _ kind: EntryKind,
+            text: String = "",
+            binText: BinaryTextFieldReducer.State? = nil,
+            value: Int = 0,
+            isFocused: Bool = false
+        ) {
             self.kind = kind
-            text = ""
-            isFocused = false
+            self.text = text
+            self.binText = binText
+            self.value = value
+            self.isFocused = isFocused
         }
 
         mutating func updateValue(_ value: Int) -> Effect<IdentifiedAction> {
             guard value != self.value else { return .none }
-            self.value = value
             return .send(.element(id: id, action: Action.binding(.set(\.value, value))))
+        }
+
+        mutating func updateText(_ text: String) -> Effect<IdentifiedAction> {
+            guard text != self.text else { return .none }
+            return .send(.element(id: id, action: Action.binding(.set(\.text, text))))
         }
     }
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
+        case binText(BinaryTextFieldReducer.Action)
         case confirmationKeyPressed
         case delegate(Delegate)
 
@@ -46,10 +59,8 @@ public struct EntryReducer {
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
-        Reduce { state, action in
-            reduce(state: &state, action: action)
-        }
-        ._printChanges()
+        Reduce { state, action in reduce(state: &state, action: action) }
+            .ifLet(\.binText, action: \.binText) { BinaryTextFieldReducer() }
     }
 
     func reduce(state: inout State, action: Action) -> Effect<Action> {
@@ -68,6 +79,9 @@ public struct EntryReducer {
                 return .none
 
             case .binding:
+                return .none
+
+            case .binText:
                 return .none
 
             case .confirmationKeyPressed:
