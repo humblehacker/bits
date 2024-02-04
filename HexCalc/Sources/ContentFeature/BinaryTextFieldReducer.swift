@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 
 @Reducer
-public struct BinTextFieldReducer {
+public struct BinaryTextFieldReducer {
     @ObservableState
     public struct State: Equatable {
         var bitWidth: Bits = ._8

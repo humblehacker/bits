@@ -1,10 +1,10 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct BinTextField: View {
-    @Bindable var store: StoreOf<BinTextFieldReducer>
+struct BinaryTextField: View {
+    @Bindable var store: StoreOf<BinaryTextFieldReducer>
 
-    init(store: StoreOf<BinTextFieldReducer>) {
+    init(store: StoreOf<BinaryTextFieldReducer>) {
         self.store = store
     }
 
@@ -53,9 +53,9 @@ struct BinTextField: View {
     }
 }
 
-public struct BinTextFieldPreviewContainer: View {
-    @State var binTextFieldStore = Store(initialState: BinTextFieldReducer.State()) {
-        BinTextFieldReducer()
+public struct BinaryTextFieldPreviewContainer: View {
+    @State var binTextFieldStore = Store(initialState: BinaryTextFieldReducer.State()) {
+        BinaryTextFieldReducer()
     }
 
     public var body: some View {
@@ -65,13 +65,13 @@ public struct BinTextFieldPreviewContainer: View {
             TextField("", text: $binTextFieldStore.text)
                 .entryTextStyle()
 
-            BinTextField(store: binTextFieldStore)
+            BinaryTextField(store: binTextFieldStore)
         }
         .padding()
     }
 }
 
 #Preview {
-    BinTextFieldPreviewContainer()
+    BinaryTextFieldPreviewContainer()
         .frame(width: 500)
 }
