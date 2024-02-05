@@ -2,29 +2,52 @@ import ComposableArchitecture
 @testable import ContentFeature
 import CustomDump
 import DataStore
-import HistoryFeature
+@testable import HistoryFeature
+import Utils
 import XCTest
 
 class ContentReducerTests: XCTestCase {
     @MainActor
-    func testExpIsFocusedOnStart() async {
+    func testExpEntryUpdatesOtherEntries() async {
         let store = TestStore(initialState: ContentReducer.State()) {
             ContentReducer()
         } withDependencies: {
             $0.userDefaults = .ephemeral()
+            $0.entryConverter = .liveValue
+            $0.mainQueue = .immediate
+            $0.historyStore.addItem = { _ in }
         }
 
-        await store.send(.onAppear) {
-            $0.focusedField = .exp
-            $0.idealWidth = 450
-            $0.selectedBitWidth = ._32
-            $0.decEntry.text = "0"
-            $0.hexEntry.text = "0"
-            $0.binEntry.text = "0000 0000 0000 0000 0000 0000 0000 0000"
+        await store.send(.entries(.element(id: .exp, action: .binding(.set(\.text, "54 + 1"))))) {
+            $0.entries[id: .exp]?.apply {
+                $0.text = "54 + 1"
+                $0.value = 55
+            }
         }
 
-        await store.receive(.focusedFieldChanged(.exp)) {
-            $0.expEntry.isFocused = true
+        await store.receive(\.entries[id: .exp].delegate.valueUpdated, 55) {
+            $0.value = 55
+        }
+
+        await store.receive(\.entries[id: .dec].binding) {
+            $0.entries[id: .dec]?.apply {
+                $0.text = "55"
+                $0.value = 55
+            }
+        }
+
+        await store.receive(\.entries[id: .hex].binding) {
+            $0.entries[id: .hex]?.apply {
+                $0.text = "37"
+                $0.value = 55
+            }
+        }
+
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "110111"
+                $0.value = 55
+            }
         }
 
         await store.finish()
@@ -32,20 +55,43 @@ class ContentReducerTests: XCTestCase {
 
     @MainActor
     func testDecEntryUpdatesOtherEntries() async {
-        var initialState = ContentReducer.State()
-        initialState.focusedField = .dec
-        initialState.decEntry.isFocused = true
-
-        let store = TestStore(initialState: initialState) {
+        let store = TestStore(initialState: ContentReducer.State()) {
             ContentReducer()
         } withDependencies: {
             $0.userDefaults = .ephemeral()
+            $0.entryConverter = .liveValue
         }
 
-        await store.send(.decEntry(.binding(.set(\.text, "55")))) {
-            $0.decEntry.text = "55"
-            $0.hexEntry.text = "37"
-            $0.binEntry.text = "0011 0111"
+        await store.send(.entries(.element(id: .dec, action: .binding(.set(\.text, "55"))))) {
+            $0.entries[id: .dec]?.apply {
+                $0.text = "55"
+                $0.value = 55
+            }
+        }
+
+        await store.receive(\.entries[id: .dec].delegate.valueUpdated, 55) {
+            $0.value = 55
+        }
+
+        await store.receive(\.entries[id: .exp].binding) {
+            $0.entries[id: .exp]?.apply {
+                $0.text = "55"
+                $0.value = 55
+            }
+        }
+
+        await store.receive(\.entries[id: .hex].binding) {
+            $0.entries[id: .hex]?.apply {
+                $0.text = "37"
+                $0.value = 55
+            }
+        }
+
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "110111"
+                $0.value = 55
+            }
         }
 
         await store.finish()
@@ -53,75 +99,87 @@ class ContentReducerTests: XCTestCase {
 
     @MainActor
     func testHexEntryUpdatesOtherEntries() async {
-        var initialState = ContentReducer.State()
-        initialState.focusedField = .hex
-        initialState.hexEntry.isFocused = true
-        initialState.selectedBitWidth = ._16
-
-        let store = TestStore(initialState: initialState) {
+        let store = TestStore(initialState: ContentReducer.State()) {
             ContentReducer()
         } withDependencies: {
             $0.userDefaults = .ephemeral()
+            $0.entryConverter = .liveValue
         }
 
-        await store.send(.hexEntry(.binding(.set(\.text, "ff")))) {
-            $0.decEntry.text = "255"
-            $0.hexEntry.text = "FF"
-            $0.binEntry.text = "0000 0000 1111 1111"
+        await store.send(.entries(.element(id: .hex, action: .binding(.set(\.text, "37"))))) {
+            $0.entries[id: .hex]?.apply {
+                $0.text = "37"
+                $0.value = 55
+            }
         }
 
-        await store.finish()
-    }
-
-    @MainActor
-    func testExpEntryUpdatesOtherEntries() async {
-        var initialState = ContentReducer.State()
-        initialState.focusedField = .exp
-        initialState.expEntry.isFocused = true
-        initialState.selectedBitWidth = ._16
-
-        let store = TestStore(initialState: initialState) {
-            ContentReducer()
-        } withDependencies: {
-            var addedItemText: String? = nil
-            $0.historyStore.addItem = { addedItemText = $0 }
-            $0.historyStore.item = { id in HistoryItem(id: id, addedOn: .now, text: addedItemText!) }
-            $0.mainQueue = .immediate
-            $0.userDefaults = .ephemeral()
+        await store.receive(\.entries[id: .hex].delegate.valueUpdated, 55) {
+            $0.value = 55
         }
 
-        await store.send(.expEntry(.binding(.set(\.text, "0xff + 1")))) {
-            $0.expEntry.text = "0xff + 1"
+        await store.receive(\.entries[id: .exp].binding) {
+            $0.entries[id: .exp]?.apply {
+                $0.text = "55"
+                $0.value = 55
+            }
         }
 
-        await store.receive(.expEntryUpdated("0xff + 1", updateHistory: true)) {
-            $0.decEntry.text = "256"
-            $0.hexEntry.text = "100"
-            $0.binEntry.text = "0000 0001 0000 0000"
+        await store.receive(\.entries[id: .dec].binding) {
+            $0.entries[id: .dec]?.apply {
+                $0.text = "55"
+                $0.value = 55
+            }
         }
 
-        await store.receive(.expressionUpdated)
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "110111"
+                $0.value = 55
+            }
+        }
 
         await store.finish()
     }
 
     @MainActor
     func testBinEntryUpdatesOtherEntries() async {
-        var initialState = ContentReducer.State()
-        initialState.focusedField = .bin
-        initialState.binEntry.isFocused = true
-        initialState.selectedBitWidth = ._16
-
-        let store = TestStore(initialState: initialState) {
+        let store = TestStore(initialState: ContentReducer.State()) {
             ContentReducer()
         } withDependencies: {
             $0.userDefaults = .ephemeral()
+            $0.entryConverter = .liveValue
         }
 
-        await store.send(.binEntry(.binding(.set(\.text, "111100000000")))) {
-            $0.decEntry.text = "3840"
-            $0.hexEntry.text = "F00"
-            $0.binEntry.text = "0000 1111 0000 0000"
+        await store.send(.entries(.element(id: .bin, action: .binding(.set(\.text, "110111"))))) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "110111"
+                $0.value = 55
+            }
+        }
+
+        await store.receive(\.entries[id: .bin].delegate.valueUpdated, 55) {
+            $0.value = 55
+        }
+
+        await store.receive(\.entries[id: .exp].binding) {
+            $0.entries[id: .exp]?.apply {
+                $0.text = "55"
+                $0.value = 55
+            }
+        }
+
+        await store.receive(\.entries[id: .dec].binding) {
+            $0.entries[id: .dec]?.apply {
+                $0.text = "55"
+                $0.value = 55
+            }
+        }
+
+        await store.receive(\.entries[id: .hex].binding) {
+            $0.entries[id: .hex]?.apply {
+                $0.text = "37"
+                $0.value = 55
+            }
         }
 
         await store.finish()
@@ -131,9 +189,11 @@ class ContentReducerTests: XCTestCase {
     func testHistoryLaunchAndCancel() async {
         var initialState = ContentReducer.State()
         initialState.focusedField = .exp
-        initialState.expEntry.isFocused = true
-        initialState.expEntry.text = "0xff"
         initialState.selectedBitWidth = ._16
+        initialState.entries[id: .exp]?.apply {
+            $0.isFocused = true
+            $0.text = "0xff"
+        }
 
         let fakeItemInHistory = HistoryItem(
             id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
@@ -145,7 +205,10 @@ class ContentReducerTests: XCTestCase {
             ContentReducer()
         } withDependencies: {
             $0.date.now = Date(timeIntervalSinceReferenceDate: 1_234_567_890)
+            $0.entryConverter = .liveValue
             $0.historyStore.items = { [fakeItemInHistory] }
+            $0.historyStore.item = { _ in fakeItemInHistory }
+            $0.historyStore.addItem = { _ in }
             $0.mainQueue = .immediate
             $0.userDefaults = .ephemeral()
             $0.uuid = .incrementing
@@ -159,19 +222,90 @@ class ContentReducerTests: XCTestCase {
             $0.destination = .history(HistoryReducer.State(history: [fakeItemInHistory]))
         }
 
-        // When the history picker is dismissed without a selection being confirmed
+        // When HistoryPicker is presented the first (bottom, newest) history item is selected
+        await store.send(.destination(.presented(.history(.binding(.set(\.selection, fakeItemInHistory.id)))))) {
+            $0.destination?.modify(\ContentReducer.Destination.State.Cases.history) {
+                $0.selection = fakeItemInHistory.id
+            }
+        }
+
+        await store.receive(\.destination.presented.history.delegate.selectionChanged, fakeItemInHistory.id)
+
+        await store.receive(\.historyItemSelected)
+
+        // The exp entry gets updated with the text of the selected history item
+        await store.receive(\.entries[id: .exp].binding) {
+            $0.entries[id: .exp]?.apply {
+                $0.text = "123"
+                $0.value = 123
+            }
+        }
+
+        // The exp entry fires the valueUpdated delegate action which sets the value ...
+        await store.receive(\.entries[id: .exp].delegate.valueUpdated, 123) {
+            $0.value = 123
+        }
+
+        // ... and causes the rest of the entries to update
+        await store.receive(\.entries[id: .dec].binding) {
+            $0.entries[id: .dec]?.apply {
+                $0.text = "123"
+                $0.value = 123
+            }
+        }
+
+        await store.receive(\.entries[id: .hex].binding) {
+            $0.entries[id: .hex]?.apply {
+                $0.text = "7B"
+                $0.value = 123
+            }
+        }
+
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "1111011"
+                $0.value = 123
+            }
+        }
+
+        // When the history picker is dismissed without a selection being confirmed,
         // the entry state reverts to what is was before the picker was presented ...
         await store.send(.destination(.dismiss)) {
-            $0.expEntry.text = "0xff"
             $0.expTextTemp = nil
             $0.destination = nil
         }
 
+        await store.receive(\.entries[id: .exp].binding) {
+            $0.entries[id: .exp]?.apply {
+                $0.text = "0xff"
+                $0.value = 255
+            }
+        }
+
         // ... and the other entries update accordingly
-        await store.receive(.expEntryUpdated("0xff", updateHistory: false)) {
-            $0.decEntry.text = "255"
-            $0.hexEntry.text = "FF"
-            $0.binEntry.text = "0000 0000 1111 1111"
+        await store.receive(\.entries[id: .exp].delegate.valueUpdated, 255) {
+            $0.value = 255
+        }
+
+        await store.receive(\.entries[id: .dec].binding) {
+            $0.entries[id: .dec]?.apply {
+                $0.text = "255"
+                $0.value = 255
+            }
+        }
+
+        await store.receive(\.entries[id: .hex].binding) {
+            $0.entries[id: .hex]?.apply {
+                $0.text = "FF"
+                $0.value = 255
+            }
+        }
+
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "11111111"
+                $0.value = 255
+            }
         }
 
         await store.finish()
@@ -181,9 +315,11 @@ class ContentReducerTests: XCTestCase {
     func testHistoryLaunchAndConfirm() async {
         var initialState = ContentReducer.State()
         initialState.focusedField = .exp
-        initialState.expEntry.isFocused = true
-        initialState.expEntry.text = "0xff"
         initialState.selectedBitWidth = ._16
+        initialState.entries[id: .exp]?.apply {
+            $0.isFocused = true
+            $0.text = "0xff"
+        }
 
         let fakeItemInHistory = HistoryItem(
             id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
@@ -195,8 +331,10 @@ class ContentReducerTests: XCTestCase {
             ContentReducer()
         } withDependencies: {
             $0.date.now = Date(timeIntervalSinceReferenceDate: 1_234_567_890)
+            $0.entryConverter = .liveValue
             $0.historyStore.items = { [fakeItemInHistory] }
             $0.historyStore.item = { _ in fakeItemInHistory }
+            $0.historyStore.addItem = { _ in }
             $0.mainQueue = .immediate
             $0.userDefaults = .ephemeral()
             $0.uuid = .incrementing
@@ -210,87 +348,142 @@ class ContentReducerTests: XCTestCase {
             $0.destination = .history(HistoryReducer.State(history: [fakeItemInHistory]))
         }
 
+        // When HistoryPicker is presented the first (bottom, newest) history item is selected
+        await store.send(.destination(.presented(.history(.binding(.set(\.selection, fakeItemInHistory.id)))))) {
+            $0.destination?.modify(\ContentReducer.Destination.State.Cases.history) {
+                $0.selection = fakeItemInHistory.id
+            }
+        }
+
+        await store.receive(\.destination.presented.history.delegate.selectionChanged, fakeItemInHistory.id)
+
+        await store.receive(\.historyItemSelected)
+
+        // The exp entry gets updated with the text of the selected history item
+        await store.receive(\.entries[id: .exp].binding) {
+            $0.entries[id: .exp]?.apply {
+                $0.text = "123"
+                $0.value = 123
+            }
+        }
+
+        // The exp entry fires the valueUpdated delegate action which sets the value ...
+        await store.receive(\.entries[id: .exp].delegate.valueUpdated, 123) {
+            $0.value = 123
+        }
+
+        // ... and causes the rest of the entries to update
+        await store.receive(\.entries[id: .dec].binding) {
+            $0.entries[id: .dec]?.apply {
+                $0.text = "123"
+                $0.value = 123
+            }
+        }
+
+        await store.receive(\.entries[id: .hex].binding) {
+            $0.entries[id: .hex]?.apply {
+                $0.text = "7B"
+                $0.value = 123
+            }
+        }
+
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "1111011"
+                $0.value = 123
+            }
+        }
+
         await store.send(.destination(.presented(.history(.delegate(.selectionConfirmed(fakeItemInHistory.id))))))
 
         await store.receive(.historyItemConfirmed(fakeItemInHistory)) {
-            $0.expEntry.text = "123"
             $0.expTextTemp = nil
-        }
-
-        await store.receive(.expEntryUpdated("123", updateHistory: false)) {
-            $0.decEntry.text = "123"
-            $0.hexEntry.text = "7B"
-            $0.binEntry.text = "0000 0000 0111 1011"
         }
 
         await store.finish()
     }
 
-    @MainActor
-    func testIdealWidth() async {
-        let store = TestStore(initialState: ContentReducer.State()) {
-            ContentReducer()
-        } withDependencies: {
-            $0.userDefaults = .ephemeral()
-        }
 
-        await store.send(.binding(.set(\.selectedBitWidth, ._8))) {
-            $0.selectedBitWidth = ._8
-            $0.idealWidth = 450.0
-            $0.decEntry.text = "0"
-            $0.hexEntry.text = "0"
-            $0.binEntry.text = "0000 0000"
-        }
+     @MainActor
+     func testIdealWidth() async {
+         let store = TestStore(initialState: ContentReducer.State()) {
+             ContentReducer()
+         } withDependencies: {
+             $0.userDefaults = .ephemeral()
+         }
+    
+         await store.send(.binding(.set(\.selectedBitWidth, ._8))) {
+             $0.selectedBitWidth = ._8
+             $0.idealWidth = 440.0
+         }
 
-        await store.send(.binding(.set(\.selectedBitWidth, ._16))) {
-            $0.selectedBitWidth = ._16
-            $0.idealWidth = 450.0
-            $0.decEntry.text = "0"
-            $0.hexEntry.text = "0"
-            $0.binEntry.text = "0000 0000 0000 0000"
-        }
+         await store.receive(\.entries[id: .bin].binText.binding)
 
-        await store.send(.binding(.set(\.selectedBitWidth, ._32))) {
-            $0.selectedBitWidth = ._32
-            $0.idealWidth = 450.0
-            $0.decEntry.text = "0"
-            $0.hexEntry.text = "0"
-            $0.binEntry.text = "0000 0000 0000 0000 0000 0000 0000 0000"
-        }
+         await store.send(.binding(.set(\.selectedBitWidth, ._16))) {
+             $0.selectedBitWidth = ._16
+             $0.idealWidth = 440.0
+         }
 
-        await store.send(.binding(.set(\.selectedBitWidth, ._64))) {
-            $0.selectedBitWidth = ._64
-            $0.idealWidth = 730.0
-            $0.decEntry.text = "0"
-            $0.hexEntry.text = "0"
-            $0.binEntry.text = "0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"
-        }
-    }
+         await store.receive(\.entries[id: .bin].binText.binding) {
+             $0.entries[id: .bin]?.apply {
+                 $0.binText?.bitWidth = ._16
+                 $0.binText?.digits = .zero(bitWidth: 16)
+             }
+         }
 
-    @MainActor
-    func testTextStrippedBeforeAddingToHistory() async {
-        @Dependency(\.historyStore) var historyStore
+         await store.send(.binding(.set(\.selectedBitWidth, ._32))) {
+             $0.selectedBitWidth = ._32
+             $0.idealWidth = 540.0
+         }
 
-        var actual: String? = nil
+         await store.receive(\.entries[id: .bin].binText.binding) {
+             $0.entries[id: .bin]?.apply {
+                 $0.binText?.bitWidth = ._32
+                 $0.binText?.digits = .zero(bitWidth: 32)
+             }
+         }
 
-        var initialState = ContentReducer.State()
-        initialState.expEntry.text = " 0x55 "
-        let store = TestStore(initialState: initialState) {
-            ContentReducer()
-        } withDependencies: {
-            $0.date.now = Date(timeIntervalSinceReferenceDate: 1_234_567_890)
-            $0.historyStore.addItem = { actual = $0 }
-            $0.mainQueue = .immediate
-            $0.userDefaults = .ephemeral()
-            $0.uuid = .incrementing
-        }
+         await store.send(.binding(.set(\.selectedBitWidth, ._64))) {
+             $0.selectedBitWidth = ._64
+             $0.idealWidth = 900.0
+         }
 
-        store.exhaustivity = .off
+         await store.receive(\.entries[id: .bin].binText.binding) {
+             $0.entries[id: .bin]?.apply {
+                 $0.binText?.bitWidth = ._64
+                 $0.binText?.digits = .zero(bitWidth: 64)
+             }
+         }
+     }
+    
+     @MainActor
+     func testTextStrippedBeforeAddingToHistory() async {
+         @Dependency(\.historyStore) var historyStore
+    
+         var itemAdded: String? = nil
 
-        await store.send(.expressionUpdated)
+         let store = TestStore(initialState: ContentReducer.State()) {
+             ContentReducer()
+         } withDependencies: {
+             $0.date.now = Date(timeIntervalSinceReferenceDate: 1_234_567_890)
+             $0.historyStore.addItem = { itemAdded = $0 }
+             $0.mainQueue = .immediate
+             $0.userDefaults = .ephemeral()
+             $0.uuid = .incrementing
+             $0.entryConverter = .liveValue
+         }
+    
+         store.exhaustivity = .off
+    
+         await store.send(.entries(.element(id: .exp, action: .binding(.set(\.text, " 0x55 "))))) {
+             $0.entries[id: .exp]?.apply {
+                 $0.text = " 0x55 "
+                 $0.value = 85
+             }
+         }
 
-        let expected = "0x55"
-
-        XCTAssertNoDifference(expected, actual)
-    }
+         let expected = "0x55"
+    
+         XCTAssertNoDifference(expected, itemAdded)
+     }
 }
