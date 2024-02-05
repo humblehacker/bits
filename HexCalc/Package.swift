@@ -18,7 +18,7 @@ let package = Package(
         .library(name: "Utils", targets: ["Utils"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "observation-beta"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.7.3"),
         .package(url: "https://github.com/pointfreeco/swift-custom-dump", from: "1.1.2"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.2.0"),
         .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.13.0"),
