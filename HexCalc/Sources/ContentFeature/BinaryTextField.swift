@@ -15,17 +15,17 @@ struct BinaryTextField: View {
             let _ = Self._printChanges()
 
             Spacer()
-            ForEach(store.digits, id: \.index) { ic in
-                Text("\(ic.value)")
-                    .background(store.selectedBits.contains(ic.index)
+            ForEach(store.digits, id: \.index) { digit in
+                Text("\(digit.value)")
+                    .background(store.selectedBits.contains(digit.index)
                         ? Color.accentColor
                         : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
                     )
                     .onTapGesture {
-                        store.send(.bitTapped(index: ic.index))
+                        store.send(.bitTapped(index: digit.index))
                     }
 
-                if ic.index.isMultiple(of: 4) && ic.index != store.bitWidth.rawValue {
+                if digit.index.isMultiple(of: 4) && digit.index != store.bitWidth.rawValue {
                     Text(" ")
                 }
             }
