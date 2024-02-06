@@ -18,9 +18,8 @@ struct BinaryTextField: View {
             ForEach(store.digits, id: \.index) { digit in
                 Text(String(digit.value.rawValue))
                     .background(store.selectedBits.contains(digit.index)
-                        ? Color.accentColor
-                        : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                    )
+                        ? Color(nsColor: .selectedTextBackgroundColor)
+                        : Color(nsColor: .unemphasizedSelectedTextBackgroundColor))
                     .onTapGesture {
                         store.send(.bitTapped(index: digit.index))
                     }
@@ -63,7 +62,11 @@ struct BinaryTextField: View {
 }
 
 public struct BinaryTextFieldPreviewContainer: View {
-    @State var binTextFieldStore = Store(initialState: BinaryTextFieldReducer.State()) {
+    @State var binTextFieldStore = Store(
+        initialState: BinaryTextFieldReducer.State(
+            selectedBits: Set(1 ... 4)
+        )
+    ) {
         BinaryTextFieldReducer()
     }
 
