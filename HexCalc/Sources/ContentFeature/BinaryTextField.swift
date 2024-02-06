@@ -30,7 +30,6 @@ struct BinaryTextField: View {
                 }
             }
         }
-        .entryTextStyle()
         .focusable()
         .onKeyPress(keys: [.leftArrow, .rightArrow]) { keyPress in
             let shiftDown = keyPress.modifiers.contains(.shift)
@@ -76,6 +75,7 @@ public struct BinaryTextFieldPreviewContainer: View {
                 .entryTextStyle()
 
             BinaryTextField(text: .constant(""), store: binTextFieldStore)
+                .entryTextStyle()
         }
         .padding()
     }
