@@ -5,19 +5,22 @@ import SwiftUI
 public struct BinaryTextFieldReducer {
     @ObservableState
     public struct State: Equatable {
-        var bitWidth: Bits = ._8
-        var selectedBits: Set<Int> = []
-        var text: String = "0"
-        var digits: [BinaryDigitState] = []
+        var bitWidth: Bits
+        var selectedBits: Set<Int>
+        var currentBit: Int?
+        var text: String
+        var digits: [BinaryDigitState]
 
         public init(
             bitWidth: Bits = ._8,
             selectedBits: Set<Int> = [],
+            currentBit: Int? = nil,
             text: String = "0",
             digits: [BinaryDigitState] = []
         ) {
             self.bitWidth = bitWidth
             self.selectedBits = selectedBits
+            self.currentBit = currentBit
             self.text = text
             self.digits = digits
             updateBinCharacters()
@@ -73,8 +76,10 @@ public struct BinaryTextFieldReducer {
         case let .bitTapped(index):
             if state.selectedBits.contains(index) {
                 state.selectedBits.removeAll()
+                state.currentBit = nil
             } else {
                 state.selectedBits = [index]
+                state.currentBit = index
             }
             return .none
 
@@ -102,15 +107,16 @@ public struct BinaryTextFieldReducer {
 
         case .cancelTypeoverKeyPressed:
             state.selectedBits.removeAll()
+            state.currentBit = nil
             return .none
 
         case let .cursorMovementKeyPressed(key, extend):
             let newSelectedBit: Int? = switch key {
             case .leftArrow:
-                (state.selectedBits.sorted().first ?? state.bitWidth.rawValue + 1) - 1
+                (state.currentBit ?? state.bitWidth.rawValue + 1) - 1
 
             case .rightArrow:
-                (state.selectedBits.sorted().last ?? 0) + 1
+                (state.currentBit ?? 0) + 1
 
             default:
                 nil
@@ -119,15 +125,24 @@ public struct BinaryTextFieldReducer {
             guard let newSelectedBit = newSelectedBit?.clamped(to: 1 ... state.bitWidth.rawValue) else { return .none }
 
             if extend {
-                state.selectedBits.insert(newSelectedBit)
+                if state.selectedBits.contains(newSelectedBit) {
+                    if newSelectedBit != state.currentBit {
+                        state.selectedBits.remove(state.currentBit ?? newSelectedBit)
+                    }
+                } else {
+                    state.selectedBits.insert(newSelectedBit)
+                }
             } else {
                 state.selectedBits = [newSelectedBit]
             }
+
+            state.currentBit = newSelectedBit
 
             return .none
 
         case .selectAllShortcutPressed:
             state.selectedBits = Set(1 ... state.bitWidth.rawValue)
+            state.currentBit = nil
             return .none
 
         case .toggleBitKeyPressed:

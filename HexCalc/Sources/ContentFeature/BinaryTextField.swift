@@ -4,28 +4,50 @@ import SwiftUI
 struct BinaryTextField: View {
     @State var store: StoreOf<BinaryTextFieldReducer>
     @Binding var text: String
+    @State var textHeight: Double
 
     init(text: Binding<String>, store: StoreOf<BinaryTextFieldReducer>) {
         self.store = store
         _text = text
+        textHeight = 0
     }
 
     var body: some View {
-        HStack(spacing: 3) {
+        HStack(spacing: 0) {
             let _ = Self._printChanges()
 
             Spacer()
             ForEach(store.digits, id: \.index) { digit in
-                Text(String(digit.value.rawValue))
-                    .background(store.selectedBits.contains(digit.index)
-                        ? Color(nsColor: .selectedTextBackgroundColor)
-                        : Color(nsColor: .unemphasizedSelectedTextBackgroundColor))
-                    .onTapGesture {
-                        store.send(.bitTapped(index: digit.index))
-                    }
+                HStack {
+                    Text(String(digit.value.rawValue))
+                        .background(
+                            store.selectedBits.contains(digit.index)
+                            ? Color(nsColor: .selectedTextBackgroundColor)
+                            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
+                        )
+                        .overlay {
+                            GeometryReader { geo in
+                                Color.clear.task(id: geo.size.height) {
+                                    self.textHeight = geo.size.height
+                                }
+                            }
+                        }
+                        .onTapGesture {
+                            store.send(.bitTapped(index: digit.index))
+                        }
+                    Spacer()
+                        .frame(width: 3, height: textHeight)
+                        .background(store.selectedBits.contains(digit.index) && store.selectedBits.sorted().last != digit.index
+                                    ? Color(nsColor: .selectedTextBackgroundColor)
+                                    : Color(nsColor: .unemphasizedSelectedTextBackgroundColor))
+
+                }
 
                 if digit.index.isMultiple(of: 4) && digit.index != store.bitWidth.rawValue {
                     Text(" ")
+                        .background(store.selectedBits.contains(digit.index) && store.selectedBits.sorted().last != digit.index
+                                    ? Color(nsColor: .selectedTextBackgroundColor)
+                                    : Color(nsColor: .unemphasizedSelectedTextBackgroundColor))
                 }
             }
         }
@@ -64,7 +86,7 @@ struct BinaryTextField: View {
 public struct BinaryTextFieldPreviewContainer: View {
     @State var binTextFieldStore = Store(
         initialState: BinaryTextFieldReducer.State(
-            selectedBits: Set(1 ... 4)
+            selectedBits: Set(1 ... 5)
         )
     ) {
         BinaryTextFieldReducer()
