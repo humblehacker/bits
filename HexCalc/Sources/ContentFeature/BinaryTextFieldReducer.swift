@@ -26,6 +26,7 @@ public struct BinaryTextFieldReducer {
         mutating func updateBinCharacters() {
             digits = (Int(text, radix: 2) ?? 0)
                 .paddedBinaryString(bits: bitWidth.rawValue, blockSize: 0)
+                .suffix(bitWidth.rawValue)
                 .enumerated()
                 .map { BinaryDigitState(index: $0.0 + 1, value: $0.1) }
         }
