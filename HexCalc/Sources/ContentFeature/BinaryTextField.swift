@@ -31,8 +31,8 @@ struct BinaryTextField: View {
         }
         .focusable()
         .onKeyPress(keys: [.leftArrow, .rightArrow]) { keyPress in
-            let shiftDown = keyPress.modifiers.contains(.shift)
-            store.send(.cursorMovementKeyPressed(keyPress.key, extend: shiftDown))
+            let shiftKeyDown = keyPress.modifiers.contains(.shift)
+            store.send(.cursorMovementKeyPressed(keyPress.key, extend: shiftKeyDown))
             return .handled
         }
         .onKeyPress(keys: ["0", "1"]) { keyPress in
