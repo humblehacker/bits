@@ -33,12 +33,18 @@ public struct EntryReducer {
 
         mutating func updateValue(_ value: Int) -> Effect<IdentifiedAction> {
             guard value != self.value else { return .none }
-            return .send(.element(id: id, action: Action.binding(.set(\.value, value))))
+            return .send(.element(id: id, action: .binding(.set(\.value, value))))
         }
 
         mutating func updateText(_ text: String) -> Effect<IdentifiedAction> {
             guard text != self.text else { return .none }
-            return .send(.element(id: id, action: Action.binding(.set(\.text, text))))
+            return .send(.element(id: id, action: .binding(.set(\.text, text))))
+        }
+
+        mutating func updateBitWidth( _ bitWidth: Bits) -> Effect<IdentifiedAction> {
+            guard let binText else { return .none }
+            guard bitWidth != binText.bitWidth else { return .none }
+            return .send(.element(id: id, action: .binText(.binding(.set(\.bitWidth, bitWidth)))))
         }
     }
 

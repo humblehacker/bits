@@ -417,8 +417,6 @@ class ContentReducerTests: XCTestCase {
              $0.idealWidth = 440.0
          }
 
-         await store.receive(\.entries[id: .bin].binText.binding)
-
          await store.send(.binding(.set(\.selectedBitWidth, ._16))) {
              $0.selectedBitWidth = ._16
              $0.idealWidth = 440.0
