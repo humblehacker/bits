@@ -21,6 +21,7 @@ public struct HistoryReducer {
         case deleteKeyPressed
         case delegate(Delegate)
 
+        @CasePathable
         public enum Delegate: Equatable {
             case selectionChanged(HistoryItem.ID?)
             case selectionConfirmed(HistoryItem.ID)

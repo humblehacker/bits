@@ -3,8 +3,8 @@ import HistoryFeature
 import SwiftUI
 
 public struct ContentView: View {
-    @Bindable var store: StoreOf<ContentReducer>
-    @FocusState var focusedField: FocusedField?
+    @State var store: StoreOf<ContentReducer>
+    @FocusState var focusedField: EntryKind?
 
     public init(store: StoreOf<ContentReducer>) {
         self.store = store
@@ -12,42 +12,39 @@ public struct ContentView: View {
 
     public var body: some View {
         VStack {
-            Entry(store: store.scope(state: \.expEntry, action: \.expEntry))
-                .onKeyPress(.upArrow) {
-                    store.send(.upArrowPressed)
-                    return .handled
+            ForEach(store.scope(state: \.entries, action: \.entries)) { store in
+                if store.kind == .bin {
+                    BinaryTextEntry(store: store)
+                        .focused($focusedField, equals: store.kind)
+                } else {
+                    Entry(store: store)
+                        .focused($focusedField, equals: store.kind)
                 }
-                .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in
-                    HistoryPicker(store: store)
-                        .frame(width: self.store.expEntry.width)
+            }
+            .onKeyPress(.upArrow) {
+                store.send(.upArrowPressed)
+                return .handled
+            }
+            .overlay {
+                GeometryReader { geo in
+                    Color.clear.onAppear { store.entryWidth = geo.size.width }
                 }
-                .focused($focusedField, equals: .exp)
-
-            Entry(store: store.scope(state: \.decEntry, action: \.decEntry))
-                .focused($focusedField, equals: .dec)
-
-            Entry(store: store.scope(state: \.hexEntry, action: \.hexEntry))
-                .focused($focusedField, equals: .hex)
-
-            Entry(store: store.scope(state: \.binEntry, action: \.binEntry))
-                .focused($focusedField, equals: .bin)
+            }
         }
         .padding()
         .toolbar {
-            Picker("", selection: $store.selectedBitWidth) {
-                Text("8").tag(Bits._8)
-                Text("16").tag(Bits._16)
-                Text("32").tag(Bits._32)
-                Text("64").tag(Bits._64)
-            }
-            .pickerStyle(.segmented)
+            BitWidthPicker(selectedBitWidth: $store.selectedBitWidth)
         }
-        .frame(minWidth: 450, idealWidth: store.idealWidth, maxWidth: 730)
+        .frame(minWidth: minWidth, idealWidth: store.idealWidth, maxWidth: maxWidth)
         .onAppear { store.send(.onAppear) }
         .onChange(of: store.idealWidth, initial: true) { _, new in
             let window = NSApplication.shared.windows.first!
             let height = window.frame.height
             window.setContentSize(NSSize(width: new, height: height))
+        }
+        .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in
+            HistoryPicker(store: store)
+                .frame(width: self.store.entryWidth)
         }
         .bind($store.focusedField, to: $focusedField)
     }
