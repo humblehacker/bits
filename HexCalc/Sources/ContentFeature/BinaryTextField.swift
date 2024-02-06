@@ -16,7 +16,7 @@ struct BinaryTextField: View {
 
             Spacer()
             ForEach(store.digits, id: \.index) { digit in
-                Text("\(digit.value)")
+                Text(String(digit.value.rawValue))
                     .background(store.selectedBits.contains(digit.index)
                         ? Color.accentColor
                         : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
