@@ -7,7 +7,7 @@ public struct BinaryTextFieldReducer {
     public struct State: Equatable {
         var bitWidth: Bits
         var selectedBits: Set<Int>
-        var currentBit: Int?
+        var cursorIndex: Int?
         var text: String
         var digits: [BinaryDigitState]
 
@@ -20,7 +20,7 @@ public struct BinaryTextFieldReducer {
         ) {
             self.bitWidth = bitWidth
             self.selectedBits = selectedBits
-            self.currentBit = currentBit
+            self.cursorIndex = currentBit
             self.text = text
             self.digits = digits
             updateBinCharacters()
@@ -76,10 +76,10 @@ public struct BinaryTextFieldReducer {
         case let .bitTapped(index):
             if state.selectedBits.contains(index) {
                 state.selectedBits.removeAll()
-                state.currentBit = nil
+                state.cursorIndex = nil
             } else {
                 state.selectedBits = [index]
-                state.currentBit = index
+                state.cursorIndex = index
             }
             return .none
 
@@ -107,16 +107,16 @@ public struct BinaryTextFieldReducer {
 
         case .cancelTypeoverKeyPressed:
             state.selectedBits.removeAll()
-            state.currentBit = nil
+            state.cursorIndex = nil
             return .none
 
         case let .cursorMovementKeyPressed(key, extend):
             let newSelectedBit: Int? = switch key {
             case .leftArrow:
-                (state.currentBit ?? state.bitWidth.rawValue + 1) - 1
+                (state.cursorIndex ?? state.bitWidth.rawValue + 1) - 1
 
             case .rightArrow:
-                (state.currentBit ?? 0) + 1
+                (state.cursorIndex ?? 0) + 1
 
             default:
                 nil
@@ -126,8 +126,8 @@ public struct BinaryTextFieldReducer {
 
             if extend {
                 if state.selectedBits.contains(newSelectedBit) {
-                    if newSelectedBit != state.currentBit {
-                        state.selectedBits.remove(state.currentBit ?? newSelectedBit)
+                    if newSelectedBit != state.cursorIndex {
+                        state.selectedBits.remove(state.cursorIndex ?? newSelectedBit)
                     }
                 } else {
                     state.selectedBits.insert(newSelectedBit)
@@ -136,13 +136,13 @@ public struct BinaryTextFieldReducer {
                 state.selectedBits = [newSelectedBit]
             }
 
-            state.currentBit = newSelectedBit
+            state.cursorIndex = newSelectedBit
 
             return .none
 
         case .selectAllShortcutPressed:
             state.selectedBits = Set(1 ... state.bitWidth.rawValue)
-            state.currentBit = nil
+            state.cursorIndex = nil
             return .none
 
         case .toggleBitKeyPressed:
