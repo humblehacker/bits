@@ -63,11 +63,24 @@ public struct Selection: Equatable {
     }
 
     mutating
-    func select(_ index: Int) {
+    func clickSelect(_ index: Int) {
+        if let selectedIndexes {
+            cursorIndex = selectedIndexes.mid(rounding: .down)
+        }
+
+        select(index)
+    }
+
+    mutating
+    private func select(_ index: Int) {
         let selectionIndex = index.clamped(to: bounds)
 
         if selectedIndexes == nil {
-            selectedIndexes = cursorIndex ..< cursorIndex + 1
+            if selectionIndex > cursorIndex {
+                selectedIndexes = cursorIndex ..< selectionIndex + 1
+            } else {
+                selectedIndexes = selectionIndex ..< cursorIndex + 1
+            }
         } else {
             if let last = selectedIndexes?.last, let first = selectedIndexes?.first {
                 if cursorIndex == first && cursorIndex == last {
@@ -80,11 +93,17 @@ public struct Selection: Equatable {
                     selectedIndexes = selectionIndex ..< last + 1
                 } else if cursorIndex == last {
                     selectedIndexes = first ..< selectionIndex + 1
+                } else {
+                    if selectionIndex > cursorIndex {
+                        selectedIndexes = first ..< selectionIndex + 1
+                    } else {
+                        selectedIndexes = selectionIndex ..< last + 1
+                    }
                 }
             }
-
-            cursorIndex = selectionIndex
         }
+        
+        cursorIndex = selectionIndex
     }
 
     mutating

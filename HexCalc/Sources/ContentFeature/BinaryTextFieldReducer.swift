@@ -62,7 +62,7 @@ public struct BinaryTextFieldReducer {
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case bitOperation(BitOp)
-        case digitClicked(BinaryDigit)
+        case digitClicked(BinaryDigit, select: Bool)
         case bitTyped(String)
         case cancelTypeoverKeyPressed
         case cursorMovementKeyPressed(CursorDirection, extend: Bool)
@@ -98,8 +98,12 @@ public struct BinaryTextFieldReducer {
         case .binding:
             return .none
 
-        case let .digitClicked(digit):
-            state.selection.setCursor(digit.index)
+        case let .digitClicked(digit, select):
+            if select {
+                state.selection.clickSelect(digit.index)
+            } else {
+                state.selection.setCursor(digit.index)
+            }
             return .none
 
         case let .bitOperation(bitOp):

@@ -37,7 +37,8 @@ struct BinaryTextField: View {
                         }
                     }
                     .onTapGesture {
-                        store.send(.digitClicked(digit))
+                        let shiftKeyDown = NSEvent.modifierFlags.contains(.shift)
+                        store.send(.digitClicked(digit, select: shiftKeyDown))
                     }
 
                 Spacer()
