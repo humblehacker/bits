@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
+import UI
 
 struct BinaryTextField: View {
     @State var store: StoreOf<BinaryTextFieldReducer>
@@ -51,6 +52,7 @@ struct BinaryTextField: View {
             }
         }
         .focusable()
+        .cursor(.iBeam)
         .onKeyPress(keys: [.leftArrow, .rightArrow]) { keyPress in
             let shiftKeyDown = keyPress.modifiers.contains(.shift)
             let direction = CursorDirection.direction(from: keyPress.key)
