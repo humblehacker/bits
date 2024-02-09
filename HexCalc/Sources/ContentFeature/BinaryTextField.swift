@@ -37,7 +37,7 @@ struct BinaryTextField: View {
                         }
                     }
                     .onTapGesture {
-                        store.send(.bitTapped(index: digit.index))
+                        store.send(.digitClicked(digit))
                     }
 
                 Spacer()
