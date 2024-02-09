@@ -199,5 +199,85 @@ final class SelectionTests: XCTestCase {
         XCTAssertNoDifference(selection.cursorIndex, 1)
     }
 
+    // MARK: mouse selection
 
+    func testWithNoSelection_CursorOn0_Click1_Selects01_MovesCursorTo1() {
+        var selection = Selection(bitWidth: ._8, cursorIndex: 0)
+        XCTAssertNoDifference(selection.selectedIndexes, nil)
+        XCTAssertNoDifference(selection.cursorIndex, 0)
+
+        selection.clickSelect(1)
+        XCTAssertNoDifference(selection.selectedIndexes, 0 ..< 2)
+        XCTAssertNoDifference(selection.cursorIndex, 1)
+    }
+
+    func testWithNoSelection_CursorOn0_Click7_Selects01234567_MovesCursorTo7() {
+        var selection = Selection(bitWidth: ._8, cursorIndex: 0)
+        XCTAssertNoDifference(selection.selectedIndexes, nil)
+        XCTAssertNoDifference(selection.cursorIndex, 0)
+
+        selection.clickSelect(7)
+        XCTAssertNoDifference(selection.selectedIndexes, 0 ..< 8)
+        XCTAssertNoDifference(selection.cursorIndex, 7)
+    }
+
+    func testWithNoSelection_CursorOn7_Click6_Selects67_MovesCursorTo6() {
+        var selection = Selection(bitWidth: ._8, cursorIndex: 7)
+        XCTAssertNoDifference(selection.selectedIndexes, nil)
+        XCTAssertNoDifference(selection.cursorIndex, 7)
+
+        selection.clickSelect(6)
+        XCTAssertNoDifference(selection.selectedIndexes, 6 ..< 8)
+        XCTAssertNoDifference(selection.cursorIndex, 6)
+    }
+
+    func testWithNoSelection_CursorOn7_Click0_Selects01234567_MovesCursorTo0() {
+        var selection = Selection(bitWidth: ._8, cursorIndex: 7)
+        XCTAssertNoDifference(selection.selectedIndexes, nil)
+        XCTAssertNoDifference(selection.cursorIndex, 7)
+
+        selection.clickSelect(0)
+        XCTAssertNoDifference(selection.selectedIndexes, 0 ..< 8)
+        XCTAssertNoDifference(selection.cursorIndex, 0)
+    }
+
+    func test345Selected_CursorOn5_Click7_Selects34567_MovesCursorTo7() {
+        var selection = Selection(bitWidth: ._8, cursorIndex: 5, selectedIndexes: 3 ..< 6)
+        XCTAssertNoDifference(selection.selectedIndexes, 3 ..< 6)
+        XCTAssertNoDifference(selection.cursorIndex, 5)
+
+        selection.clickSelect(7)
+        XCTAssertNoDifference(selection.selectedIndexes, 3 ..< 8)
+        XCTAssertNoDifference(selection.cursorIndex, 7)
+    }
+
+    func test3456Selected_CursorOn6_Click5_Selects345_MovesCursorTo5() {
+        var selection = Selection(bitWidth: ._8, cursorIndex: 5, selectedIndexes: 3 ..< 7)
+        XCTAssertNoDifference(selection.selectedIndexes, 3 ..< 7)
+        XCTAssertNoDifference(selection.cursorIndex, 6)
+
+        selection.clickSelect(5)
+        XCTAssertNoDifference(selection.selectedIndexes, 3 ..< 6)
+        XCTAssertNoDifference(selection.cursorIndex, 5)
+    }
+
+    func test3456Selected_CursorOn6_Click4_Selects456_MovesCursorTo4() {
+        var selection = Selection(bitWidth: ._8, cursorIndex: 6, selectedIndexes: 3 ..< 7)
+        XCTAssertNoDifference(selection.selectedIndexes, 3 ..< 7)
+        XCTAssertNoDifference(selection.cursorIndex, 6)
+
+        selection.clickSelect(4)
+        XCTAssertNoDifference(selection.selectedIndexes, 4 ..< 7)
+        XCTAssertNoDifference(selection.cursorIndex, 4)
+    }
+
+    func test3456Selected_CursorOn6_Click1_Selects123456_MovesCursorTo1() {
+        var selection = Selection(bitWidth: ._8, cursorIndex: 6, selectedIndexes: 3 ..< 7)
+        XCTAssertNoDifference(selection.selectedIndexes, 3 ..< 7)
+        XCTAssertNoDifference(selection.cursorIndex, 6)
+
+        selection.clickSelect(1)
+        XCTAssertNoDifference(selection.selectedIndexes, 1 ..< 7)
+        XCTAssertNoDifference(selection.cursorIndex, 1)
+    }
 }
