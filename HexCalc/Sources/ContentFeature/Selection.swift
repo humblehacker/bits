@@ -8,7 +8,7 @@ public struct Selection: Equatable {
 
     public init(bitWidth: Bits, cursorIndex: Int? = nil, selectedIndexes: Range<Int>? = nil) {
         bounds = 0 ..< bitWidth.rawValue
-        self.cursorIndex = cursorIndex ?? bounds.last!
+        self.cursorIndex = cursorIndex ?? selectedIndexes?.mid(rounding: .down) ?? bounds.last!
         self.selectedIndexes = selectedIndexes
     }
 
