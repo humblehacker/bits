@@ -1,11 +1,11 @@
 import Foundation
 
-enum BinaryDigit: Character {
+enum BitValue: Character {
     case zero = "0"
     case one = "1"
 }
 
-extension BinaryDigit: CustomStringConvertible {
+extension BitValue: CustomStringConvertible {
     var description: String {
         String(rawValue)
     }
@@ -13,13 +13,13 @@ extension BinaryDigit: CustomStringConvertible {
 
 public struct BinaryDigitState: Equatable {
     let index: Int
-    let value: BinaryDigit
+    let value: BitValue
 }
 
 extension BinaryDigitState {
     init(index: Int, value: Character) {
         self.index = index
-        self.value = BinaryDigit(rawValue: value)!
+        self.value = BitValue(rawValue: value)!
     }
 }
 
