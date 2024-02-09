@@ -11,21 +11,21 @@ extension BitValue: CustomStringConvertible {
     }
 }
 
-public struct BinaryDigitState: Equatable {
+public struct BinaryDigit: Equatable {
     let index: Int
     let value: BitValue
 }
 
-extension BinaryDigitState {
+extension BinaryDigit {
     init(index: Int, value: Character) {
         self.index = index
         self.value = BitValue(rawValue: value)!
     }
 }
 
-extension Array<BinaryDigitState> {
+extension Array<BinaryDigit> {
     static func zero(bitWidth: Int) -> Self {
-        (0 ..< bitWidth).map { BinaryDigitState(index: $0, value: .zero) }
+        (0 ..< bitWidth).map { BinaryDigit(index: $0, value: .zero) }
     }
 }
 

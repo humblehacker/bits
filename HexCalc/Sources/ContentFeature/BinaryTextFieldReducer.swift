@@ -8,13 +8,13 @@ public struct BinaryTextFieldReducer {
         var bitWidth: Bits
         var selection: Selection
         var text: String
-        var digits: [BinaryDigitState]
+        var digits: [BinaryDigit]
 
         public init(
             bitWidth: Bits = ._8,
             selection: Selection = .init(bitWidth: Bits._8),
             text: String = "0",
-            digits: [BinaryDigitState] = []
+            digits: [BinaryDigit] = []
         ) {
             self.bitWidth = bitWidth
             self.selection = selection
@@ -28,33 +28,33 @@ public struct BinaryTextFieldReducer {
                 .paddedBinaryString(bits: bitWidth.rawValue, blockSize: 0)
                 .suffix(bitWidth.rawValue)
                 .enumerated()
-                .map { BinaryDigitState(index: $0.0, value: $0.1) }
+                .map { BinaryDigit(index: $0.0, value: $0.1) }
         }
 
-        func showCursorForDigit(_ digit: BinaryDigitState) -> Bool {
+        func showCursorForDigit(_ digit: BinaryDigit) -> Bool {
             selection.cursorIndex == digit.index && !digitSelected(digit)
         }
 
-        func digitSelected(_ digit: BinaryDigitState) -> Bool {
+        func digitSelected(_ digit: BinaryDigit) -> Bool {
             selection.selectedIndexes?.contains(digit.index) ?? false
         }
 
-        func spacerWidthForDigit(_ digit: BinaryDigitState) -> Double {
+        func spacerWidthForDigit(_ digit: BinaryDigit) -> Double {
             guard !digitIsLast(digit) else { return 0.0 }
 
             let displayIndex = digit.index + 1
             return displayIndex.isMultiple(of: 4) ? 10.0 : 3.0
         }
 
-        func digitSpacerSelected(_ digit: BinaryDigitState) -> Bool {
+        func digitSpacerSelected(_ digit: BinaryDigit) -> Bool {
             digitSelected(digit) && !digitIsLastSelected(digit)
         }
 
-        func digitIsLast(_ digit: BinaryDigitState) -> Bool {
+        func digitIsLast(_ digit: BinaryDigit) -> Bool {
             digit.index == bitWidth.rawValue - 1
         }
 
-        func digitIsLastSelected(_ digit: BinaryDigitState) -> Bool {
+        func digitIsLastSelected(_ digit: BinaryDigit) -> Bool {
             selection.selectedIndexes?.last == digit.index
         }
     }
@@ -62,7 +62,7 @@ public struct BinaryTextFieldReducer {
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case bitOperation(BitOp)
-        case digitClicked(BinaryDigitState)
+        case digitClicked(BinaryDigit)
         case bitTyped(String)
         case cancelTypeoverKeyPressed
         case cursorMovementKeyPressed(CursorDirection, extend: Bool)
