@@ -18,43 +18,42 @@ struct BinaryTextField: View {
 
             Spacer()
             ForEach(store.digits, id: \.index) { digit in
-                HStack {
-                    Text(String(digit.value.rawValue))
-                        .background(
-                            store.selectedBits.contains(digit.index)
+                Text(String(digit.value.rawValue))
+                    .background(
+                        store.state.digitSelected(digit)
                             ? Color(nsColor: .selectedTextBackgroundColor)
                             : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                        )
-                        .overlay {
-                            GeometryReader { geo in
-                                Color.clear.task(id: geo.size.height) {
-                                    self.textHeight = geo.size.height
-                                }
+                    )
+                    .border(
+                        store.state.showCursorForDigit(digit)
+                            ? Color(nsColor: .textInsertionPointColor)
+                            : Color.clear
+                    )
+                    .overlay {
+                        GeometryReader { geo in
+                            Color.clear.task(id: geo.size.height) {
+                                self.textHeight = geo.size.height
                             }
                         }
-                        .onTapGesture {
-                            store.send(.bitTapped(index: digit.index))
-                        }
-                    Spacer()
-                        .frame(width: 3, height: textHeight)
-                        .background(store.selectedBits.contains(digit.index) && store.selectedBits.sorted().last != digit.index
-                                    ? Color(nsColor: .selectedTextBackgroundColor)
-                                    : Color(nsColor: .unemphasizedSelectedTextBackgroundColor))
+                    }
+                    .onTapGesture {
+                        store.send(.bitTapped(index: digit.index))
+                    }
 
-                }
-
-                if digit.index.isMultiple(of: 4) && digit.index != store.bitWidth.rawValue {
-                    Text(" ")
-                        .background(store.selectedBits.contains(digit.index) && store.selectedBits.sorted().last != digit.index
-                                    ? Color(nsColor: .selectedTextBackgroundColor)
-                                    : Color(nsColor: .unemphasizedSelectedTextBackgroundColor))
-                }
+                Spacer()
+                    .frame(width: store.state.spacerWidthForDigit(digit), height: textHeight)
+                    .background(
+                        store.state.digitSpacerSelected(digit)
+                            ? Color(nsColor: .selectedTextBackgroundColor)
+                            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
+                    )
             }
         }
         .focusable()
         .onKeyPress(keys: [.leftArrow, .rightArrow]) { keyPress in
             let shiftKeyDown = keyPress.modifiers.contains(.shift)
-            store.send(.cursorMovementKeyPressed(keyPress.key, extend: shiftKeyDown))
+            let direction = CursorDirection.direction(from: keyPress.key)
+            store.send(.cursorMovementKeyPressed(direction, extend: shiftKeyDown))
             return .handled
         }
         .onKeyPress(keys: ["0", "1"]) { keyPress in
@@ -83,10 +82,23 @@ struct BinaryTextField: View {
     }
 }
 
+extension CursorDirection {
+    static func direction(from keyEquivalent: KeyEquivalent) -> CursorDirection {
+        switch keyEquivalent {
+        case .leftArrow: .left
+        case .rightArrow: .right
+        default: fatalError()
+        }
+    }
+}
+
 public struct BinaryTextFieldPreviewContainer: View {
+    @FocusState var focused: Int?
+
     @State var binTextFieldStore = Store(
         initialState: BinaryTextFieldReducer.State(
-            selectedBits: Set(1 ... 5)
+            bitWidth: ._16,
+            selection: Selection(bitWidth: Bits._16, selectedIndexes: 0 ..< 4)
         )
     ) {
         BinaryTextFieldReducer()
@@ -95,14 +107,24 @@ public struct BinaryTextFieldPreviewContainer: View {
     public var body: some View {
         VStack {
             BitWidthPicker(selectedBitWidth: $binTextFieldStore.bitWidth)
+                .focused($focused, equals: 0)
 
             TextField("", text: $binTextFieldStore.text)
                 .entryTextStyle()
+                .focused($focused, equals: 1)
 
             BinaryTextField(text: .constant(""), store: binTextFieldStore)
                 .entryTextStyle()
+                .focused($focused, equals: 2)
+
+            HStack {
+                Text("cursorIndex: \(binTextFieldStore.selection.cursorIndex)")
+                Text("selection: \(binTextFieldStore.selection.selectedIndexes ?? 0 ..< 0)")
+                Spacer()
+            }
         }
         .padding()
+        .onAppear { focused = 2 }
     }
 }
 

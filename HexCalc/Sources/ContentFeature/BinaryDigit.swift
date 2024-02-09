@@ -25,7 +25,7 @@ extension BinaryDigitState {
 
 extension Array<BinaryDigitState> {
     static func zero(bitWidth: Int) -> Self {
-        (1 ... bitWidth).map { BinaryDigitState(index: $0, value: .zero) }
+        (0 ..< bitWidth).map { BinaryDigitState(index: $0, value: .zero) }
     }
 }
 

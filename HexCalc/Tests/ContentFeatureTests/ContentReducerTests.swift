@@ -426,6 +426,7 @@ class ContentReducerTests: XCTestCase {
              $0.entries[id: .bin]?.apply {
                  $0.binText?.bitWidth = ._16
                  $0.binText?.digits = .zero(bitWidth: 16)
+                 $0.binText?.selection.bounds = 0 ..< 16
              }
          }
 
@@ -438,6 +439,7 @@ class ContentReducerTests: XCTestCase {
              $0.entries[id: .bin]?.apply {
                  $0.binText?.bitWidth = ._32
                  $0.binText?.digits = .zero(bitWidth: 32)
+                 $0.binText?.selection.bounds = 0 ..< 32
              }
          }
 
@@ -450,6 +452,7 @@ class ContentReducerTests: XCTestCase {
              $0.entries[id: .bin]?.apply {
                  $0.binText?.bitWidth = ._64
                  $0.binText?.digits = .zero(bitWidth: 64)
+                 $0.binText?.selection.bounds = 0 ..< 64
              }
          }
      }
