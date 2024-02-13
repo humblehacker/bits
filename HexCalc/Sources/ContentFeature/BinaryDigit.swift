@@ -1,4 +1,5 @@
 import Foundation
+import IdentifiedCollections
 
 enum BitValue: Character {
     case zero = "0"
@@ -16,6 +17,10 @@ public struct BinaryDigit: Equatable {
     let value: BitValue
 }
 
+extension BinaryDigit: Identifiable {
+    public var id: Int { index }
+}
+
 extension BinaryDigit {
     init(index: Int, value: Character) {
         self.index = index
@@ -23,9 +28,9 @@ extension BinaryDigit {
     }
 }
 
-extension Array<BinaryDigit> {
+extension IdentifiedArrayOf<BinaryDigit> {
     static func zero(bitWidth: Int) -> Self {
-        (0 ..< bitWidth).map { BinaryDigit(index: $0, value: .zero) }
+        IdentifiedArray(uniqueElements: (0 ..< bitWidth).map { BinaryDigit(index: $0, value: .zero) })
     }
 }
 

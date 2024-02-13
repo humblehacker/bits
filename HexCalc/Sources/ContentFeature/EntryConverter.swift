@@ -15,6 +15,7 @@ extension EntryConverter: DependencyKey {
         },
         integer: { text, kind in
             if kind == .exp {
+                guard text.isNotEmpty else { return nil }
                 @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
                 return try evaluateExpression(text)
             } else {
