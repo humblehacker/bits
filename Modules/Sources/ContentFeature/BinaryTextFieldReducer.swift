@@ -69,7 +69,7 @@ public struct BinaryTextFieldReducer {
 
             let bits = selection.selectedIndexes ?? selection.cursorIndex ..< selection.cursorIndex + 1
             for bit in bits {
-                let bitIndex = bitWidth.rawValue - bit 
+                let bitIndex = bitWidth.rawValue - bit - 1 
 
                 newValue = switch bitOp {
                 case .set: newValue | (1 << bitIndex)
