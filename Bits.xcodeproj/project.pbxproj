@@ -37,14 +37,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		630503C72B58370E00879FAE /* HexCalc */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = HexCalc; sourceTree = "<group>"; };
-		630503CE2B58457000879FAE /* HexCalc.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = HexCalc.xctestplan; sourceTree = "<group>"; };
+		630503C72B58370E00879FAE /* Bits */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Bits; sourceTree = "<group>"; };
+		630503CE2B58457000879FAE /* Bits.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Bits.xctestplan; sourceTree = "<group>"; };
 		630503DC2B584BFF00879FAE /* AppFeature.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = AppFeature.xctestplan; sourceTree = "<group>"; };
 		6310471C2B488DA600AC4460 /* Bits.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bits.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6310471F2B488DA600AC4460 /* BitsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitsApp.swift; sourceTree = "<group>"; };
 		631047232B488DA700AC4460 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		631047262B488DA800AC4460 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		631047282B488DA800AC4460 /* HexCalc.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HexCalc.entitlements; sourceTree = "<group>"; };
+		631047282B488DA800AC4460 /* Bits.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Bits.entitlements; sourceTree = "<group>"; };
 		6316CC332B65952C00EF5095 /* HistoryFeaturePreview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HistoryFeaturePreview.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6316CC352B65952C00EF5095 /* HistoryFeaturePreviewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryFeaturePreviewApp.swift; sourceTree = "<group>"; };
 		6316CC372B65952C00EF5095 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -93,7 +93,7 @@
 			children = (
 				6310471F2B488DA600AC4460 /* BitsApp.swift */,
 				631047232B488DA700AC4460 /* Assets.xcassets */,
-				631047282B488DA800AC4460 /* HexCalc.entitlements */,
+				631047282B488DA800AC4460 /* Bits.entitlements */,
 				631047252B488DA800AC4460 /* Preview Content */,
 			);
 			path = App;
@@ -111,8 +111,8 @@
 			children = (
 				63CE98892B72A89800D2398A /* ContentFeaturePreview.xctestplan */,
 				630503DC2B584BFF00879FAE /* AppFeature.xctestplan */,
-				630503CE2B58457000879FAE /* HexCalc.xctestplan */,
-				630503C72B58370E00879FAE /* HexCalc */,
+				630503CE2B58457000879FAE /* Bits.xctestplan */,
+				630503C72B58370E00879FAE /* Bits */,
 				630503C82B58381000879FAE /* App */,
 				6316CC342B65952C00EF5095 /* HistoryFeaturePreview */,
 				6316CC492B6595B000EF5095 /* ContentFeaturePreview */,
@@ -473,7 +473,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = App/HexCalc.entitlements;
+				CODE_SIGN_ENTITLEMENTS = App/Bits.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -491,7 +491,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.humblehacker.HexCalc;
+				PRODUCT_BUNDLE_IDENTIFIER = com.humblehacker.Bits;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -504,7 +504,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = App/HexCalc.entitlements;
+				CODE_SIGN_ENTITLEMENTS = App/Bits.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -522,7 +522,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.humblehacker.HexCalc;
+				PRODUCT_BUNDLE_IDENTIFIER = com.humblehacker.Bits;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;

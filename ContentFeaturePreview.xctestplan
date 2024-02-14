@@ -17,7 +17,7 @@
         "ContentFeatureTests"
       ],
       "target" : {
-        "containerPath" : "container:HexCalc",
+        "containerPath" : "container:Bits",
         "identifier" : "ContentFeatureTests",
         "name" : "ContentFeatureTests"
       }
