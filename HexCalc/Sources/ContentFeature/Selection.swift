@@ -63,29 +63,115 @@ public struct Selection: Equatable {
     }
 
     mutating
-    func select(_ index: Int) {
-        let selectionIndex = index.clamped(to: bounds)
-
-        if selectedIndexes == nil {
-            selectedIndexes = cursorIndex ..< cursorIndex + 1
-        } else {
-            if let last = selectedIndexes?.last, let first = selectedIndexes?.first {
-                if cursorIndex == first && cursorIndex == last {
-                    if selectionIndex > cursorIndex {
-                        selectedIndexes = cursorIndex ..< selectionIndex + 1
-                    } else {
-                        selectedIndexes = selectionIndex ..< cursorIndex + 1
-                    }
-                } else if cursorIndex == first {
-                    selectedIndexes = selectionIndex ..< last + 1
-                } else if cursorIndex == last {
-                    selectedIndexes = first ..< selectionIndex + 1
-                }
-            }
-
-            cursorIndex = selectionIndex
+    func clickSelect(_ index: Int) {
+        if let selectedIndexes {
+            cursorIndex = selectedIndexes.mid(rounding: .down)
         }
+
+        select(index)
     }
+
+    mutating
+    func dragSelect(_ index: Int) {
+        if selectedIndexes == nil {
+            cursorIndex = index
+        }
+        select(index)
+    }
+
+    private mutating func select(_ index: Int) {
+        precondition(selectedIndexes?.contains(cursorIndex) ?? true)
+
+        let selectionIndex = index.clamped(to: bounds)
+        defer { cursorIndex = selectionIndex }
+
+        guard let selectedIndexes else {
+            // When there's no current selection
+            selectedIndexes = min(cursorIndex, selectionIndex) ..< max(cursorIndex, selectionIndex) + 1
+            return
+        }
+
+        let first = selectedIndexes.lowerBound
+        let last = selectedIndexes.upperBound - 1 // Adjust because upperBound is exclusive
+
+        // New selection before existing selection: Expand selection left
+        if selectionIndex < first {
+            self.selectedIndexes = selectionIndex ..< last + 1
+            return
+        }
+
+        // New selection after existing selection: Expand selection right
+        if selectionIndex > last {
+            self.selectedIndexes = first ..< selectionIndex + 1
+            return
+        }
+
+        // New selection within existing selection
+
+        // Cursor at left boundary: shrink selection from left
+        if cursorIndex == first {
+            self.selectedIndexes = selectionIndex ..< last + 1
+            return
+        }
+
+        // Cursor at right boundary: shrink selection from right
+        if cursorIndex == last {
+            self.selectedIndexes = first ..< selectionIndex + 1
+            return
+        }
+
+        // Cursor is inside the selection but not at selection boundaries,
+        // shrink or expand depending on which side of the cursor the
+        // new selection lies
+
+        // New selection before cursor: shrink or expand from left
+        if selectionIndex <= cursorIndex {
+            self.selectedIndexes = selectionIndex ..< last + 1
+            return
+        }
+
+        // New selection after cursor: shrink or expand from right
+        self.selectedIndexes = first ..< selectionIndex + 1
+    }
+
+//    mutating
+//    private func select(_ index: Int) {
+//        let selectionIndex = index.clamped(to: bounds)
+//
+//        if selectedIndexes == nil {
+//            if selectionIndex > cursorIndex {
+//                selectedIndexes = cursorIndex ..< selectionIndex + 1
+//            } else {
+//                selectedIndexes = selectionIndex ..< cursorIndex + 1
+//            }
+//        } else {
+//            if let last = selectedIndexes?.last, let first = selectedIndexes?.first {
+//                if cursorIndex == first && cursorIndex == last {
+//                    if selectionIndex > cursorIndex {
+//                        selectedIndexes = cursorIndex ..< selectionIndex + 1
+//                    } else {
+//                        selectedIndexes = selectionIndex ..< cursorIndex + 1
+//                    }
+//                } else if cursorIndex == first {
+//                    if selectionIndex <= last {
+//                        selectedIndexes = selectionIndex ..< last + 1
+//                    } else {
+//                        selectedIndexes = first ..< selectionIndex + 1
+//                    }
+//                } else if cursorIndex == last {
+//                    selectedIndexes = first ..< selectionIndex + 1
+//                } else {
+//                    if selectionIndex > cursorIndex {
+//                        selectedIndexes = first ..< selectionIndex + 1
+//                    } else {
+//                        selectedIndexes = selectionIndex ..< last + 1
+//                    }
+//                }
+//            }
+//        }
+//
+//        cursorIndex = selectionIndex
+//    }
 
     mutating
     func selectAll() {

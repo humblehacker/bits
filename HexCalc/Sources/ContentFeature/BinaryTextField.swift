@@ -1,15 +1,26 @@
 import ComposableArchitecture
 import SwiftUI
+import UI
 
 struct BinaryTextField: View {
     @State var store: StoreOf<BinaryTextFieldReducer>
     @Binding var text: String
-    @State var textHeight: Double
+    @State var digitFrames: [Int: CGRect] = [:]
+    @State var bounds: CGRect = .zero
+    let cspace: NamedCoordinateSpace = .named("BinaryTextField")
 
     init(text: Binding<String>, store: StoreOf<BinaryTextFieldReducer>) {
         self.store = store
         _text = text
-        textHeight = 0
+    }
+
+    var drag: some Gesture {
+        DragGesture(minimumDistance: 1, coordinateSpace: cspace)
+            .onChanged { gesture in
+                guard let digit = digit(at: gesture.location) else { return }
+                store.send(.dragSelectDigit(digit))
+            }
+            .onEnded { _ in store.send(.endDragSelection) }
     }
 
     var body: some View {
@@ -17,39 +28,51 @@ struct BinaryTextField: View {
             let _ = Self._printChanges()
 
             Spacer()
-            ForEach(store.digits, id: \.index) { digit in
-                Text(String(digit.value.rawValue))
-                    .background(
-                        store.state.digitSelected(digit)
-                            ? Color(nsColor: .selectedTextBackgroundColor)
-                            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                    )
-                    .border(
-                        store.state.showCursorForDigit(digit)
-                            ? Color(nsColor: .textInsertionPointColor)
-                            : Color.clear
-                    )
-                    .overlay {
-                        GeometryReader { geo in
-                            Color.clear.task(id: geo.size.height) {
-                                self.textHeight = geo.size.height
+            ForEach(store.digits) { digit in
+                Group {
+                    Text(String(digit.value.rawValue))
+                        .background(
+                            store.state.digitSelected(digit)
+                                ? Color(nsColor: .selectedTextBackgroundColor)
+                                : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
+                        )
+                        .border(
+                            store.state.showCursorForDigit(digit)
+                                ? Color(nsColor: .textInsertionPointColor)
+                                : Color.clear,
+                            width: 1.5
+                        )
+                        .overlay {
+                            GeometryReader { geo in
+                                let frame = geo.frame(in: cspace)
+                                Color.clear.task(id: frame) {
+                                    self.digitFrames[digit.index] = frame
+                                    self.bounds = geo.bounds(of: cspace) ?? .zero
+                                }
                             }
                         }
-                    }
-                    .onTapGesture {
-                        store.send(.digitClicked(digit))
-                    }
 
-                Spacer()
-                    .frame(width: store.state.spacerWidthForDigit(digit), height: textHeight)
-                    .background(
-                        store.state.digitSpacerSelected(digit)
-                            ? Color(nsColor: .selectedTextBackgroundColor)
-                            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                    )
+                    Spacer()
+                        .frame(
+                            width: store.state.spacerWidthForDigit(digit),
+                            height: digitFrames[digit.index]?.size.height ?? 44
+                        )
+                        .background(
+                            store.state.digitSpacerSelected(digit)
+                                ? Color(nsColor: .selectedTextBackgroundColor)
+                                : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
+                        )
+                }
+                .onTapGesture {
+                    let shiftKeyDown = NSEvent.modifierFlags.contains(.shift)
+                    store.send(.digitClicked(digit, select: shiftKeyDown))
+                }
             }
         }
         .focusable()
+        .coordinateSpace(cspace)
+        .highPriorityGesture(drag)
+        .cursor(.iBeam)
         .onKeyPress(keys: [.leftArrow, .rightArrow]) { keyPress in
             let shiftKeyDown = keyPress.modifiers.contains(.shift)
             let direction = CursorDirection.direction(from: keyPress.key)
@@ -79,6 +102,14 @@ struct BinaryTextField: View {
         .onChange(of: store.text) {
             self.text = store.text
         }
+        .onChange(of: store.bitWidth) {
+            self.digitFrames = [:]
+        }
+    }
+
+    func digit(at point: CGPoint) -> BinaryDigit? {
+        guard let index = digitFrames.filter({ $0.value.contains(point) }).keys.first else { return nil }
+        return store.digits[id: index]
     }
 }
 
@@ -104,6 +135,8 @@ public struct BinaryTextFieldPreviewContainer: View {
         BinaryTextFieldReducer()
     }
 
+    public init() {}
+
     public var body: some View {
         VStack {
             BitWidthPicker(selectedBitWidth: $binTextFieldStore.bitWidth)
@@ -120,6 +153,7 @@ public struct BinaryTextFieldPreviewContainer: View {
             HStack {
                 Text("cursorIndex: \(binTextFieldStore.selection.cursorIndex)")
                 Text("selection: \(binTextFieldStore.selection.selectedIndexes ?? 0 ..< 0)")
+                Text("selectingDigit: \(String(describing: binTextFieldStore.selectingDigit))")
                 Spacer()
             }
         }

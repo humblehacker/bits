@@ -8,31 +8,34 @@ public struct BinaryTextFieldReducer {
         var bitWidth: Bits
         var selection: Selection
         var text: String
-        var digits: [BinaryDigit]
+        var digits: IdentifiedArrayOf<BinaryDigit>
+        var selectingDigit: BinaryDigit?
 
         public init(
             bitWidth: Bits = ._8,
             selection: Selection = .init(bitWidth: Bits._8),
             text: String = "0",
-            digits: [BinaryDigit] = []
+            digits: IdentifiedArrayOf<BinaryDigit> = []
         ) {
             self.bitWidth = bitWidth
             self.selection = selection
             self.text = text
             self.digits = digits
+            selectingDigit = nil
             updateDigits()
         }
 
         mutating func updateDigits() {
-            digits = (Int(text, radix: 2) ?? 0)
+            digits = IdentifiedArray(uniqueElements: (Int(text, radix: 2) ?? 0)
                 .paddedBinaryString(bits: bitWidth.rawValue, blockSize: 0)
                 .suffix(bitWidth.rawValue)
                 .enumerated()
                 .map { BinaryDigit(index: $0.0, value: $0.1) }
+            )
         }
 
         func showCursorForDigit(_ digit: BinaryDigit) -> Bool {
-            selection.cursorIndex == digit.index && !digitSelected(digit)
+            selection.cursorIndex == digit.index // && !digitSelected(digit)
         }
 
         func digitSelected(_ digit: BinaryDigit) -> Bool {
@@ -62,11 +65,13 @@ public struct BinaryTextFieldReducer {
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case bitOperation(BitOp)
-        case digitClicked(BinaryDigit)
+        case digitClicked(BinaryDigit, select: Bool)
         case bitTyped(String)
         case cancelTypeoverKeyPressed
         case cursorMovementKeyPressed(CursorDirection, extend: Bool)
         case selectAllShortcutPressed
+        case dragSelectDigit(_ digit: BinaryDigit)
+        case endDragSelection
         case toggleBitKeyPressed
     }
 
@@ -91,6 +96,7 @@ public struct BinaryTextFieldReducer {
         Reduce { state, action in
             reduce(state: &state, action: action)
         }
+        ._printChanges()
     }
 
     func reduce(state: inout State, action: Action) -> Effect<Action> {
@@ -98,8 +104,12 @@ public struct BinaryTextFieldReducer {
         case .binding:
             return .none
 
-        case let .digitClicked(digit):
-            state.selection.setCursor(digit.index)
+        case let .digitClicked(digit, select):
+            if select {
+                state.selection.clickSelect(digit.index)
+            } else {
+                state.selection.setCursor(digit.index)
+            }
             return .none
 
         case let .bitOperation(bitOp):
@@ -141,6 +151,18 @@ public struct BinaryTextFieldReducer {
 
         case .selectAllShortcutPressed:
             state.selection.selectAll()
+            return .none
+
+        case let .dragSelectDigit(digit):
+            if state.selectingDigit == nil {
+                state.selection.clear()
+            }
+            state.selectingDigit = digit
+            state.selection.dragSelect(digit.index)
+            return .none
+
+        case .endDragSelection:
+            state.selectingDigit = nil
             return .none
 
         case .toggleBitKeyPressed:
