@@ -37,7 +37,7 @@ public struct ContentReducer {
             entryWidth: Double = 100.0,
             selectedBitWidth: Bits = ._8,
             entries: IdentifiedArrayOf<EntryReducer.State> = [
-                .init(.exp), .init(.dec), .init(.hex), .init(.bin, binText: .init()),
+                .init(.bin, binText: .init()), .init(.exp), .init(.dec), .init(.hex),
             ],
             value: Int = 0,
             focusedField: EntryKind? = nil
