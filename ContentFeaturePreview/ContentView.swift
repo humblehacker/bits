@@ -5,13 +5,17 @@
 //  Created by David Whetstone on 1/27/24.
 //
 
-import SwiftUI
+import ComposableArchitecture
 import ContentFeature
+import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        BinaryTextFieldPreviewContainer()
-            .padding()
+        ContentFeature.ContentView(
+            store: Store(initialState: .init()) {
+                ContentReducer()
+            }
+        )
     }
 }
 
