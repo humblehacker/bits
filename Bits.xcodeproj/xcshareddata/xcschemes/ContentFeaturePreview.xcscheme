@@ -30,7 +30,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:ContentFeaturePreview.xctestplan"
+            reference = "container:ContentFeaturePreview/ContentFeaturePreview.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>

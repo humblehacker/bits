@@ -108,7 +108,6 @@
 		631047132B488DA600AC4460 = {
 			isa = PBXGroup;
 			children = (
-				63CE98892B72A89800D2398A /* ContentFeaturePreview.xctestplan */,
 				630503CE2B58457000879FAE /* Bits.xctestplan */,
 				630503C72B58370E00879FAE /* Modules */,
 				630503C82B58381000879FAE /* App */,
@@ -160,6 +159,7 @@
 		6316CC492B6595B000EF5095 /* ContentFeaturePreview */ = {
 			isa = PBXGroup;
 			children = (
+				63CE98892B72A89800D2398A /* ContentFeaturePreview.xctestplan */,
 				6316CC4A2B6595B000EF5095 /* ContentFeaturePreviewApp.swift */,
 				6316CC4C2B6595B000EF5095 /* ContentView.swift */,
 				6316CC4E2B6595B100EF5095 /* Assets.xcassets */,
