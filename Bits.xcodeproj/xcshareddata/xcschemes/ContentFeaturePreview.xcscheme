@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6316CC322B65952C00EF5095"
-               BuildableName = "HistoryFeaturePreview.app"
-               BlueprintName = "HistoryFeaturePreview"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
+               BlueprintIdentifier = "6316CC472B6595B000EF5095"
+               BuildableName = "ContentFeaturePreview.app"
+               BlueprintName = "ContentFeaturePreview"
+               ReferencedContainer = "container:Bits.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -27,8 +27,13 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      shouldAutocreateTestPlan = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES">
+      <TestPlans>
+         <TestPlanReference
+            reference = "container:ContentFeaturePreview.xctestplan"
+            default = "YES">
+         </TestPlanReference>
+      </TestPlans>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -44,10 +49,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "6316CC322B65952C00EF5095"
-            BuildableName = "HistoryFeaturePreview.app"
-            BlueprintName = "HistoryFeaturePreview"
-            ReferencedContainer = "container:HexCalc.xcodeproj">
+            BlueprintIdentifier = "6316CC472B6595B000EF5095"
+            BuildableName = "ContentFeaturePreview.app"
+            BlueprintName = "ContentFeaturePreview"
+            ReferencedContainer = "container:Bits.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -61,10 +66,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "6316CC322B65952C00EF5095"
-            BuildableName = "HistoryFeaturePreview.app"
-            BlueprintName = "HistoryFeaturePreview"
-            ReferencedContainer = "container:HexCalc.xcodeproj">
+            BlueprintIdentifier = "6316CC472B6595B000EF5095"
+            BuildableName = "ContentFeaturePreview.app"
+            BlueprintName = "ContentFeaturePreview"
+            ReferencedContainer = "container:Bits.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

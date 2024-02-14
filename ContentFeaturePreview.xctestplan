@@ -17,7 +17,7 @@
         "ContentFeatureTests"
       ],
       "target" : {
-        "containerPath" : "container:HexCalc",
+        "containerPath" : "container:Modules",
         "identifier" : "ContentFeatureTests",
         "name" : "ContentFeatureTests"
       }

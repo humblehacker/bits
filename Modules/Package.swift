@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "HexCalc",
+    name: "Modules",
     platforms: [
         .macOS(.v14),
     ],

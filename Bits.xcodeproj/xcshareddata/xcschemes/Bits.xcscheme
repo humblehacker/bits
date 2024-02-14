@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6310471B2B488DA600AC4460"
-               BuildableName = "HexCalc.app"
-               BlueprintName = "HexCalc"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
+               BuildableName = "Bits.app"
+               BlueprintName = "Bits"
+               ReferencedContainer = "container:Bits.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -29,7 +29,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:HexCalc.xctestplan"
+            reference = "container:Bits.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
@@ -40,9 +40,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "630503D22B58481A00879FAE"
-               BuildableName = "HexCalcTests.xctest"
-               BlueprintName = "HexCalcTests"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
+               BuildableName = "BitsTests.xctest"
+               BlueprintName = "BitsTests"
+               ReferencedContainer = "container:Bits.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -51,9 +51,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "631047362B488DA800AC4460"
-               BuildableName = "HexCalcUITests.xctest"
-               BlueprintName = "HexCalcUITests"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
+               BuildableName = "BitsUITests.xctest"
+               BlueprintName = "BitsUITests"
+               ReferencedContainer = "container:Bits.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -62,9 +62,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "630503D22B58481A00879FAE"
-               BuildableName = "HexCalcTests.xctest"
-               BlueprintName = "HexCalcTests"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
+               BuildableName = "BitsTests.xctest"
+               BlueprintName = "BitsTests"
+               ReferencedContainer = "container:Bits.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -84,9 +84,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6310471B2B488DA600AC4460"
-            BuildableName = "HexCalc.app"
-            BlueprintName = "HexCalc"
-            ReferencedContainer = "container:HexCalc.xcodeproj">
+            BuildableName = "Bits.app"
+            BlueprintName = "Bits"
+            ReferencedContainer = "container:Bits.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -101,9 +101,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6310471B2B488DA600AC4460"
-            BuildableName = "HexCalc.app"
-            BlueprintName = "HexCalc"
-            ReferencedContainer = "container:HexCalc.xcodeproj">
+            BuildableName = "Bits.app"
+            BlueprintName = "Bits"
+            ReferencedContainer = "container:Bits.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
