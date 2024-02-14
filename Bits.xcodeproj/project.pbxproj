@@ -39,7 +39,6 @@
 /* Begin PBXFileReference section */
 		630503C72B58370E00879FAE /* Bits */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Bits; sourceTree = "<group>"; };
 		630503CE2B58457000879FAE /* Bits.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Bits.xctestplan; sourceTree = "<group>"; };
-		630503DC2B584BFF00879FAE /* AppFeature.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = AppFeature.xctestplan; sourceTree = "<group>"; };
 		6310471C2B488DA600AC4460 /* Bits.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bits.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6310471F2B488DA600AC4460 /* BitsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitsApp.swift; sourceTree = "<group>"; };
 		631047232B488DA700AC4460 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -110,7 +109,6 @@
 			isa = PBXGroup;
 			children = (
 				63CE98892B72A89800D2398A /* ContentFeaturePreview.xctestplan */,
-				630503DC2B584BFF00879FAE /* AppFeature.xctestplan */,
 				630503CE2B58457000879FAE /* Bits.xctestplan */,
 				630503C72B58370E00879FAE /* Bits */,
 				630503C82B58381000879FAE /* App */,
