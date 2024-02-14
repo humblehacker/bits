@@ -60,11 +60,34 @@ public struct BinaryTextFieldReducer {
         func digitIsLastSelected(_ digit: BinaryDigit) -> Bool {
             selection.selectedIndexes?.last == digit.index
         }
+
+        mutating
+        func applyBitOperation(bitOp: BitOp) -> EffectOf<BinaryTextFieldReducer> {
+            guard
+                let currentValue = Int(text, radix: 2),
+                let selectedBits = selection.selectedIndexes
+            else { return .none }
+
+            var newValue = currentValue
+
+            for selectedBit in selectedBits {
+                let bitIndex = bitWidth.rawValue - selectedBit
+
+                newValue = switch bitOp {
+                case .set: newValue | (1 << bitIndex)
+                case .unset: newValue & ~(1 << bitIndex)
+                case .toggle: newValue ^ (1 << bitIndex)
+                }
+            }
+
+            text = String(newValue, radix: 2)
+            updateDigits()
+            return .none
+        }
     }
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
-        case bitOperation(BitOp)
         case digitClicked(BinaryDigit, select: Bool)
         case bitTyped(String)
         case cancelTypeoverKeyPressed
@@ -112,30 +135,8 @@ public struct BinaryTextFieldReducer {
             }
             return .none
 
-        case let .bitOperation(bitOp):
-            guard
-                let currentValue = Int(state.text, radix: 2),
-                let selectedBits = state.selection.selectedIndexes
-            else { return .none }
-
-            var newValue = currentValue
-
-            for selectedBit in selectedBits {
-                let bitIndex = state.bitWidth.rawValue - selectedBit
-
-                newValue = switch bitOp {
-                case .set: newValue | (1 << bitIndex)
-                case .unset: newValue & ~(1 << bitIndex)
-                case .toggle: newValue ^ (1 << bitIndex)
-                }
-            }
-
-            state.text = String(newValue, radix: 2)
-            state.updateDigits()
-            return .none
-
         case let .bitTyped(bit):
-            return .send(.bitOperation(bit == "1" ? .set : .unset))
+            return state.applyBitOperation(bitOp: bit == "1" ? .set : .unset)
 
         case .cancelTypeoverKeyPressed:
             state.selection.clear()
@@ -166,7 +167,7 @@ public struct BinaryTextFieldReducer {
             return .none
 
         case .toggleBitKeyPressed:
-            return .send(.bitOperation(.toggle))
+            return state.applyBitOperation(bitOp: .toggle)
         }
     }
 
