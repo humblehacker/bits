@@ -17,7 +17,7 @@
         "ContentFeatureTests"
       ],
       "target" : {
-        "containerPath" : "container:Bits",
+        "containerPath" : "container:Modules",
         "identifier" : "ContentFeatureTests",
         "name" : "ContentFeatureTests"
       }
