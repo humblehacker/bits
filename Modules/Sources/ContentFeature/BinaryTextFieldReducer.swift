@@ -63,15 +63,13 @@ public struct BinaryTextFieldReducer {
 
         mutating
         func applyBitOperation(bitOp: BitOp) -> EffectOf<BinaryTextFieldReducer> {
-            guard
-                let currentValue = Int(text, radix: 2),
-                let selectedBits = selection.selectedIndexes
-            else { return .none }
+            guard let currentValue = Int(text, radix: 2) else { return .none }
 
             var newValue = currentValue
 
-            for selectedBit in selectedBits {
-                let bitIndex = bitWidth.rawValue - selectedBit
+            let bits = selection.selectedIndexes ?? selection.cursorIndex ..< selection.cursorIndex + 1
+            for bit in bits {
+                let bitIndex = bitWidth.rawValue - bit 
 
                 newValue = switch bitOp {
                 case .set: newValue | (1 << bitIndex)
