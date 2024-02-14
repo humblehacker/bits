@@ -1,0 +1,27 @@
+{
+  "configurations" : [
+    {
+      "id" : "7B5B188A-3D6E-4CA0-B82E-4227ACFA9EBC",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "skippedTests" : [
+        "ContentFeatureTests"
+      ],
+      "target" : {
+        "containerPath" : "container:HexCalc",
+        "identifier" : "ContentFeatureTests",
+        "name" : "ContentFeatureTests"
+      }
+    }
+  ],
+  "version" : 1
+}

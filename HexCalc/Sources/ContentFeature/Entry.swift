@@ -74,7 +74,7 @@ extension View {
 
 #Preview {
     Entry(
-        store: Store(initialState: .init(.bin, text: "0000 0000")) {
+        store: Store(initialState: .init(.hex, text: "FF00")) {
             EntryReducer()
         }
     )

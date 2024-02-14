@@ -5,40 +5,67 @@ import SwiftUI
 public struct BinaryTextFieldReducer {
     @ObservableState
     public struct State: Equatable {
-        var bitWidth: Bits = ._8
-        var selectedBits: Set<Int> = []
-        var text: String = "0"
-        var digits: [BinaryDigitState] = []
+        var bitWidth: Bits
+        var selection: Selection
+        var text: String
+        var digits: [BinaryDigit]
 
         public init(
             bitWidth: Bits = ._8,
-            selectedBits: Set<Int> = [],
+            selection: Selection = .init(bitWidth: Bits._8),
             text: String = "0",
-            digits: [BinaryDigitState] = []
+            digits: [BinaryDigit] = []
         ) {
             self.bitWidth = bitWidth
-            self.selectedBits = selectedBits
+            self.selection = selection
             self.text = text
             self.digits = digits
-            updateBinCharacters()
+            updateDigits()
         }
 
-        mutating func updateBinCharacters() {
+        mutating func updateDigits() {
             digits = (Int(text, radix: 2) ?? 0)
                 .paddedBinaryString(bits: bitWidth.rawValue, blockSize: 0)
                 .suffix(bitWidth.rawValue)
                 .enumerated()
-                .map { BinaryDigitState(index: $0.0 + 1, value: $0.1) }
+                .map { BinaryDigit(index: $0.0, value: $0.1) }
+        }
+
+        func showCursorForDigit(_ digit: BinaryDigit) -> Bool {
+            selection.cursorIndex == digit.index && !digitSelected(digit)
+        }
+
+        func digitSelected(_ digit: BinaryDigit) -> Bool {
+            selection.selectedIndexes?.contains(digit.index) ?? false
+        }
+
+        func spacerWidthForDigit(_ digit: BinaryDigit) -> Double {
+            guard !digitIsLast(digit) else { return 0.0 }
+
+            let displayIndex = digit.index + 1
+            return displayIndex.isMultiple(of: 4) ? 10.0 : 3.0
+        }
+
+        func digitSpacerSelected(_ digit: BinaryDigit) -> Bool {
+            digitSelected(digit) && !digitIsLastSelected(digit)
+        }
+
+        func digitIsLast(_ digit: BinaryDigit) -> Bool {
+            digit.index == bitWidth.rawValue - 1
+        }
+
+        func digitIsLastSelected(_ digit: BinaryDigit) -> Bool {
+            selection.selectedIndexes?.last == digit.index
         }
     }
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case bitOperation(BitOp)
-        case bitTapped(index: Int)
+        case digitClicked(BinaryDigit)
         case bitTyped(String)
         case cancelTypeoverKeyPressed
-        case cursorMovementKeyPressed(KeyEquivalent, extend: Bool)
+        case cursorMovementKeyPressed(CursorDirection, extend: Bool)
         case selectAllShortcutPressed
         case toggleBitKeyPressed
     }
@@ -49,13 +76,14 @@ public struct BinaryTextFieldReducer {
         BindingReducer()
             .onChange(of: \.text) { _, _ in
                 Reduce { state, _ in
-                    state.updateBinCharacters()
+                    state.updateDigits()
                     return .none
                 }
             }
             .onChange(of: \.bitWidth) { _, _ in
                 Reduce { state, _ in
-                    state.updateBinCharacters()
+                    state.updateDigits()
+                    state.selection.setBitWidth(state.bitWidth)
                     return .none
                 }
             }
@@ -70,20 +98,19 @@ public struct BinaryTextFieldReducer {
         case .binding:
             return .none
 
-        case let .bitTapped(index):
-            if state.selectedBits.contains(index) {
-                state.selectedBits.removeAll()
-            } else {
-                state.selectedBits = [index]
-            }
+        case let .digitClicked(digit):
+            state.selection.setCursor(digit.index)
             return .none
 
         case let .bitOperation(bitOp):
-            guard let currentValue = Int(state.text, radix: 2) else { return .none }
+            guard
+                let currentValue = Int(state.text, radix: 2),
+                let selectedBits = state.selection.selectedIndexes
+            else { return .none }
 
             var newValue = currentValue
 
-            for selectedBit in state.selectedBits {
+            for selectedBit in selectedBits {
                 let bitIndex = state.bitWidth.rawValue - selectedBit
 
                 newValue = switch bitOp {
@@ -94,40 +121,26 @@ public struct BinaryTextFieldReducer {
             }
 
             state.text = String(newValue, radix: 2)
-            state.updateBinCharacters()
+            state.updateDigits()
             return .none
 
         case let .bitTyped(bit):
             return .send(.bitOperation(bit == "1" ? .set : .unset))
 
         case .cancelTypeoverKeyPressed:
-            state.selectedBits.removeAll()
+            state.selection.clear()
             return .none
 
-        case let .cursorMovementKeyPressed(key, extend):
-            let newSelectedBit: Int? = switch key {
-            case .leftArrow:
-                (state.selectedBits.sorted().first ?? state.bitWidth.rawValue + 1) - 1
-
-            case .rightArrow:
-                (state.selectedBits.sorted().last ?? 0) + 1
-
-            default:
-                nil
-            }
-
-            guard let newSelectedBit = newSelectedBit?.clamped(to: 1 ... state.bitWidth.rawValue) else { return .none }
-
+        case let .cursorMovementKeyPressed(direction, extend):
             if extend {
-                state.selectedBits.insert(newSelectedBit)
+                state.selection.select(towards: direction)
             } else {
-                state.selectedBits = [newSelectedBit]
+                state.selection.moveCursor(direction)
             }
-
             return .none
 
         case .selectAllShortcutPressed:
-            state.selectedBits = Set(1 ... state.bitWidth.rawValue)
+            state.selection.selectAll()
             return .none
 
         case .toggleBitKeyPressed:
@@ -139,11 +152,5 @@ public struct BinaryTextFieldReducer {
         case set
         case unset
         case toggle
-    }
-}
-
-extension Comparable {
-    func clamped(to limits: ClosedRange<Self>) -> Self {
-        return min(max(self, limits.lowerBound), limits.upperBound)
     }
 }

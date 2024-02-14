@@ -58,6 +58,14 @@ public struct ContentReducer {
             )
         }
 
+        mutating func updateBitWidth(_ bitWidth: Bits) -> EffectOf<ContentReducer> {
+            return .merge(
+                entries.ids
+                    .compactMap { id in entries[id: id]?.updateBitWidth(bitWidth) }
+                    .map { effect in effect.map(ContentReducer.Action.entries) }
+            )
+        }
+
         mutating func updateValuesFromExpression() -> EffectOf<ContentReducer> {
             guard let value = entries[id: .exp]?.value else { return .none }
             print("Updating from value: \(value)")
@@ -125,6 +133,7 @@ public struct ContentReducer {
             state.entries[id: .exp]?.text = ""
             return .merge(
                 state.updateValues(newValue: 0),
+                state.updateBitWidth(state.selectedBitWidth),
                 state.updateFocusedField(newField: state.focusedField)
             )
 
@@ -143,12 +152,10 @@ public struct ContentReducer {
             return .none
 
         case .binding(\.selectedBitWidth):
-            saveBits(state.selectedBitWidth)
-            state.idealWidth = idealWindowWidth(bits: state.selectedBitWidth)
-            return .merge(
-                state.updateValues(newValue: state.value),
-                .send(.entries(.element(id: .bin, action: .binText(.binding(.set(\.bitWidth, state.selectedBitWidth))))))
-            )
+            let bitWidth = state.selectedBitWidth
+            saveBits(bitWidth)
+            state.idealWidth = idealWindowWidth(bits: bitWidth)
+            return state.updateBitWidth(bitWidth)
 
         case .binding(\.focusedField):
             return state.updateFocusedField(newField: state.focusedField)

@@ -13,3 +13,15 @@ struct BinaryTextEntry: View {
         }
     }
 }
+
+#Preview {
+    BinaryTextEntry(
+        store: Store(initialState: .init(.bin, binText: .init(bitWidth: ._16))) {
+            EntryReducer()
+        } withDependencies: {
+            $0.userDefaults = .ephemeral()
+        }
+    )
+    .padding()
+    .frame(maxWidth: .infinity)
+}

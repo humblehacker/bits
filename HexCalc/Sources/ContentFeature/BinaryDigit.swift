@@ -1,31 +1,31 @@
 import Foundation
 
-enum BinaryDigit: Character {
+enum BitValue: Character {
     case zero = "0"
     case one = "1"
 }
 
-extension BinaryDigit: CustomStringConvertible {
+extension BitValue: CustomStringConvertible {
     var description: String {
         String(rawValue)
     }
 }
 
-public struct BinaryDigitState: Equatable {
+public struct BinaryDigit: Equatable {
     let index: Int
-    let value: BinaryDigit
+    let value: BitValue
 }
 
-extension BinaryDigitState {
+extension BinaryDigit {
     init(index: Int, value: Character) {
         self.index = index
-        self.value = BinaryDigit(rawValue: value)!
+        self.value = BitValue(rawValue: value)!
     }
 }
 
-extension Array<BinaryDigitState> {
+extension Array<BinaryDigit> {
     static func zero(bitWidth: Int) -> Self {
-        (1 ... bitWidth).map { BinaryDigitState(index: $0, value: .zero) }
+        (0 ..< bitWidth).map { BinaryDigit(index: $0, value: .zero) }
     }
 }
 
