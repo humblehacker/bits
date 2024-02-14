@@ -21,6 +21,7 @@
 		6316CC4F2B6595B100EF5095 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6316CC4E2B6595B100EF5095 /* Assets.xcassets */; };
 		6316CC522B6595B100EF5095 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6316CC512B6595B100EF5095 /* Preview Assets.xcassets */; };
 		6316CC582B6595B800EF5095 /* ContentFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 6316CC572B6595B800EF5095 /* ContentFeature */; };
+		63A2EE2C2B7D600E008A855D /* DataStoreLive in Frameworks */ = {isa = PBXBuildFile; productRef = 63A2EE2B2B7D600E008A855D /* DataStoreLive */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -80,6 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63A2EE2C2B7D600E008A855D /* DataStoreLive in Frameworks */,
 				6316CC582B6595B800EF5095 /* ContentFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -236,6 +238,7 @@
 			name = ContentFeaturePreview;
 			packageProductDependencies = (
 				6316CC572B6595B800EF5095 /* ContentFeature */,
+				63A2EE2B2B7D600E008A855D /* DataStoreLive */,
 			);
 			productName = ContentFeaturePreview;
 			productReference = 6316CC482B6595B000EF5095 /* ContentFeaturePreview.app */;
@@ -693,6 +696,10 @@
 		6316CC572B6595B800EF5095 /* ContentFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ContentFeature;
+		};
+		63A2EE2B2B7D600E008A855D /* DataStoreLive */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DataStoreLive;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
