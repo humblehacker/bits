@@ -4,7 +4,7 @@ import SwiftUI
 import XCTestDynamicOverlay
 
 @main
-struct HexCalcApp: App {
+struct BitsApp: App {
     var body: some Scene {
         WindowGroup {
             if !_XCTIsTesting {

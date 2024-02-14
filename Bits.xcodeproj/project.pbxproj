@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		630503CD2B58403C00879FAE /* AppFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 630503CC2B58403C00879FAE /* AppFeature */; };
-		631047202B488DA600AC4460 /* HexCalcApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310471F2B488DA600AC4460 /* HexCalcApp.swift */; };
+		631047202B488DA600AC4460 /* BitsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6310471F2B488DA600AC4460 /* BitsApp.swift */; };
 		631047242B488DA700AC4460 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 631047232B488DA700AC4460 /* Assets.xcassets */; };
 		631047272B488DA800AC4460 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 631047262B488DA800AC4460 /* Preview Assets.xcassets */; };
 		6316CC362B65952C00EF5095 /* HistoryFeaturePreviewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6316CC352B65952C00EF5095 /* HistoryFeaturePreviewApp.swift */; };
@@ -41,7 +41,7 @@
 		630503CE2B58457000879FAE /* HexCalc.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = HexCalc.xctestplan; sourceTree = "<group>"; };
 		630503DC2B584BFF00879FAE /* AppFeature.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = AppFeature.xctestplan; sourceTree = "<group>"; };
 		6310471C2B488DA600AC4460 /* Bits.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bits.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		6310471F2B488DA600AC4460 /* HexCalcApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexCalcApp.swift; sourceTree = "<group>"; };
+		6310471F2B488DA600AC4460 /* BitsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitsApp.swift; sourceTree = "<group>"; };
 		631047232B488DA700AC4460 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		631047262B488DA800AC4460 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		631047282B488DA800AC4460 /* HexCalc.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HexCalc.entitlements; sourceTree = "<group>"; };
@@ -91,7 +91,7 @@
 		630503C82B58381000879FAE /* App */ = {
 			isa = PBXGroup;
 			children = (
-				6310471F2B488DA600AC4460 /* HexCalcApp.swift */,
+				6310471F2B488DA600AC4460 /* BitsApp.swift */,
 				631047232B488DA700AC4460 /* Assets.xcassets */,
 				631047282B488DA800AC4460 /* HexCalc.entitlements */,
 				631047252B488DA800AC4460 /* Preview Content */,
@@ -321,7 +321,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				631047202B488DA600AC4460 /* HexCalcApp.swift in Sources */,
+				631047202B488DA600AC4460 /* BitsApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
