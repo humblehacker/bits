@@ -40,7 +40,7 @@
 		630503C72B58370E00879FAE /* HexCalc */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = HexCalc; sourceTree = "<group>"; };
 		630503CE2B58457000879FAE /* HexCalc.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = HexCalc.xctestplan; sourceTree = "<group>"; };
 		630503DC2B584BFF00879FAE /* AppFeature.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = AppFeature.xctestplan; sourceTree = "<group>"; };
-		6310471C2B488DA600AC4460 /* HexCalc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HexCalc.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6310471C2B488DA600AC4460 /* Bits.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bits.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6310471F2B488DA600AC4460 /* HexCalcApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexCalcApp.swift; sourceTree = "<group>"; };
 		631047232B488DA700AC4460 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		631047262B488DA800AC4460 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -124,7 +124,7 @@
 		6310471D2B488DA600AC4460 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6310471C2B488DA600AC4460 /* HexCalc.app */,
+				6310471C2B488DA600AC4460 /* Bits.app */,
 				6316CC332B65952C00EF5095 /* HistoryFeaturePreview.app */,
 				6316CC482B6595B000EF5095 /* ContentFeaturePreview.app */,
 			);
@@ -182,9 +182,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6310471B2B488DA600AC4460 /* HexCalc */ = {
+		6310471B2B488DA600AC4460 /* Bits */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 631047412B488DA800AC4460 /* Build configuration list for PBXNativeTarget "HexCalc" */;
+			buildConfigurationList = 631047412B488DA800AC4460 /* Build configuration list for PBXNativeTarget "Bits" */;
 			buildPhases = (
 				631047182B488DA600AC4460 /* Sources */,
 				631047192B488DA600AC4460 /* Frameworks */,
@@ -195,12 +195,12 @@
 			);
 			dependencies = (
 			);
-			name = HexCalc;
+			name = Bits;
 			packageProductDependencies = (
 				630503CC2B58403C00879FAE /* AppFeature */,
 			);
 			productName = Calc;
-			productReference = 6310471C2B488DA600AC4460 /* HexCalc.app */;
+			productReference = 6310471C2B488DA600AC4460 /* Bits.app */;
 			productType = "com.apple.product-type.application";
 		};
 		6316CC322B65952C00EF5095 /* HistoryFeaturePreview */ = {
@@ -264,7 +264,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 631047172B488DA600AC4460 /* Build configuration list for PBXProject "HexCalc" */;
+			buildConfigurationList = 631047172B488DA600AC4460 /* Build configuration list for PBXProject "Bits" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -279,7 +279,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6310471B2B488DA600AC4460 /* HexCalc */,
+				6310471B2B488DA600AC4460 /* Bits */,
 				6316CC322B65952C00EF5095 /* HistoryFeaturePreview */,
 				6316CC472B6595B000EF5095 /* ContentFeaturePreview */,
 			);
@@ -645,7 +645,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		631047172B488DA600AC4460 /* Build configuration list for PBXProject "HexCalc" */ = {
+		631047172B488DA600AC4460 /* Build configuration list for PBXProject "Bits" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6310473F2B488DA800AC4460 /* Debug */,
@@ -654,7 +654,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		631047412B488DA800AC4460 /* Build configuration list for PBXNativeTarget "HexCalc" */ = {
+		631047412B488DA800AC4460 /* Build configuration list for PBXNativeTarget "Bits" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				631047422B488DA800AC4460 /* Debug */,

@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6310471B2B488DA600AC4460"
-               BuildableName = "HexCalc.app"
-               BlueprintName = "HexCalc"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
+               BuildableName = "Bits.app"
+               BlueprintName = "Bits"
+               ReferencedContainer = "container:Bits.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -42,7 +42,7 @@
                BlueprintIdentifier = "630503D22B58481A00879FAE"
                BuildableName = "HexCalcTests.xctest"
                BlueprintName = "HexCalcTests"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
+               ReferencedContainer = "container:Bits.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -53,7 +53,7 @@
                BlueprintIdentifier = "631047362B488DA800AC4460"
                BuildableName = "HexCalcUITests.xctest"
                BlueprintName = "HexCalcUITests"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
+               ReferencedContainer = "container:Bits.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -64,7 +64,7 @@
                BlueprintIdentifier = "630503D22B58481A00879FAE"
                BuildableName = "HexCalcTests.xctest"
                BlueprintName = "HexCalcTests"
-               ReferencedContainer = "container:HexCalc.xcodeproj">
+               ReferencedContainer = "container:Bits.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -84,9 +84,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6310471B2B488DA600AC4460"
-            BuildableName = "HexCalc.app"
-            BlueprintName = "HexCalc"
-            ReferencedContainer = "container:HexCalc.xcodeproj">
+            BuildableName = "Bits.app"
+            BlueprintName = "Bits"
+            ReferencedContainer = "container:Bits.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -101,9 +101,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6310471B2B488DA600AC4460"
-            BuildableName = "HexCalc.app"
-            BlueprintName = "HexCalc"
-            ReferencedContainer = "container:HexCalc.xcodeproj">
+            BuildableName = "Bits.app"
+            BlueprintName = "Bits"
+            ReferencedContainer = "container:Bits.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
