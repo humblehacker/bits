@@ -4,7 +4,7 @@ import UI
 import Utils
 
 struct BinaryTextField: View {
-    @State var store: StoreOf<BinaryTextFieldReducer>
+    @Bindable var store: StoreOf<BinaryTextFieldReducer>
     @Binding var text: String
     @State var digitFrames: [Int: CGRect] = [:]
     let cspace: NamedCoordinateSpace = .named("BinaryTextField")
@@ -165,7 +165,7 @@ public struct BinaryTextFieldPreviewContainer: View {
 
             HStack {
                 Text("cursorIndex: \(binTextFieldStore.selection.cursorIndex)")
-                Text("selection: \(binTextFieldStore.selection.selectedIndexes ?? 0 ..< 0)")
+                Text("selection: \(String(describing: binTextFieldStore.selection.selectedIndexes ?? 0 ..< 0))")
                 Text("selectingDigit: \(String(describing: binTextFieldStore.selectingDigit))")
                 Spacer()
             }
