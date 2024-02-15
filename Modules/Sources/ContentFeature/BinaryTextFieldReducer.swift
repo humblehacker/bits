@@ -1,5 +1,8 @@
 import ComposableArchitecture
 import SwiftUI
+import Utils
+
+public let maxBits = Bits._64
 
 @Reducer
 public struct BinaryTextFieldReducer {
@@ -13,7 +16,7 @@ public struct BinaryTextFieldReducer {
 
         public init(
             bitWidth: Bits = ._8,
-            selection: Selection = .init(bitWidth: Bits._8),
+            selection: Selection = .init(bounds: Bits._8.selectionBounds()),
             text: String = "0",
             digits: IdentifiedArrayOf<BinaryDigit> = []
         ) {
@@ -27,11 +30,9 @@ public struct BinaryTextFieldReducer {
 
         mutating func updateDigits() {
             digits = IdentifiedArray(uniqueElements: (Int(text, radix: 2) ?? 0)
-                .paddedBinaryString(bits: bitWidth.rawValue, blockSize: 0)
-                .suffix(bitWidth.rawValue)
+                .paddedBinaryString(bits: maxBits.rawValue, blockSize: 0)
                 .enumerated()
-                .map { BinaryDigit(index: $0.0, value: $0.1) }
-            )
+                .map { BinaryDigit(index: $0.0, value: $0.1) })
         }
 
         func showCursorForDigit(_ digit: BinaryDigit) -> Bool {
@@ -40,6 +41,11 @@ public struct BinaryTextFieldReducer {
 
         func digitSelected(_ digit: BinaryDigit) -> Bool {
             selection.selectedIndexes?.contains(digit.index) ?? false
+        }
+
+        func digitDisabled(_ digit: BinaryDigit) -> Bool {
+            let bitIndex = maxBits.rawValue - 1 - digit.index
+            return bitIndex >= bitWidth.rawValue
         }
 
         func spacerWidthForDigit(_ digit: BinaryDigit) -> Double {
@@ -54,7 +60,8 @@ public struct BinaryTextFieldReducer {
         }
 
         func digitIsLast(_ digit: BinaryDigit) -> Bool {
-            digit.index == bitWidth.rawValue - 1
+            let displayIndex = digit.index + 1
+            return displayIndex.isMultiple(of: 32)
         }
 
         func digitIsLastSelected(_ digit: BinaryDigit) -> Bool {
@@ -67,9 +74,9 @@ public struct BinaryTextFieldReducer {
 
             var newValue = currentValue
 
-            let bits = selection.selectedIndexes ?? selection.cursorIndex ..< selection.cursorIndex + 1
+            let bits = selection.selectedIndexes ?? selection.cursorIndex ..<+ 1
             for bit in bits {
-                let bitIndex = bitWidth.rawValue - bit - 1 
+                let bitIndex = 64 - bit - 1
 
                 newValue = switch bitOp {
                 case .set: newValue | (1 << bitIndex)
@@ -109,7 +116,7 @@ public struct BinaryTextFieldReducer {
             .onChange(of: \.bitWidth) { _, _ in
                 Reduce { state, _ in
                     state.updateDigits()
-                    state.selection.setBitWidth(state.bitWidth)
+                    state.selection.setBounds(state.bitWidth.selectionBounds())
                     return .none
                 }
             }
@@ -173,5 +180,11 @@ public struct BinaryTextFieldReducer {
         case set
         case unset
         case toggle
+    }
+}
+
+public extension Bits {
+    func selectionBounds(within bits: Bits = maxBits) -> Range<Int> {
+        return bits.rawValue - rawValue ..< bits.rawValue
     }
 }

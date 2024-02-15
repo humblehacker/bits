@@ -17,13 +17,15 @@ struct Entry<TextFieldContent: View>: View {
 
     var body: some View {
         HStack {
-            Button(store.title) { store.isFocused = true }
-                .frame(width: 45, height: 20)
-                .buttonStyle(.plain)
-                .background(buttonBackgroundColor(store.isFocused))
-                .foregroundColor(buttonForegroundColor(store.isFocused))
-                .clipShape(RoundedRectangle(cornerRadius: 4))
-                .focusable(false)
+            if store.state.showTitleButton() {
+                Button(store.title) { store.isFocused = true }
+                    .frame(width: 45, height: 20)
+                    .buttonStyle(.plain)
+                    .background(buttonBackgroundColor(store.isFocused))
+                    .foregroundColor(buttonForegroundColor(store.isFocused))
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .focusable(false)
+            }
 
             textField($store.text)
                 .entryTextStyle()

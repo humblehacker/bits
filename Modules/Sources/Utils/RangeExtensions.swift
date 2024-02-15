@@ -16,3 +16,9 @@ public extension ClosedRange where Bound == Int {
         lowerBound ..< (upperBound + 1)
     }
 }
+
+infix operator ..<+ : RangeFormationPrecedence
+
+public func ..<+ <Bound: Numeric> (lhs: Bound, rhs: Bound) -> Range<Bound> {
+    return lhs ..< lhs + rhs
+}

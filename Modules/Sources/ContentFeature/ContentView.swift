@@ -35,13 +35,8 @@ public struct ContentView: View {
         .toolbar {
             BitWidthPicker(selectedBitWidth: $store.selectedBitWidth)
         }
-        .frame(minWidth: minWidth, idealWidth: store.idealWidth, maxWidth: maxWidth)
+        .frame(width: 470)
         .onAppear { store.send(.onAppear) }
-        .onChange(of: store.idealWidth, initial: true) { _, new in
-            let window = NSApplication.shared.windows.first!
-            let height = window.frame.height
-            window.setContentSize(NSSize(width: new, height: height))
-        }
         .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in
             HistoryPicker(store: store)
                 .frame(width: self.store.entryWidth)
