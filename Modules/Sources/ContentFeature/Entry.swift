@@ -18,7 +18,7 @@ struct Entry: View {
                     .focusable(false)
             }
 
-            TextField("", text: $store.text)
+            TextField(text: $store.text, label: { EmptyView() })
                 .entryTextStyle()
                 .onKeyPress(keys: [.return, "="]) { _ in
                     store.send(.confirmationKeyPressed)
