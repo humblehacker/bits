@@ -46,6 +46,10 @@ public struct EntryReducer {
             guard bitWidth != binText.bitWidth else { return .none }
             return .send(.element(id: id, action: .binText(.binding(.set(\.bitWidth, bitWidth)))))
         }
+
+        func showTitleButton() -> Bool {
+            return kind != .bin
+        }
     }
 
     public enum Action: BindableAction, Equatable {

@@ -6,15 +6,18 @@ public struct Selection: Equatable {
     var cursorIndex: Int
     var selectedIndexes: Range<Int>?
 
-    public init(bitWidth: Bits, cursorIndex: Int? = nil, selectedIndexes: Range<Int>? = nil) {
-        bounds = 0 ..< bitWidth.rawValue
-        self.cursorIndex = cursorIndex ?? selectedIndexes?.mid(rounding: .down) ?? bounds.last!
+    public init(bounds: Range<Int>, cursorIndex: Int? = nil, selectedIndexes: Range<Int>? = nil) {
+        precondition(selectedIndexes == nil || bounds.contains(selectedIndexes!))
+        precondition(cursorIndex == nil || bounds.contains(cursorIndex!))
+        self.bounds = bounds
+        self.cursorIndex = cursorIndex ?? selectedIndexes?.last ?? bounds.last!
         self.selectedIndexes = selectedIndexes
     }
 
     mutating
-    func setBitWidth(_ bitWidth: Bits) {
-        bounds = 0 ..< bitWidth.rawValue
+    func setBounds(_ bounds: Range<Int>) {
+        self.bounds = bounds
+        self.cursorIndex = cursorIndex.clamped(to: bounds)
     }
 
     mutating
@@ -64,6 +67,7 @@ public struct Selection: Equatable {
 
     mutating
     func clickSelect(_ index: Int) {
+        guard bounds.contains(index) else { return }
         if let selectedIndexes {
             cursorIndex = selectedIndexes.mid(rounding: .down)
         }
@@ -73,6 +77,7 @@ public struct Selection: Equatable {
 
     mutating
     func dragSelect(_ index: Int) {
+        guard bounds.contains(index) else { return }
         if selectedIndexes == nil {
             cursorIndex = index
         }
@@ -133,45 +138,6 @@ public struct Selection: Equatable {
         // New selection after cursor: shrink or expand from right
         self.selectedIndexes = first ..< selectionIndex + 1
     }
-
-//    mutating
-//    private func select(_ index: Int) {
-//        let selectionIndex = index.clamped(to: bounds)
-//
-//        if selectedIndexes == nil {
-//            if selectionIndex > cursorIndex {
-//                selectedIndexes = cursorIndex ..< selectionIndex + 1
-//            } else {
-//                selectedIndexes = selectionIndex ..< cursorIndex + 1
-//            }
-//        } else {
-//            if let last = selectedIndexes?.last, let first = selectedIndexes?.first {
-//                if cursorIndex == first && cursorIndex == last {
-//                    if selectionIndex > cursorIndex {
-//                        selectedIndexes = cursorIndex ..< selectionIndex + 1
-//                    } else {
-//                        selectedIndexes = selectionIndex ..< cursorIndex + 1
-//                    }
-//                } else if cursorIndex == first {
-//                    if selectionIndex <= last {
-//                        selectedIndexes = selectionIndex ..< last + 1
-//                    } else {
-//                        selectedIndexes = first ..< selectionIndex + 1
-//                    }
-//                } else if cursorIndex == last {
-//                    selectedIndexes = first ..< selectionIndex + 1
-//                } else {
-//                    if selectionIndex > cursorIndex {
-//                        selectedIndexes = first ..< selectionIndex + 1
-//                    } else {
-//                        selectedIndexes = selectionIndex ..< last + 1
-//                    }
-//                }
-//            }
-//        }
-//
-//        cursorIndex = selectionIndex
-//    }
 
     mutating
     func selectAll() {

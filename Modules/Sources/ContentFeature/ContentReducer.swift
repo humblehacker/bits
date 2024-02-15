@@ -9,8 +9,6 @@ import Observation
 import Utils
 
 private let defaultBits: Bits = ._32
-let minWidth = 440.0
-let maxWidth = 900.0
 
 public enum EntryKind: Equatable {
     case exp
@@ -23,7 +21,6 @@ public enum EntryKind: Equatable {
 public struct ContentReducer {
     @ObservableState
     public struct State: Equatable {
-        var idealWidth: Double
         var entryWidth: Double
         var selectedBitWidth: Bits
         var expTextTemp: String?
@@ -33,16 +30,14 @@ public struct ContentReducer {
         @Presents var destination: Destination.State?
 
         public init(
-            idealWidth: Double = 500.0,
             entryWidth: Double = 100.0,
             selectedBitWidth: Bits = ._8,
             entries: IdentifiedArrayOf<EntryReducer.State> = [
-                .init(.exp), .init(.dec), .init(.hex), .init(.bin, binText: .init()),
+                .init(.bin, binText: .init()), .init(.exp), .init(.dec), .init(.hex),
             ],
             value: Int = 0,
             focusedField: EntryKind? = nil
         ) {
-            self.idealWidth = idealWidth
             self.entryWidth = entryWidth
             self.selectedBitWidth = selectedBitWidth
             self.entries = entries
@@ -128,7 +123,6 @@ public struct ContentReducer {
         switch action {
         case .onAppear:
             state.selectedBitWidth = loadBits()
-            state.idealWidth = idealWindowWidth(bits: state.selectedBitWidth)
             state.focusedField = .exp
             state.entries[id: .exp]?.text = ""
             return .merge(
@@ -154,7 +148,6 @@ public struct ContentReducer {
         case .binding(\.selectedBitWidth):
             let bitWidth = state.selectedBitWidth
             saveBits(bitWidth)
-            state.idealWidth = idealWindowWidth(bits: bitWidth)
             return state.updateBitWidth(bitWidth)
 
         case .binding(\.focusedField):
@@ -253,13 +246,5 @@ public struct ContentReducer {
     func loadBits() -> Bits {
         guard let bits = userDefaults.integer(forKey: "bits") else { return defaultBits }
         return Bits(rawValue: bits) ?? defaultBits
-    }
-}
-
-func idealWindowWidth(bits: Bits) -> Double {
-    return switch bits {
-    case ._8, ._16: minWidth
-    case ._32: minWidth + 100
-    case ._64: maxWidth
     }
 }

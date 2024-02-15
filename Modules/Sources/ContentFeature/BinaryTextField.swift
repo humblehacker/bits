@@ -1,12 +1,12 @@
 import ComposableArchitecture
 import SwiftUI
 import UI
+import Utils
 
 struct BinaryTextField: View {
     @State var store: StoreOf<BinaryTextFieldReducer>
     @Binding var text: String
     @State var digitFrames: [Int: CGRect] = [:]
-    @State var bounds: CGRect = .zero
     let cspace: NamedCoordinateSpace = .named("BinaryTextField")
 
     init(text: Binding<String>, store: StoreOf<BinaryTextFieldReducer>) {
@@ -24,50 +24,9 @@ struct BinaryTextField: View {
     }
 
     var body: some View {
-        HStack(spacing: 0) {
-            let _ = Self._printChanges()
-
-            Spacer()
-            ForEach(store.digits) { digit in
-                Group {
-                    Text(String(digit.value.rawValue))
-                        .background(
-                            store.state.digitSelected(digit)
-                                ? Color(nsColor: .selectedTextBackgroundColor)
-                                : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                        )
-                        .border(
-                            store.state.showCursorForDigit(digit)
-                                ? Color(nsColor: .textInsertionPointColor)
-                                : Color.clear,
-                            width: 1.5
-                        )
-                        .overlay {
-                            GeometryReader { geo in
-                                let frame = geo.frame(in: cspace)
-                                Color.clear.task(id: frame) {
-                                    self.digitFrames[digit.index] = frame
-                                    self.bounds = geo.bounds(of: cspace) ?? .zero
-                                }
-                            }
-                        }
-
-                    Spacer()
-                        .frame(
-                            width: store.state.spacerWidthForDigit(digit),
-                            height: digitFrames[digit.index]?.size.height ?? 44
-                        )
-                        .background(
-                            store.state.digitSpacerSelected(digit)
-                                ? Color(nsColor: .selectedTextBackgroundColor)
-                                : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                        )
-                }
-                .onTapGesture {
-                    let shiftKeyDown = NSEvent.modifierFlags.contains(.shift)
-                    store.send(.digitClicked(digit, select: shiftKeyDown))
-                }
-            }
+        VStack(spacing: 8) {
+            PartialBinaryTextField(digits: store.digits.prefix(32))
+            PartialBinaryTextField(digits: store.digits.suffix(32))
         }
         .focusable()
         .coordinateSpace(cspace)
@@ -107,6 +66,56 @@ struct BinaryTextField: View {
         }
     }
 
+    @ViewBuilder
+    func PartialBinaryTextField(digits: Slice<IdentifiedArray<Int, BinaryDigit>>) -> some View {
+        HStack(spacing: 0) {
+            ForEach(digits) { digit in
+                Group {
+                    Text(String(digit.value.rawValue))
+                        .foregroundColor(
+                            store.state.digitDisabled(digit)
+                            ? Color(nsColor: .disabledControlTextColor)
+                            : Color(nsColor: .textColor)
+                        )
+                        .background(
+                            store.state.digitSelected(digit)
+                            ? Color(nsColor: .selectedTextBackgroundColor)
+                            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
+                        )
+                        .border(
+                            store.state.showCursorForDigit(digit)
+                            ? Color(nsColor: .textInsertionPointColor)
+                            : Color.clear,
+                            width: 1.5
+                        )
+                        .overlay {
+                            GeometryReader { geo in
+                                let frame = geo.frame(in: cspace)
+                                Color.clear.task(id: frame) {
+                                    self.digitFrames[digit.index] = frame
+                                }
+                            }
+                        }
+                    
+                    Spacer()
+                        .frame(
+                            width: store.state.spacerWidthForDigit(digit),
+                            height: digitFrames[digit.index]?.size.height ?? 16
+                        )
+                        .background(
+                            store.state.digitSpacerSelected(digit)
+                            ? Color(nsColor: .selectedTextBackgroundColor)
+                            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
+                        )
+                }
+                .onTapGesture {
+                    let shiftKeyDown = NSEvent.modifierFlags.contains(.shift)
+                    store.send(.digitClicked(digit, select: shiftKeyDown))
+                }
+            }
+        }
+    }
+
     func digit(at point: CGPoint) -> BinaryDigit? {
         guard let index = digitFrames.filter({ $0.value.contains(point) }).keys.first else { return nil }
         return store.digits[id: index]
@@ -126,14 +135,18 @@ extension CursorDirection {
 public struct BinaryTextFieldPreviewContainer: View {
     @FocusState var focused: Int?
 
-    @State var binTextFieldStore = Store(
-        initialState: BinaryTextFieldReducer.State(
-            bitWidth: ._16,
-            selection: Selection(bitWidth: Bits._16, selectedIndexes: 0 ..< 4)
-        )
-    ) {
-        BinaryTextFieldReducer()
-    }
+    @State var binTextFieldStore = {
+        let bitWidth = Bits._16
+        let bounds = bitWidth.selectionBounds()
+        return Store(
+            initialState: BinaryTextFieldReducer.State(
+                bitWidth: bitWidth,
+                selection: Selection(bounds: bounds, selectedIndexes: bounds.lowerBound ..<+ 4)
+            )
+        ) {
+            BinaryTextFieldReducer()
+        }
+    }()
 
     public init() {}
 

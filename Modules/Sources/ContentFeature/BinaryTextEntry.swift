@@ -9,6 +9,7 @@ struct BinaryTextEntry: View {
             let _ = Self._printChanges()
             if let binStore = store.scope(state: \.binText, action: \.binText) {
                 BinaryTextField(text: text, store: binStore)
+                    .padding(8)
             }
         }
     }

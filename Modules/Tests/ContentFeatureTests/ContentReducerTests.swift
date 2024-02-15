@@ -29,6 +29,13 @@ class ContentReducerTests: XCTestCase {
             $0.value = 55
         }
 
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "110111"
+                $0.value = 55
+            }
+        }
+
         await store.receive(\.entries[id: .dec].binding) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "55"
@@ -39,13 +46,6 @@ class ContentReducerTests: XCTestCase {
         await store.receive(\.entries[id: .hex].binding) {
             $0.entries[id: .hex]?.apply {
                 $0.text = "37"
-                $0.value = 55
-            }
-        }
-
-        await store.receive(\.entries[id: .bin].binding) {
-            $0.entries[id: .bin]?.apply {
-                $0.text = "110111"
                 $0.value = 55
             }
         }
@@ -73,6 +73,13 @@ class ContentReducerTests: XCTestCase {
             $0.value = 55
         }
 
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "110111"
+                $0.value = 55
+            }
+        }
+
         await store.receive(\.entries[id: .exp].binding) {
             $0.entries[id: .exp]?.apply {
                 $0.text = "55"
@@ -83,13 +90,6 @@ class ContentReducerTests: XCTestCase {
         await store.receive(\.entries[id: .hex].binding) {
             $0.entries[id: .hex]?.apply {
                 $0.text = "37"
-                $0.value = 55
-            }
-        }
-
-        await store.receive(\.entries[id: .bin].binding) {
-            $0.entries[id: .bin]?.apply {
-                $0.text = "110111"
                 $0.value = 55
             }
         }
@@ -117,6 +117,13 @@ class ContentReducerTests: XCTestCase {
             $0.value = 55
         }
 
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "110111"
+                $0.value = 55
+            }
+        }
+
         await store.receive(\.entries[id: .exp].binding) {
             $0.entries[id: .exp]?.apply {
                 $0.text = "55"
@@ -127,13 +134,6 @@ class ContentReducerTests: XCTestCase {
         await store.receive(\.entries[id: .dec].binding) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "55"
-                $0.value = 55
-            }
-        }
-
-        await store.receive(\.entries[id: .bin].binding) {
-            $0.entries[id: .bin]?.apply {
-                $0.text = "110111"
                 $0.value = 55
             }
         }
@@ -247,6 +247,13 @@ class ContentReducerTests: XCTestCase {
         }
 
         // ... and causes the rest of the entries to update
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "1111011"
+                $0.value = 123
+            }
+        }
+
         await store.receive(\.entries[id: .dec].binding) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "123"
@@ -257,13 +264,6 @@ class ContentReducerTests: XCTestCase {
         await store.receive(\.entries[id: .hex].binding) {
             $0.entries[id: .hex]?.apply {
                 $0.text = "7B"
-                $0.value = 123
-            }
-        }
-
-        await store.receive(\.entries[id: .bin].binding) {
-            $0.entries[id: .bin]?.apply {
-                $0.text = "1111011"
                 $0.value = 123
             }
         }
@@ -287,6 +287,13 @@ class ContentReducerTests: XCTestCase {
             $0.value = 255
         }
 
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "11111111"
+                $0.value = 255
+            }
+        }
+
         await store.receive(\.entries[id: .dec].binding) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "255"
@@ -297,13 +304,6 @@ class ContentReducerTests: XCTestCase {
         await store.receive(\.entries[id: .hex].binding) {
             $0.entries[id: .hex]?.apply {
                 $0.text = "FF"
-                $0.value = 255
-            }
-        }
-
-        await store.receive(\.entries[id: .bin].binding) {
-            $0.entries[id: .bin]?.apply {
-                $0.text = "11111111"
                 $0.value = 255
             }
         }
@@ -373,6 +373,13 @@ class ContentReducerTests: XCTestCase {
         }
 
         // ... and causes the rest of the entries to update
+        await store.receive(\.entries[id: .bin].binding) {
+            $0.entries[id: .bin]?.apply {
+                $0.text = "1111011"
+                $0.value = 123
+            }
+        }
+
         await store.receive(\.entries[id: .dec].binding) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "123"
@@ -387,13 +394,6 @@ class ContentReducerTests: XCTestCase {
             }
         }
 
-        await store.receive(\.entries[id: .bin].binding) {
-            $0.entries[id: .bin]?.apply {
-                $0.text = "1111011"
-                $0.value = 123
-            }
-        }
-
         await store.send(.destination(.presented(.history(.delegate(.selectionConfirmed(fakeItemInHistory.id))))))
 
         await store.receive(.historyItemConfirmed(fakeItemInHistory)) {
@@ -403,88 +403,34 @@ class ContentReducerTests: XCTestCase {
         await store.finish()
     }
 
+    @MainActor
+    func testTextStrippedBeforeAddingToHistory() async {
+        @Dependency(\.historyStore) var historyStore
 
-     @MainActor
-     func testIdealWidth() async {
-         let store = TestStore(initialState: ContentReducer.State()) {
-             ContentReducer()
-         } withDependencies: {
-             $0.userDefaults = .ephemeral()
-         }
-    
-         await store.send(.binding(.set(\.selectedBitWidth, ._8))) {
-             $0.selectedBitWidth = ._8
-             $0.idealWidth = 440.0
-         }
+        var itemAdded: String? = nil
 
-         await store.send(.binding(.set(\.selectedBitWidth, ._16))) {
-             $0.selectedBitWidth = ._16
-             $0.idealWidth = 440.0
-         }
+        let store = TestStore(initialState: ContentReducer.State()) {
+            ContentReducer()
+        } withDependencies: {
+            $0.date.now = Date(timeIntervalSinceReferenceDate: 1_234_567_890)
+            $0.historyStore.addItem = { itemAdded = $0 }
+            $0.mainQueue = .immediate
+            $0.userDefaults = .ephemeral()
+            $0.uuid = .incrementing
+            $0.entryConverter = .liveValue
+        }
 
-         await store.receive(\.entries[id: .bin].binText.binding) {
-             $0.entries[id: .bin]?.apply {
-                 $0.binText?.bitWidth = ._16
-                 $0.binText?.digits = .zero(bitWidth: 16)
-                 $0.binText?.selection.bounds = 0 ..< 16
-             }
-         }
+        store.exhaustivity = .off
 
-         await store.send(.binding(.set(\.selectedBitWidth, ._32))) {
-             $0.selectedBitWidth = ._32
-             $0.idealWidth = 540.0
-         }
+        await store.send(.entries(.element(id: .exp, action: .binding(.set(\.text, " 0x55 "))))) {
+            $0.entries[id: .exp]?.apply {
+                $0.text = " 0x55 "
+                $0.value = 85
+            }
+        }
 
-         await store.receive(\.entries[id: .bin].binText.binding) {
-             $0.entries[id: .bin]?.apply {
-                 $0.binText?.bitWidth = ._32
-                 $0.binText?.digits = .zero(bitWidth: 32)
-                 $0.binText?.selection.bounds = 0 ..< 32
-             }
-         }
+        let expected = "0x55"
 
-         await store.send(.binding(.set(\.selectedBitWidth, ._64))) {
-             $0.selectedBitWidth = ._64
-             $0.idealWidth = 900.0
-         }
-
-         await store.receive(\.entries[id: .bin].binText.binding) {
-             $0.entries[id: .bin]?.apply {
-                 $0.binText?.bitWidth = ._64
-                 $0.binText?.digits = .zero(bitWidth: 64)
-                 $0.binText?.selection.bounds = 0 ..< 64
-             }
-         }
-     }
-    
-     @MainActor
-     func testTextStrippedBeforeAddingToHistory() async {
-         @Dependency(\.historyStore) var historyStore
-    
-         var itemAdded: String? = nil
-
-         let store = TestStore(initialState: ContentReducer.State()) {
-             ContentReducer()
-         } withDependencies: {
-             $0.date.now = Date(timeIntervalSinceReferenceDate: 1_234_567_890)
-             $0.historyStore.addItem = { itemAdded = $0 }
-             $0.mainQueue = .immediate
-             $0.userDefaults = .ephemeral()
-             $0.uuid = .incrementing
-             $0.entryConverter = .liveValue
-         }
-    
-         store.exhaustivity = .off
-    
-         await store.send(.entries(.element(id: .exp, action: .binding(.set(\.text, " 0x55 "))))) {
-             $0.entries[id: .exp]?.apply {
-                 $0.text = " 0x55 "
-                 $0.value = 85
-             }
-         }
-
-         let expected = "0x55"
-    
-         XCTAssertNoDifference(expected, itemAdded)
-     }
+        XCTAssertNoDifference(expected, itemAdded)
+    }
 }
