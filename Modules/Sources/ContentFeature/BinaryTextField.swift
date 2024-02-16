@@ -24,11 +24,12 @@ struct BinaryTextField: View {
     }
 
     var body: some View {
-        VStack(spacing: 8) {
-            PartialBinaryTextField(digits: store.digits.prefix(32))
-            PartialBinaryTextField(digits: store.digits.suffix(32))
+        VStack(spacing: 10) {
+            BinaryTextFieldRow(.first, store: store, digitFrames: $digitFrames)
+            BinaryTextFieldRow(.last, store: store, digitFrames: $digitFrames)
         }
         .focusable()
+        .padding()
         .coordinateSpace(cspace)
         .highPriorityGesture(drag)
         .cursor(.iBeam)
@@ -61,64 +62,120 @@ struct BinaryTextField: View {
         .onChange(of: store.text) {
             self.text = store.text
         }
-        .onChange(of: store.bitWidth) {
-            self.digitFrames = [:]
-        }
-    }
-
-    @ViewBuilder
-    func PartialBinaryTextField(digits: Slice<IdentifiedArray<Int, BinaryDigit>>) -> some View {
-        HStack(spacing: 0) {
-            ForEach(digits) { digit in
-                Group {
-                    Text(String(digit.value.rawValue))
-                        .foregroundColor(
-                            store.state.digitDisabled(digit)
-                            ? Color(nsColor: .disabledControlTextColor)
-                            : Color(nsColor: .textColor)
-                        )
-                        .background(
-                            store.state.digitSelected(digit)
-                            ? Color(nsColor: .selectedTextBackgroundColor)
-                            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                        )
-                        .border(
-                            store.state.showCursorForDigit(digit)
-                            ? Color(nsColor: .textInsertionPointColor)
-                            : Color.clear,
-                            width: 1.5
-                        )
-                        .overlay {
-                            GeometryReader { geo in
-                                let frame = geo.frame(in: cspace)
-                                Color.clear.task(id: frame) {
-                                    self.digitFrames[digit.index] = frame
-                                }
-                            }
-                        }
-                    
-                    Spacer()
-                        .frame(
-                            width: store.state.spacerWidthForDigit(digit),
-                            height: digitFrames[digit.index]?.size.height ?? 16
-                        )
-                        .background(
-                            store.state.digitSpacerSelected(digit)
-                            ? Color(nsColor: .selectedTextBackgroundColor)
-                            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                        )
-                }
-                .onTapGesture {
-                    let shiftKeyDown = NSEvent.modifierFlags.contains(.shift)
-                    store.send(.digitClicked(digit, select: shiftKeyDown))
-                }
-            }
-        }
     }
 
     func digit(at point: CGPoint) -> BinaryDigit? {
         guard let index = digitFrames.filter({ $0.value.contains(point) }).keys.first else { return nil }
         return store.digits[id: index]
+    }
+}
+
+struct BinaryTextFieldRow: View {
+    @Bindable var store: StoreOf<BinaryTextFieldReducer>
+    @Binding var digitFrames: [Int: CGRect]
+    @State var textHeight: Double = 0.0
+    let cspace: NamedCoordinateSpace = .named("BinaryTextField")
+
+    enum RowID { case first; case last }
+    let rowID: RowID
+
+    init(_ rowID: RowID, store: StoreOf<BinaryTextFieldReducer>, digitFrames: Binding<[Int: CGRect]>) {
+        self.rowID = rowID
+        self.store = store
+        _digitFrames = digitFrames
+        textHeight = textHeight
+    }
+
+    var digits: Slice<IdentifiedArrayOf<BinaryDigit>> {
+        switch rowID {
+        case .first: store.digits.prefix(32)
+        case .last: store.digits.suffix(32)
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(digits) { digit in
+                VStack {
+                    Text(String(digit.value.rawValue))
+                        .fixedSize()
+                        .padding(1)
+                        .foregroundColor(foregroundColor(digit: digit))
+                        .layoutPriority(1)
+                        // text cursor
+                        .border(cursorColor(digit: digit), width: 1.5)
+                        // selection
+                        .background(selectionBackgroundColor(digit: digit))
+                        // inter-digit variable spacing
+                        .padding(.trailing, store.state.spacingForDigit(digit))
+                        // selection of above spacing
+                        .background(spacingSelectionBackgroundColor(digit: digit))
+                        .overlay {
+                            GeometryReader { geo in
+                                let frame = geo.frame(in: cspace)
+                                Color.clear
+                                    .task(id: frame) { self.digitFrames[digit.index] = frame }
+                                    .task(id: frame.size.height) { self.textHeight = frame.size.height }
+                            }
+                        }
+                        .overlay(alignment: .bottomLeading) {
+                            Group {
+                                let indexesToShow = [63, 47, 32, 31, 15, 0]
+                                let bitIndex = maxBits.rawValue - digit.index - 1
+                                if indexesToShow.contains(bitIndex) {
+                                    Text("\(bitIndex)")
+                                        .font(.caption)
+                                        .foregroundStyle(.primary)
+                                } else {
+                                    Text("\(bitIndex)")
+                                        .font(.caption)
+                                        .hidden()
+                                }
+                            }
+                            .alignmentGuide(.leading) { $0[.leading] }
+                            .fixedSize()
+                            .offset(x: 1, y: textHeight)
+                        }
+                        .onTapGesture {
+                            let shiftKeyDown = NSEvent.modifierFlags.contains(.shift)
+                            store.send(.digitClicked(digit, select: shiftKeyDown))
+                        }
+
+                    Spacer()
+                        .frame(height: textHeight)
+                }
+            }
+        }
+    }
+
+    func foregroundColor(digit: BinaryDigit) -> Color {
+        store.state.digitDisabled(digit)
+            ? Color(nsColor: .disabledControlTextColor)
+            : Color(nsColor: .textColor)
+    }
+
+    func cursorColor(digit: BinaryDigit) -> Color {
+        store.state.showCursorForDigit(digit)
+            ? cursorColor()
+            : Color.clear
+    }
+
+    func cursorColor() -> Color {
+        store.isFocused
+            ? Color(nsColor: .textInsertionPointColor)
+            : Color(nsColor: .disabledControlTextColor)
+    }
+
+    func selectionBackgroundColor(digit: BinaryDigit) -> Color {
+        store.state.digitSelected(digit)
+            ? Color(nsColor: .selectedTextBackgroundColor)
+            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
+    }
+
+    func spacingSelectionBackgroundColor(digit: BinaryDigit) -> Color {
+        store.state.digitSpacingSelected(digit)
+            ? Color(nsColor: .selectedTextBackgroundColor)
+            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
     }
 }
 
@@ -155,7 +212,7 @@ public struct BinaryTextFieldPreviewContainer: View {
             BitWidthPicker(selectedBitWidth: $binTextFieldStore.bitWidth)
                 .focused($focused, equals: 0)
 
-            TextField("", text: $binTextFieldStore.text)
+            TextField(text: $binTextFieldStore.text, label: { EmptyView() })
                 .entryTextStyle()
                 .focused($focused, equals: 1)
 
@@ -177,5 +234,5 @@ public struct BinaryTextFieldPreviewContainer: View {
 
 #Preview {
     BinaryTextFieldPreviewContainer()
-        .frame(width: 500)
+        .fixedSize()
 }

@@ -32,10 +32,8 @@ public struct ContentView: View {
             }
         }
         .padding()
-        .toolbar {
-            BitWidthPicker(selectedBitWidth: $store.selectedBitWidth)
-        }
-        .frame(width: 470)
+        .toolbar { BitWidthPicker(selectedBitWidth: $store.selectedBitWidth) }
+        .fixedSize()
         .onAppear { store.send(.onAppear) }
         .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in
             HistoryPicker(store: store)

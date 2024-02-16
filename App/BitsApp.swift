@@ -14,7 +14,7 @@ struct BitsApp: App {
             }
         }
         .windowStyle(.automatic)
-        .windowToolbarStyle(.unified)
+        .windowToolbarStyle(.unifiedCompact)
         .windowResizability(.contentSize)
     }
 }

@@ -14,7 +14,7 @@ struct ContentFeaturePreviewApp: App {
             ContentView()
         }
         .windowStyle(.automatic)
-        .windowToolbarStyle(.unified)
+        .windowToolbarStyle(.unifiedCompact)
         .windowResizability(.contentSize)
     }
 }

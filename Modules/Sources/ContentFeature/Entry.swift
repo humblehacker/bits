@@ -3,17 +3,8 @@ import Dependencies
 import HistoryFeature
 import SwiftUI
 
-struct Entry<TextFieldContent: View>: View {
+struct Entry: View {
     @State var store: StoreOf<EntryReducer>
-    let textField: (Binding<String>) -> TextFieldContent
-
-    init(
-        store: StoreOf<EntryReducer>,
-        @ViewBuilder textField: @escaping (Binding<String>) -> TextFieldContent
-    ) {
-        self.store = store
-        self.textField = textField
-    }
 
     var body: some View {
         HStack {
@@ -27,7 +18,7 @@ struct Entry<TextFieldContent: View>: View {
                     .focusable(false)
             }
 
-            textField($store.text)
+            TextField(text: $store.text, label: { EmptyView() })
                 .entryTextStyle()
                 .onKeyPress(keys: [.return, "="]) { _ in
                     store.send(.confirmationKeyPressed)
@@ -42,15 +33,6 @@ struct Entry<TextFieldContent: View>: View {
 
     func buttonForegroundColor(_ isFocused: Bool) -> Color {
         isFocused ? Color.white : Color(nsColor: .controlTextColor)
-    }
-}
-
-extension Entry where TextFieldContent == TextField<Text> {
-    init(store: StoreOf<EntryReducer>) {
-        self.store = store
-        textField = { text in
-            TextField("", text: text)
-        }
     }
 }
 

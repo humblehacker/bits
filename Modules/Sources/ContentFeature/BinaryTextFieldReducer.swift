@@ -9,21 +9,24 @@ public struct BinaryTextFieldReducer {
     @ObservableState
     public struct State: Equatable {
         var bitWidth: Bits
-        var selection: Selection
-        var text: String
         var digits: IdentifiedArrayOf<BinaryDigit>
+        var isFocused: Bool
+        var selection: Selection
         var selectingDigit: BinaryDigit?
+        var text: String
 
         public init(
             bitWidth: Bits = ._8,
             selection: Selection = .init(bounds: Bits._8.selectionBounds()),
             text: String = "0",
-            digits: IdentifiedArrayOf<BinaryDigit> = []
+            digits: IdentifiedArrayOf<BinaryDigit> = [],
+            isFocused: Bool = false
         ) {
             self.bitWidth = bitWidth
             self.selection = selection
             self.text = text
             self.digits = digits
+            self.isFocused = isFocused
             selectingDigit = nil
             updateDigits()
         }
@@ -48,14 +51,14 @@ public struct BinaryTextFieldReducer {
             return bitIndex >= bitWidth.rawValue
         }
 
-        func spacerWidthForDigit(_ digit: BinaryDigit) -> Double {
+        func spacingForDigit(_ digit: BinaryDigit) -> Double {
             guard !digitIsLast(digit) else { return 0.0 }
 
             let displayIndex = digit.index + 1
-            return displayIndex.isMultiple(of: 4) ? 10.0 : 3.0
+            return displayIndex.isMultiple(of: 4) ? 8.0 : 1.0
         }
 
-        func digitSpacerSelected(_ digit: BinaryDigit) -> Bool {
+        func digitSpacingSelected(_ digit: BinaryDigit) -> Bool {
             digitSelected(digit) && !digitIsLastSelected(digit)
         }
 
