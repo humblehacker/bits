@@ -61,9 +61,6 @@ struct BinaryTextField: View {
         .onChange(of: store.text) {
             self.text = store.text
         }
-        .onChange(of: store.bitWidth) {
-            self.digitFrames = [:]
-        }
     }
 
     @ViewBuilder
