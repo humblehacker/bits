@@ -175,5 +175,5 @@ public struct BinaryTextFieldPreviewContainer: View {
 
 #Preview {
     BinaryTextFieldPreviewContainer()
-        .frame(width: 500)
+        .fixedSize()
 }
