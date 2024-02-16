@@ -51,14 +51,14 @@ public struct BinaryTextFieldReducer {
             return bitIndex >= bitWidth.rawValue
         }
 
-        func spacerWidthForDigit(_ digit: BinaryDigit) -> Double {
+        func spacingForDigit(_ digit: BinaryDigit) -> Double {
             guard !digitIsLast(digit) else { return 0.0 }
 
             let displayIndex = digit.index + 1
             return displayIndex.isMultiple(of: 4) ? 8.0 : 1.0
         }
 
-        func digitSpacerSelected(_ digit: BinaryDigit) -> Bool {
+        func digitSpacingSelected(_ digit: BinaryDigit) -> Bool {
             digitSelected(digit) && !digitIsLastSelected(digit)
         }
 

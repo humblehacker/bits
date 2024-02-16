@@ -107,7 +107,7 @@ struct BinaryTextFieldRow: View {
                         // selection
                         .background(selectionBackgroundColor(digit: digit))
                         // inter-digit variable spacing
-                        .padding(.trailing, store.state.spacerWidthForDigit(digit))
+                        .padding(.trailing, store.state.spacingForDigit(digit))
                         // selection of above spacing
                         .background(spacingSelectionBackgroundColor(digit: digit))
                         .overlay {
@@ -173,7 +173,7 @@ struct BinaryTextFieldRow: View {
     }
 
     func spacingSelectionBackgroundColor(digit: BinaryDigit) -> Color {
-        store.state.digitSpacerSelected(digit)
+        store.state.digitSpacingSelected(digit)
             ? Color(nsColor: .selectedTextBackgroundColor)
             : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
     }
