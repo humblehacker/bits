@@ -156,7 +156,6 @@ struct BinaryTextFieldRow: View {
 
                     Spacer()
                         .frame(height: textHeight)
-                        .background(Color.green)
                 }
             }
         }
