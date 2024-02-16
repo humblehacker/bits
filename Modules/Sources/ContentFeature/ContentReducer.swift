@@ -113,9 +113,7 @@ public struct ContentReducer {
         Reduce { state, action in
             reduce(state: &state, action: action)
         }
-        .ifLet(\.$destination, action: \.destination) {
-            Destination()
-        }
+        .ifLet(\.$destination, action: \.destination)
         .forEach(\.entries, action: \.entries) {
             EntryReducer()
         }
@@ -224,22 +222,9 @@ public struct ContentReducer {
         }
     }
 
-    @Reducer
-    public struct Destination {
-        @ObservableState
-        public enum State: Equatable {
-            case history(HistoryReducer.State)
-        }
-
-        public enum Action: Equatable {
-            case history(HistoryReducer.Action)
-        }
-
-        public var body: some ReducerOf<Self> {
-            Scope(state: \.history, action: \.history) {
-                HistoryReducer()
-            }
-        }
+    @Reducer(state: .equatable, action: .equatable)
+    public enum Destination {
+        case history(HistoryReducer)
     }
 
     func saveBits(_ bits: Bits) {
