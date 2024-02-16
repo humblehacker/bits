@@ -10,6 +10,7 @@ struct BinaryTextEntry: View {
             BinaryTextField(text: $store.text, store: binStore)
                 .padding(8)
                 .entryTextStyle()
+                .focusEffectDisabled()
         }
     }
 }
