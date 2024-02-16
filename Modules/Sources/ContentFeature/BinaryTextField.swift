@@ -111,11 +111,32 @@ struct BinaryTextField: View {
                                 }
                             }
                         }
-                    
+                        .overlay(alignment: .bottomLeading) {
+                            Group {
+                                let indexesToShow = [63, 47, 32, 31, 15, 0]
+                                let bitIndex = maxBits.rawValue - digit.index - 1
+                                if indexesToShow.contains(bitIndex) {
+                                    Text("\(bitIndex)")
+                                        .font(.caption)
+                                        .foregroundStyle(.primary)
+                                } else {
+                                    Text("\(bitIndex)")
+                                        .font(.caption)
+                                        .hidden()
+                                }
+                            }
+                            .alignmentGuide(.leading) { $0[.leading] }
+                            .frame(width: 15)
+                            .offset(x: 1, y: textHeight)
+                        }
                         .onTapGesture {
                             let shiftKeyDown = NSEvent.modifierFlags.contains(.shift)
                             store.send(.digitClicked(digit, select: shiftKeyDown))
                         }
+
+                    Spacer()
+                        .frame(height: textHeight)
+                        .background(Color.green)
                 }
             }
         }
