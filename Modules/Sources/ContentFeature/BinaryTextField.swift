@@ -106,18 +106,22 @@ struct BinaryTextFieldRow: View {
                                 : Color(nsColor: .textColor)
                         )
                         .layoutPriority(1)
+                        // text cursor
                         .border(
                             store.state.showCursorForDigit(digit)
                                 ? cursorColor()
                                 : Color.clear,
                             width: 1.5
                         )
+                        // selection
                         .background(
                             store.state.digitSelected(digit)
                                 ? Color(nsColor: .selectedTextBackgroundColor)
                                 : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
                         )
+                        // inter-digit variable spacing
                         .padding(.trailing, store.state.spacerWidthForDigit(digit))
+                        // selection of above spacing
                         .background(
                             store.state.digitSpacerSelected(digit)
                                 ? Color(nsColor: .selectedTextBackgroundColor)
