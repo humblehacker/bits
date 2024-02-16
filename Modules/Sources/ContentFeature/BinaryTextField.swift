@@ -100,33 +100,16 @@ struct BinaryTextFieldRow: View {
                     Text(String(digit.value.rawValue))
                         .fixedSize()
                         .padding(1)
-                        .foregroundColor(
-                            store.state.digitDisabled(digit)
-                                ? Color(nsColor: .disabledControlTextColor)
-                                : Color(nsColor: .textColor)
-                        )
+                        .foregroundColor(foregroundColor(digit: digit))
                         .layoutPriority(1)
                         // text cursor
-                        .border(
-                            store.state.showCursorForDigit(digit)
-                                ? cursorColor()
-                                : Color.clear,
-                            width: 1.5
-                        )
+                        .border(cursorColor(digit: digit), width: 1.5)
                         // selection
-                        .background(
-                            store.state.digitSelected(digit)
-                                ? Color(nsColor: .selectedTextBackgroundColor)
-                                : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                        )
+                        .background(selectionBackgroundColor(digit: digit))
                         // inter-digit variable spacing
                         .padding(.trailing, store.state.spacerWidthForDigit(digit))
                         // selection of above spacing
-                        .background(
-                            store.state.digitSpacerSelected(digit)
-                                ? Color(nsColor: .selectedTextBackgroundColor)
-                                : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                        )
+                        .background(spacingSelectionBackgroundColor(digit: digit))
                         .overlay {
                             GeometryReader { geo in
                                 let frame = geo.frame(in: cspace)
@@ -165,10 +148,34 @@ struct BinaryTextFieldRow: View {
         }
     }
 
+    func foregroundColor(digit: BinaryDigit) -> Color {
+        store.state.digitDisabled(digit)
+            ? Color(nsColor: .disabledControlTextColor)
+            : Color(nsColor: .textColor)
+    }
+
+    func cursorColor(digit: BinaryDigit) -> Color {
+        store.state.showCursorForDigit(digit)
+            ? cursorColor()
+            : Color.clear
+    }
+
     func cursorColor() -> Color {
         store.isFocused
             ? Color(nsColor: .textInsertionPointColor)
             : Color(nsColor: .disabledControlTextColor)
+    }
+
+    func selectionBackgroundColor(digit: BinaryDigit) -> Color {
+        store.state.digitSelected(digit)
+            ? Color(nsColor: .selectedTextBackgroundColor)
+            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
+    }
+
+    func spacingSelectionBackgroundColor(digit: BinaryDigit) -> Color {
+        store.state.digitSpacerSelected(digit)
+            ? Color(nsColor: .selectedTextBackgroundColor)
+            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
     }
 }
 
