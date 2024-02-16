@@ -150,7 +150,7 @@ struct BinaryTextFieldRow: View {
                                 }
                             }
                             .alignmentGuide(.leading) { $0[.leading] }
-                            .frame(width: 15)
+                            .fixedSize()
                             .offset(x: 1, y: textHeight)
                         }
                         .onTapGesture {
