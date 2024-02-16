@@ -6,14 +6,12 @@ import Utils
 struct BinaryTextField: View {
     @Bindable var store: StoreOf<BinaryTextFieldReducer>
     @Binding var text: String
-    @State var textHeight: Double
     @State var digitFrames: [Int: CGRect] = [:]
     let cspace: NamedCoordinateSpace = .named("BinaryTextField")
 
     init(text: Binding<String>, store: StoreOf<BinaryTextFieldReducer>) {
         self.store = store
         _text = text
-        textHeight = 0.0
     }
 
     var drag: some Gesture {
@@ -27,8 +25,8 @@ struct BinaryTextField: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            PartialBinaryTextField(digits: store.digits.prefix(32))
-            PartialBinaryTextField(digits: store.digits.suffix(32))
+            BinaryTextFieldRow(.first, store: store, digitFrames: $digitFrames)
+            BinaryTextFieldRow(.last, store: store, digitFrames: $digitFrames)
         }
         .focusable()
         .padding()
@@ -66,14 +64,36 @@ struct BinaryTextField: View {
         }
     }
 
-    func cursorColor() -> Color {
-        store.isFocused
-            ? Color(nsColor: .textInsertionPointColor)
-            : Color(nsColor: .disabledControlTextColor)
+    func digit(at point: CGPoint) -> BinaryDigit? {
+        guard let index = digitFrames.filter({ $0.value.contains(point) }).keys.first else { return nil }
+        return store.digits[id: index]
+    }
+}
+
+struct BinaryTextFieldRow: View {
+    @Bindable var store: StoreOf<BinaryTextFieldReducer>
+    @Binding var digitFrames: [Int: CGRect]
+    @State var textHeight: Double = 0.0
+    let cspace: NamedCoordinateSpace = .named("BinaryTextField")
+
+    enum RowID { case first; case last }
+    let rowID: RowID
+
+    init(_ rowID: RowID, store: StoreOf<BinaryTextFieldReducer>, digitFrames: Binding<[Int: CGRect]>) {
+        self.rowID = rowID
+        self.store = store
+        _digitFrames = digitFrames
+        textHeight = textHeight
     }
 
-    @ViewBuilder
-    func PartialBinaryTextField(digits: Slice<IdentifiedArray<Int, BinaryDigit>>) -> some View {
+    var digits: Slice<IdentifiedArrayOf<BinaryDigit>> {
+        switch rowID {
+        case .first: store.digits.prefix(32)
+        case .last: store.digits.suffix(32)
+        }
+    }
+
+    var body: some View {
         HStack(spacing: 0) {
             ForEach(digits) { digit in
                 VStack {
@@ -142,9 +162,10 @@ struct BinaryTextField: View {
         }
     }
 
-    func digit(at point: CGPoint) -> BinaryDigit? {
-        guard let index = digitFrames.filter({ $0.value.contains(point) }).keys.first else { return nil }
-        return store.digits[id: index]
+    func cursorColor() -> Color {
+        store.isFocused
+            ? Color(nsColor: .textInsertionPointColor)
+            : Color(nsColor: .disabledControlTextColor)
     }
 }
 
