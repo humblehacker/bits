@@ -63,6 +63,12 @@ struct BinaryTextField: View {
         }
     }
 
+    func cursorColor() -> Color {
+        store.isFocused
+            ? Color(nsColor: .textInsertionPointColor)
+            : Color(nsColor: .disabledControlTextColor)
+    }
+
     @ViewBuilder
     func PartialBinaryTextField(digits: Slice<IdentifiedArray<Int, BinaryDigit>>) -> some View {
         HStack(spacing: 0) {
@@ -82,8 +88,8 @@ struct BinaryTextField: View {
                         )
                         .border(
                             store.state.showCursorForDigit(digit)
-                            ? Color(nsColor: .textInsertionPointColor)
-                            : Color.clear,
+                                ? cursorColor()
+                                : Color.clear,
                             width: 1.5
                         )
                         .overlay {

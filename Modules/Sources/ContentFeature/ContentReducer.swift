@@ -70,7 +70,10 @@ public struct ContentReducer {
         mutating func updateFocusedField(newField: EntryKind?) -> EffectOf<ContentReducer> {
             for entryID in entries.ids {
                 let thisKind = entries[id: entryID]?.kind
-                entries[id: entryID]?.isFocused = newField == thisKind
+                let isFocused = newField == thisKind
+                entries[id: entryID]?.isFocused = isFocused
+                // TODO: the following should be propagated from the former
+                entries[id: entryID]?.binText?.isFocused = isFocused
             }
             return .none
         }

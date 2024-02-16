@@ -9,21 +9,24 @@ public struct BinaryTextFieldReducer {
     @ObservableState
     public struct State: Equatable {
         var bitWidth: Bits
-        var selection: Selection
-        var text: String
         var digits: IdentifiedArrayOf<BinaryDigit>
+        var isFocused: Bool
+        var selection: Selection
         var selectingDigit: BinaryDigit?
+        var text: String
 
         public init(
             bitWidth: Bits = ._8,
             selection: Selection = .init(bounds: Bits._8.selectionBounds()),
             text: String = "0",
-            digits: IdentifiedArrayOf<BinaryDigit> = []
+            digits: IdentifiedArrayOf<BinaryDigit> = [],
+            isFocused: Bool = false
         ) {
             self.bitWidth = bitWidth
             self.selection = selection
             self.text = text
             self.digits = digits
+            self.isFocused = isFocused
             selectingDigit = nil
             updateDigits()
         }
