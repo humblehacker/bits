@@ -69,6 +69,7 @@ struct BinaryTextField: View {
             ForEach(digits) { digit in
                 Group {
                     Text(String(digit.value.rawValue))
+                        .fixedSize()
                         .foregroundColor(
                             store.state.digitDisabled(digit)
                             ? Color(nsColor: .disabledControlTextColor)
