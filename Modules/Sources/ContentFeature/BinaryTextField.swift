@@ -6,12 +6,14 @@ import Utils
 struct BinaryTextField: View {
     @Bindable var store: StoreOf<BinaryTextFieldReducer>
     @Binding var text: String
+    @State var textHeight: Double
     @State var digitFrames: [Int: CGRect] = [:]
     let cspace: NamedCoordinateSpace = .named("BinaryTextField")
 
     init(text: Binding<String>, store: StoreOf<BinaryTextFieldReducer>) {
         self.store = store
         _text = text
+        textHeight = 0.0
     }
 
     var drag: some Gesture {
@@ -70,8 +72,6 @@ struct BinaryTextField: View {
             : Color(nsColor: .disabledControlTextColor)
     }
 
-    let textHeight = 18.0
-
     @ViewBuilder
     func PartialBinaryTextField(digits: Slice<IdentifiedArray<Int, BinaryDigit>>) -> some View {
         HStack(spacing: 0) {
@@ -106,9 +106,9 @@ struct BinaryTextField: View {
                         .overlay {
                             GeometryReader { geo in
                                 let frame = geo.frame(in: cspace)
-                                Color.clear.task(id: frame) {
-                                    self.digitFrames[digit.index] = frame
-                                }
+                                Color.clear
+                                    .task(id: frame) { self.digitFrames[digit.index] = frame }
+                                    .task(id: frame.size.height) { self.textHeight = frame.size.height }
                             }
                         }
                         .overlay(alignment: .bottomLeading) {
