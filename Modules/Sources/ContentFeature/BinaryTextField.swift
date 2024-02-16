@@ -24,11 +24,12 @@ struct BinaryTextField: View {
     }
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 10) {
             PartialBinaryTextField(digits: store.digits.prefix(32))
             PartialBinaryTextField(digits: store.digits.suffix(32))
         }
         .focusable()
+        .padding()
         .coordinateSpace(cspace)
         .highPriorityGesture(drag)
         .cursor(.iBeam)
@@ -69,28 +70,38 @@ struct BinaryTextField: View {
             : Color(nsColor: .disabledControlTextColor)
     }
 
+    let textHeight = 18.0
+
     @ViewBuilder
     func PartialBinaryTextField(digits: Slice<IdentifiedArray<Int, BinaryDigit>>) -> some View {
         HStack(spacing: 0) {
             ForEach(digits) { digit in
-                Group {
+                VStack {
                     Text(String(digit.value.rawValue))
                         .fixedSize()
+                        .padding(1)
                         .foregroundColor(
                             store.state.digitDisabled(digit)
-                            ? Color(nsColor: .disabledControlTextColor)
-                            : Color(nsColor: .textColor)
+                                ? Color(nsColor: .disabledControlTextColor)
+                                : Color(nsColor: .textColor)
                         )
-                        .background(
-                            store.state.digitSelected(digit)
-                            ? Color(nsColor: .selectedTextBackgroundColor)
-                            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                        )
+                        .layoutPriority(1)
                         .border(
                             store.state.showCursorForDigit(digit)
                                 ? cursorColor()
                                 : Color.clear,
                             width: 1.5
+                        )
+                        .background(
+                            store.state.digitSelected(digit)
+                                ? Color(nsColor: .selectedTextBackgroundColor)
+                                : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
+                        )
+                        .padding(.trailing, store.state.spacerWidthForDigit(digit))
+                        .background(
+                            store.state.digitSpacerSelected(digit)
+                                ? Color(nsColor: .selectedTextBackgroundColor)
+                                : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
                         )
                         .overlay {
                             GeometryReader { geo in
@@ -101,20 +112,10 @@ struct BinaryTextField: View {
                             }
                         }
                     
-                    Spacer()
-                        .frame(
-                            width: store.state.spacerWidthForDigit(digit),
-                            height: digitFrames[digit.index]?.size.height ?? 16
-                        )
-                        .background(
-                            store.state.digitSpacerSelected(digit)
-                            ? Color(nsColor: .selectedTextBackgroundColor)
-                            : Color(nsColor: .unemphasizedSelectedTextBackgroundColor)
-                        )
-                }
-                .onTapGesture {
-                    let shiftKeyDown = NSEvent.modifierFlags.contains(.shift)
-                    store.send(.digitClicked(digit, select: shiftKeyDown))
+                        .onTapGesture {
+                            let shiftKeyDown = NSEvent.modifierFlags.contains(.shift)
+                            store.send(.digitClicked(digit, select: shiftKeyDown))
+                        }
                 }
             }
         }
@@ -159,7 +160,7 @@ public struct BinaryTextFieldPreviewContainer: View {
             BitWidthPicker(selectedBitWidth: $binTextFieldStore.bitWidth)
                 .focused($focused, equals: 0)
 
-            TextField("", text: $binTextFieldStore.text)
+            TextField(text: $binTextFieldStore.text, label: { EmptyView() })
                 .entryTextStyle()
                 .focused($focused, equals: 1)
 

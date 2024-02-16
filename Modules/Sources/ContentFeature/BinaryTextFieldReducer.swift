@@ -55,7 +55,7 @@ public struct BinaryTextFieldReducer {
             guard !digitIsLast(digit) else { return 0.0 }
 
             let displayIndex = digit.index + 1
-            return displayIndex.isMultiple(of: 4) ? 10.0 : 3.0
+            return displayIndex.isMultiple(of: 4) ? 8.0 : 1.0
         }
 
         func digitSpacerSelected(_ digit: BinaryDigit) -> Bool {
