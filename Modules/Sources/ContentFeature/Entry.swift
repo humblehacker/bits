@@ -20,6 +20,7 @@ struct Entry: View {
 
             TextField(text: $store.text, label: { EmptyView() })
                 .entryTextStyle()
+                .foregroundColor(textForegroundColor(store.isError))
                 .onKeyPress(keys: [.return, "="]) { _ in
                     store.send(.confirmationKeyPressed)
                     return .handled
@@ -33,6 +34,10 @@ struct Entry: View {
 
     func buttonForegroundColor(_ isFocused: Bool) -> Color {
         isFocused ? Color.white : Color(nsColor: .controlTextColor)
+    }
+
+    func textForegroundColor(_ isError: Bool) -> Color {
+        isError ? .red : Color(nsColor: .controlTextColor)
     }
 }
 

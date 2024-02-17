@@ -7,6 +7,9 @@ struct EntryConverter {
     var text: (_ integer: Int, _ kind: EntryKind) throws -> String = { _, _ in "" }
     var integer: (_ text: String, _ kind: EntryKind) throws -> Int? = { _, _ in 0 }
 }
+enum EntryConverterError: Error {
+    case invalidConversion
+}
 
 extension EntryConverter: DependencyKey {
     static let liveValue = Self(
@@ -19,7 +22,8 @@ extension EntryConverter: DependencyKey {
                 @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
                 return try evaluateExpression(text)
             } else {
-                return Int(text, radix: kind.base)
+                guard let value = Int(text, radix: kind.base) else { throw EntryConverterError.invalidConversion }
+                return value
             }
         }
     )

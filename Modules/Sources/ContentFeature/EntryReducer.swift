@@ -13,6 +13,7 @@ public struct EntryReducer {
         var binText: BinaryTextFieldReducer.State?
         var value: Int
         var isFocused: Bool
+        var isError: Bool
 
         public var id: EntryKind { kind }
         var title: String { kind.title }
@@ -22,13 +23,15 @@ public struct EntryReducer {
             text: String = "",
             binText: BinaryTextFieldReducer.State? = nil,
             value: Int = 0,
-            isFocused: Bool = false
+            isFocused: Bool = false,
+            isError: Bool = false
         ) {
             self.kind = kind
             self.text = text
             self.binText = binText
             self.value = value
             self.isFocused = isFocused
+            self.isError = isError
         }
 
         mutating func updateValue(_ value: Int) -> Effect<IdentifiedAction> {
@@ -74,6 +77,7 @@ public struct EntryReducer {
     }
 
     func reduce(state: inout State, action: Action) -> Effect<Action> {
+        state.isError = false
         do {
             switch action {
             case .binding(\.isFocused):
@@ -103,6 +107,7 @@ public struct EntryReducer {
             }
         } catch {
             print("unhandled error: \(error)")
+            state.isError = true
             return .none
         }
     }
