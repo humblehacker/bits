@@ -15,6 +15,7 @@ public struct ContentView: View {
             ForEach(store.scope(state: \.entries, action: \.entries)) { store in
                 if store.kind == .bin {
                     BinaryTextEntry(store: store)
+                        .padding(.vertical, 8)
                         .focused($focusedField, equals: store.kind)
                 } else {
                     Entry(store: store)
@@ -31,8 +32,20 @@ public struct ContentView: View {
                 }
             }
         }
-        .padding()
-        .toolbar { BitWidthPicker(selectedBitWidth: $store.selectedBitWidth) }
+        .padding([.horizontal, .bottom])
+        .toolbar {
+            ToolbarItem {
+                Text(Bundle.main.appName ?? "")
+                    .font(.system(size: 13))
+                    .fontWeight(.bold)
+            }
+            ToolbarItem {
+                Spacer()
+            }
+            ToolbarItem {
+                BitWidthPicker(selectedBitWidth: $store.selectedBitWidth)
+            }
+        }
         .fixedSize()
         .onAppear { store.send(.onAppear) }
         .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in

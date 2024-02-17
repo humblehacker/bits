@@ -13,7 +13,7 @@ struct BitsApp: App {
                 })
             }
         }
-        .windowStyle(.automatic)
+        .windowStyle(.hiddenTitleBar)
         .windowToolbarStyle(.unifiedCompact)
         .windowResizability(.contentSize)
     }
