@@ -32,10 +32,18 @@ public struct BinaryTextFieldReducer {
         }
 
         mutating func updateDigits() {
-            digits = IdentifiedArray(uniqueElements: (Int(text, radix: 2) ?? 0)
-                .paddedBinaryString(bits: maxBits.rawValue, blockSize: 0)
+            // This is just the rendering step, where we take a binary string of arbitrary
+            // width and render it as a 64bit binary string. Any necessary bit manipulations
+            // should have already been applied.
+            let value = Int(text, radix: 2)!
+            assert(value >= 0)
+
+            let newDigits = value
+                .padded64BitBinaryString
                 .enumerated()
-                .map { BinaryDigit(index: $0.0, value: $0.1) })
+                .map { BinaryDigit(index: $0.0, value: $0.1) }
+
+            digits = IdentifiedArray(uniqueElements: newDigits)
         }
 
         func showCursorForDigit(_ digit: BinaryDigit) -> Bool {

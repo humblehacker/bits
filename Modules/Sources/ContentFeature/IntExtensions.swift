@@ -1,17 +1,10 @@
 import Foundation
 
 extension Int {
-    func paddedBinaryString(bits: Int, blockSize: Int = 4) -> String {
+    var padded64BitBinaryString: String {
+        let zeroPadding = String(repeating: "0", count: leadingZeroBitCount)
+        guard self > 0 else { return zeroPadding }
         let binaryString = String(self, radix: 2)
-        let paddedString = String(repeating: "0", count: Swift.max(0, bits - binaryString.count)) + binaryString
-        guard blockSize > 0 else { return paddedString }
-        var result = ""
-        for (index, char) in paddedString.enumerated() {
-            if index % blockSize == 0 && index != 0 {
-                result += " "
-            }
-            result += String(char)
-        }
-        return result
+        return zeroPadding + binaryString
     }
 }
