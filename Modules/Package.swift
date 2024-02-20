@@ -18,6 +18,7 @@ let package = Package(
         .library(name: "Utils", targets: ["Utils"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/attaswift/BigInt", from: "5.3.0"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.8.0"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.2.0"),
         .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.13.0"),
@@ -37,6 +38,7 @@ let package = Package(
             dependencies: [
                 "ExpressionEvaluator",
                 "HistoryFeature",
+                .product(name: "BigInt", package: "BigInt"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
