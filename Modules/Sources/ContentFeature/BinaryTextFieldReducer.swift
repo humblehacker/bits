@@ -39,7 +39,7 @@ public struct BinaryTextFieldReducer {
             assert(value >= 0)
 
             let newDigits = value
-                .padded64BitBinaryString
+                .fixedWidthBinaryString
                 .enumerated()
                 .map { BinaryDigit(index: $0.0, value: $0.1) }
 
