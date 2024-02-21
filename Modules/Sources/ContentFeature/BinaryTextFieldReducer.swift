@@ -1,3 +1,4 @@
+import BigInt
 import ComposableArchitecture
 import SwiftUI
 import Utils
@@ -34,12 +35,12 @@ public struct BinaryTextFieldReducer {
         mutating func updateDigits() {
             // This is just the rendering step, where we take a binary string of arbitrary
             // width and render it as a 64bit binary string. Any necessary bit manipulations
-            // should have already been applied.
-            let value = Int(text, radix: 2)!
-            assert(value >= 0)
+            // should have already been applied. For example, negative values should have
+            // already been converted to their twos-complement.
+            let value = BigUInt(text, radix: 2)!
 
             let newDigits = value
-                .fixedWidthBinaryString
+                .fixedWidthBinaryString(64)
                 .enumerated()
                 .map { BinaryDigit(index: $0.0, value: $0.1) }
 

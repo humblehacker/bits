@@ -1,3 +1,4 @@
+import BigInt
 import ComposableArchitecture
 import DataStore
 import Dependencies
@@ -17,6 +18,11 @@ public enum EntryKind: Equatable {
     case hex
 }
 
+public enum Signage: Equatable {
+    case signed
+    case unsigned
+}
+
 @Reducer
 public struct ContentReducer {
     @ObservableState
@@ -25,7 +31,8 @@ public struct ContentReducer {
         var selectedBitWidth: Bits
         var expTextTemp: String?
         var entries: IdentifiedArrayOf<EntryReducer.State>
-        var value: Int
+        var value: BigInt
+        var signage: Signage
         var focusedField: EntryKind?
         @Presents var destination: Destination.State?
 
@@ -35,17 +42,19 @@ public struct ContentReducer {
             entries: IdentifiedArrayOf<EntryReducer.State> = [
                 .init(.bin, binText: .init()), .init(.exp), .init(.dec), .init(.hex),
             ],
-            value: Int = 0,
+            value: BigInt = 0,
+            signage: Signage = .unsigned,
             focusedField: EntryKind? = nil
         ) {
             self.entryWidth = entryWidth
             self.selectedBitWidth = selectedBitWidth
             self.entries = entries
             self.value = value
+            self.signage = signage
             self.focusedField = focusedField
         }
 
-        mutating func updateValues(newValue: Int) -> EffectOf<ContentReducer> {
+        mutating func updateValues(newValue: BigInt) -> EffectOf<ContentReducer> {
             return .merge(
                 entries.ids
                     .compactMap { id in entries[id: id]?.updateValue(newValue) }
@@ -57,6 +66,14 @@ public struct ContentReducer {
             return .merge(
                 entries.ids
                     .compactMap { id in entries[id: id]?.updateBitWidth(bitWidth) }
+                    .map { effect in effect.map(ContentReducer.Action.entries) }
+            )
+        }
+
+        mutating func updateSignage(_ signage: Signage) -> EffectOf<ContentReducer> {
+            return .merge(
+                entries.ids
+                    .compactMap { id in entries[id: id]?.updateSignage(signage) }
                     .map { effect in effect.map(ContentReducer.Action.entries) }
             )
         }
@@ -95,6 +112,7 @@ public struct ContentReducer {
         case historyItemConfirmed(HistoryItem)
         case historyLoaded([HistoryItem])
         case destination(PresentationAction<Destination.Action>)
+        case toggleSignage
     }
 
     @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
@@ -211,6 +229,13 @@ public struct ContentReducer {
 
         case .destination:
             return .none
+
+        case .toggleSignage:
+            state.signage = switch state.signage {
+            case .unsigned: .signed
+            case .signed: .unsigned
+            }
+            return state.updateSignage(state.signage)
         }
 
         func addExpressionToHistory() -> EffectOf<ContentReducer> {

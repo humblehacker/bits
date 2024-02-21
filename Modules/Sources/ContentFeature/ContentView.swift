@@ -43,6 +43,12 @@ public struct ContentView: View {
                 Spacer()
             }
             ToolbarItem {
+                Button(store.signage == .signed ? "Signed" : "Unsigned") {
+                    store.send(.toggleSignage)
+                }
+                .font(.body.smallCaps())
+            }
+            ToolbarItem {
                 BitWidthPicker(selectedBitWidth: $store.selectedBitWidth)
             }
         }

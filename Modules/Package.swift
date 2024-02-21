@@ -77,7 +77,7 @@ let package = Package(
             ]
         ),
         .target(name: "UI"),
-        .target(name: "Utils"),
+        .target(name: "Utils", dependencies: [ .product(name: "BigInt", package: "BigInt")]),
         .testTarget(name: "ContentFeatureTests", dependencies: ["ContentFeature"]),
         .testTarget(name: "ExpressionEvaluatorTests", dependencies: ["ExpressionEvaluator"]),
         .testTarget(name: "HistoryFeatureTests", dependencies: ["HistoryFeature"]),
