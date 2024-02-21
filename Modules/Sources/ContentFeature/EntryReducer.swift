@@ -8,7 +8,7 @@ public struct EntryValue: Equatable {
     var bits: Bits
     var signage: Signage
 
-    public init(value: BigInt = 0, bits: Bits = ._8, signage: Signage = .unsigned) {
+    public init(_ value: BigInt = 0, bits: Bits = ._8, signage: Signage = .unsigned) {
         self.value = value
         self.bits = bits
         self.signage = signage

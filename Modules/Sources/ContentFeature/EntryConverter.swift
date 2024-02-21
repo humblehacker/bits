@@ -35,7 +35,7 @@ extension EntryConverter: DependencyKey {
                 }
 
             case .dec, .hex, .exp:
-                let result = String(value.value, radix: kind.base)
+                let result = String(value.value, radix: kind.base, uppercase: true)
                 return result
             }
         },
@@ -45,7 +45,7 @@ extension EntryConverter: DependencyKey {
                 guard text.isNotEmpty else { return nil }
                 @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
                 let value = try BigInt(evaluateExpression(text))
-                let entryValue = EntryValue(value: value, bits: bits, signage: signage)
+                let entryValue = EntryValue(value, bits: bits, signage: signage)
                 try validateValue(entryValue)
                 return entryValue
 
@@ -53,7 +53,7 @@ extension EntryConverter: DependencyKey {
                 // When text == "-", value will equal -0 so we filter that out here. Is there a better way?
                 guard let value = BigInt(text, radix: kind.base), !(value.isZero && value.sign == .minus)
                 else { throw EntryConverterError.invalidConversion }
-                let entryValue = EntryValue(value: value, bits: bits, signage: signage)
+                let entryValue = EntryValue(value, bits: bits, signage: signage)
                 try validateValue(entryValue)
                 return entryValue
             }
