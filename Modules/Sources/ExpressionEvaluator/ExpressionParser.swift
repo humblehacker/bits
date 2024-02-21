@@ -81,9 +81,13 @@ struct Factor: Parser {
     var body: some Parser<Substring.UTF8View, Int> {
         OneOf {
             Parse {
+                Skip { Whitespace() }
                 "(".utf8
-                AdditionAndSubtraction()
+                Skip { Whitespace() }
+                ExpressionParser()
+                Skip { Whitespace() }
                 ")".utf8
+                Skip { Whitespace() }
             }
 
             Parse {
