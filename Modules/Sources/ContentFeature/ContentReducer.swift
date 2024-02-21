@@ -18,18 +18,6 @@ public enum EntryKind: Equatable {
     case hex
 }
 
-public enum Signage: Equatable {
-    case signed
-    case unsigned
-
-    func toggled() -> Signage {
-        switch self {
-        case .unsigned: .signed
-        case .signed: .unsigned
-        }
-    }
-}
-
 @Reducer
 public struct ContentReducer {
     @ObservableState
