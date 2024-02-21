@@ -58,6 +58,13 @@ final class ExpressionParserTests: XCTestCase {
         XCTAssertEqual(14, actual)
     }
 
+    func testParenthesisedExpressions2() throws {
+        var input = "(-127 >> 1) + 64"[...].utf8
+        let actual = try ExpressionParser().parse(&input)
+        XCTAssertNotNil(actual)
+        XCTAssertEqual(0, actual)
+    }
+
     func testBitwiseOr() throws {
         var input = "0b1100|0b0111"[...].utf8
         let actual = try ExpressionParser().parse(&input)
@@ -79,4 +86,3 @@ final class ExpressionParserTests: XCTestCase {
         XCTAssertEqual(4, actual)
     }
 }
-
