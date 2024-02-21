@@ -58,7 +58,7 @@ public struct ContentReducer {
             self.focusedField = focusedField
         }
 
-        mutating func updateValues(newValue: EntryValue) -> EffectOf<ContentReducer> {
+        mutating func updateEntries(newValue: EntryValue) -> EffectOf<ContentReducer> {
             return .merge(
                 entries.ids
                     .compactMap { id in entries[id: id]?.updateValue(newValue) }
@@ -66,26 +66,10 @@ public struct ContentReducer {
             )
         }
 
-        mutating func updateBitWidth(_ bitWidth: Bits) -> EffectOf<ContentReducer> {
-            return .merge(
-                entries.ids
-                    .compactMap { id in entries[id: id]?.updateBitWidth(bitWidth) }
-                    .map { effect in effect.map(ContentReducer.Action.entries) }
-            )
-        }
-
-        mutating func updateSignage(_ signage: Signage) -> EffectOf<ContentReducer> {
-            return .merge(
-                entries.ids
-                    .compactMap { id in entries[id: id]?.updateSignage(signage) }
-                    .map { effect in effect.map(ContentReducer.Action.entries) }
-            )
-        }
-
-        mutating func updateValuesFromExpression() -> EffectOf<ContentReducer> {
+        mutating func updateEntriesFromExpression() -> EffectOf<ContentReducer> {
             guard let value = entries[id: .exp]?.value else { return .none }
             print("Updating from value: \(value)")
-            return updateValues(newValue: value)
+            return updateEntries(newValue: value)
         }
 
         mutating func updateFocusedField(newField: EntryKind?) -> EffectOf<ContentReducer> {
@@ -102,7 +86,7 @@ public struct ContentReducer {
         mutating func updateExpressionText(_ text: String) -> EffectOf<ContentReducer> {
             .merge(
                 entries[id: .exp]?.updateText(text).map(Action.entries) ?? .none,
-                updateValuesFromExpression()
+                updateEntriesFromExpression()
             )
         }
     }
@@ -149,8 +133,7 @@ public struct ContentReducer {
             state.focusedField = .exp
             state.entries[id: .exp]?.text = ""
             return .merge(
-                state.updateValues(newValue: .init()),
-                state.updateBitWidth(state.selectedBitWidth),
+                state.updateEntries(newValue: .init(bits: state.selectedBitWidth)),
                 state.updateFocusedField(newField: state.focusedField)
             )
 
@@ -161,7 +144,7 @@ public struct ContentReducer {
         case let .entries(.element(id, .delegate(.valueUpdated(value)))):
             state.value = value
             return .merge(
-                state.updateValues(newValue: value),
+                state.updateEntries(newValue: value),
                 id == .exp ? addExpressionToHistory() : .none
             )
 
@@ -171,7 +154,8 @@ public struct ContentReducer {
         case .binding(\.selectedBitWidth):
             let bitWidth = state.selectedBitWidth
             saveBits(bitWidth)
-            return state.updateBitWidth(bitWidth)
+            state.value.bits = bitWidth
+            return state.updateEntries(newValue: state.value)
 
         case .binding(\.focusedField):
             return state.updateFocusedField(newField: state.focusedField)
@@ -236,7 +220,7 @@ public struct ContentReducer {
 
         case .toggleSignage:
             state.value.signage = state.value.signage.toggled()
-            return state.updateSignage(state.value.signage)
+            return state.updateEntries(newValue: state.value)
         }
 
         func addExpressionToHistory() -> EffectOf<ContentReducer> {

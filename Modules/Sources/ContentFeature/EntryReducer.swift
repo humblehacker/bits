@@ -57,21 +57,6 @@ public struct EntryReducer {
             return .send(.element(id: id, action: .binding(.set(\.text, text))))
         }
 
-        mutating func updateBitWidth(_ bitWidth: Bits) -> Effect<IdentifiedAction> {
-            guard let binText else { return .none }
-            guard bitWidth != binText.bitWidth else { return .none }
-            value.bits = bitWidth
-            return .merge(
-                .send(.element(id: id, action: .binding(.set(\.value, value)))),
-                .send(.element(id: id, action: .binText(.binding(.set(\.bitWidth, bitWidth)))))
-            )
-        }
-
-        mutating func updateSignage(_ signage: Signage) -> Effect<IdentifiedAction> {
-            value.signage = signage
-            return .send(.element(id: id, action: .binding(.set(\.value, value))))
-        }
-
         func showTitleButton() -> Bool {
             return kind != .bin
         }
@@ -114,6 +99,8 @@ public struct EntryReducer {
             case .binding(\.value): // value --> text
                 state.isError = false
                 state.text = try entryConverter.text(value: state.value, kind: state.kind)
+                let bits = state.value.bits
+                state.binText?.bitWidth = bits
                 return .none
 
             case .binding:
