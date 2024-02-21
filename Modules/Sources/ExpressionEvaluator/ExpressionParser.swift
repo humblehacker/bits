@@ -1,90 +1,90 @@
 import Foundation
 import Parsing
 
-struct ExpressionParser: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
-        BitwiseOr()
+struct ExpressionParser<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
+        BitwiseOr<Output>()
     }
 }
 
-struct BitwiseOr: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
+struct BitwiseOr<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
         InfixOperator(associativity: .left) {
-            "|".utf8.map { (|) as (Int, Int) -> Int }
+            "|".utf8.map { (|) as (Output, Output) -> Output }
         } follows: {
-            BitwiseXor()
+            BitwiseXor<Output>()
         }
     }
 }
 
-struct BitwiseXor: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
+struct BitwiseXor<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
         InfixOperator(associativity: .left) {
-            "^".utf8.map { (^) as (Int, Int) -> Int }
+            "^".utf8.map { (^) as (Output, Output) -> Output }
         } follows: {
-            BitwiseAnd()
+            BitwiseAnd<Output>()
         }
     }
 }
 
-struct BitwiseAnd: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
+struct BitwiseAnd<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
         InfixOperator(associativity: .left) {
-            "&".utf8.map { (&) as (Int, Int) -> Int }
+            "&".utf8.map { (&) as (Output, Output) -> Output }
         } follows: {
-            Shifts()
+            Shifts<Output>()
         }
     }
 }
 
-struct Shifts: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
+struct Shifts<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
         InfixOperator(associativity: .left) {
             OneOf {
-                "<<".utf8.map { (<<) as (Int, Int) -> Int }
+                "<<".utf8.map { (<<) as (Output, Output) -> Output }
                 ">>".utf8.map { (>>) }
             }
         } follows: {
-            AdditionAndSubtraction()
+            AdditionAndSubtraction<Output>()
         }
     }
 }
 
-struct AdditionAndSubtraction: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
+struct AdditionAndSubtraction<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
         InfixOperator(associativity: .left) {
             OneOf {
-                "+".utf8.map { (+) as (Int, Int) -> Int }
+                "+".utf8.map { (+) as (Output, Output) -> Output }
                 "-".utf8.map { (-) }
             }
         } follows: {
-            MultiplicationAndDivision()
+            MultiplicationAndDivision<Output>()
         }
     }
 }
 
-struct MultiplicationAndDivision: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
+struct MultiplicationAndDivision<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
         InfixOperator(associativity: .left) {
             OneOf {
-                "*".utf8.map { (*) as (Int, Int) -> Int }
+                "*".utf8.map { (*) as (Output, Output) -> Output }
                 "/".utf8.map { (/) }
                 "%".utf8.map { (%) }
             }
         } follows: {
-            Factor()
+            Factor<Output>()
         }
     }
 }
 
-struct Factor: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
+struct Factor<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
         OneOf {
             Parse {
                 Skip { Whitespace() }
                 "(".utf8
                 Skip { Whitespace() }
-                ExpressionParser()
+                ExpressionParser<Output>()
                 Skip { Whitespace() }
                 ")".utf8
                 Skip { Whitespace() }
@@ -92,7 +92,7 @@ struct Factor: Parser {
 
             Parse {
                 Skip { Whitespace() }
-                Value()
+                Value<Output>()
                 Skip { Whitespace() }
             }
         }
@@ -160,32 +160,32 @@ public enum Associativity {
     case right
 }
 
-struct Value: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
+struct Value<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
         OneOf {
-            HexInt()
-            BinaryInt()
-            DecimalInt()
+            HexInt<Output>()
+            BinaryInt<Output>()
+            DecimalInt<Output>()
         }
     }
 }
 
-struct DecimalInt: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
-        Int.parser(radix: 10)
+struct DecimalInt<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
+        Output.parser(radix: 10)
     }
 }
 
-struct HexInt: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
+struct HexInt<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
         "0x".utf8
-        Int.parser(radix: 16)
+        Output.parser(radix: 16)
     }
 }
 
-struct BinaryInt: Parser {
-    var body: some Parser<Substring.UTF8View, Int> {
+struct BinaryInt<Output: FixedWidthInteger>: Parser {
+    var body: some Parser<Substring.UTF8View, Output> {
         "0b".utf8
-        Int.parser(radix: 2)
+        Output.parser(radix: 2)
     }
 }
