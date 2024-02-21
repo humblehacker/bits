@@ -12,7 +12,7 @@ struct EntryConverter {
 
 enum EntryConverterError: Error {
     case invalidConversion
-    case overflow
+    case valueOutOfBounds(value: BigInt, bounds: ClosedRange<BigInt>)
 }
 
 extension EntryConverter: DependencyKey {
@@ -60,14 +60,14 @@ extension EntryConverter: DependencyKey {
 
     static func validateValue(_ value: BigInt, bits: Bits, signage: Signage) throws {
         switch (bits, signage) {
-        case (._8, .unsigned): if !UInt8.bigBounds.contains(value) { throw EntryConverterError.overflow }
-        case (._8, .signed): if !Int8.bigBounds.contains(value) { throw EntryConverterError.overflow }
-        case (._16, .unsigned): if !UInt16.bigBounds.contains(value) { throw EntryConverterError.overflow }
-        case (._16, .signed): if !Int16.bigBounds.contains(value) { throw EntryConverterError.overflow }
-        case (._32, .unsigned): if !UInt32.bigBounds.contains(value) { throw EntryConverterError.overflow }
-        case (._32, .signed): if !Int32.bigBounds.contains(value) { throw EntryConverterError.overflow }
-        case (._64, .unsigned): if !UInt64.bigBounds.contains(value) { throw EntryConverterError.overflow }
-        case (._64, .signed): if !Int64.bigBounds.contains(value) { throw EntryConverterError.overflow }
+        case (._8, .unsigned): if !UInt8.bigBounds.contains(value) { throw EntryConverterError.valueOutOfBounds(value: value, bounds: UInt8.bigBounds) }
+        case (._8, .signed): if !Int8.bigBounds.contains(value) { throw EntryConverterError.valueOutOfBounds(value: value, bounds: Int8.bigBounds) }
+        case (._16, .unsigned): if !UInt16.bigBounds.contains(value) { throw EntryConverterError.valueOutOfBounds(value: value, bounds: UInt16.bigBounds) }
+        case (._16, .signed): if !Int16.bigBounds.contains(value) { throw EntryConverterError.valueOutOfBounds(value: value, bounds: Int16.bigBounds) }
+        case (._32, .unsigned): if !UInt32.bigBounds.contains(value) { throw EntryConverterError.valueOutOfBounds(value: value, bounds: UInt32.bigBounds) }
+        case (._32, .signed): if !Int32.bigBounds.contains(value) { throw EntryConverterError.valueOutOfBounds(value: value, bounds: Int32.bigBounds) }
+        case (._64, .unsigned): if !UInt64.bigBounds.contains(value) { throw EntryConverterError.valueOutOfBounds(value: value, bounds: UInt64.bigBounds) }
+        case (._64, .signed): if !Int64.bigBounds.contains(value) { throw EntryConverterError.valueOutOfBounds(value: value, bounds: Int64.bigBounds) }
         }
     }
 }
