@@ -21,6 +21,13 @@ public enum EntryKind: Equatable {
 public enum Signage: Equatable {
     case signed
     case unsigned
+
+    func toggled() -> Signage {
+        switch self {
+        case .unsigned: .signed
+        case .signed: .unsigned
+        }
+    }
 }
 
 @Reducer
@@ -31,8 +38,7 @@ public struct ContentReducer {
         var selectedBitWidth: Bits
         var expTextTemp: String?
         var entries: IdentifiedArrayOf<EntryReducer.State>
-        var value: BigInt
-        var signage: Signage
+        var value: EntryValue
         var focusedField: EntryKind?
         @Presents var destination: Destination.State?
 
@@ -42,19 +48,17 @@ public struct ContentReducer {
             entries: IdentifiedArrayOf<EntryReducer.State> = [
                 .init(.bin, binText: .init()), .init(.exp), .init(.dec), .init(.hex),
             ],
-            value: BigInt = 0,
-            signage: Signage = .unsigned,
+            value: EntryValue = .init(),
             focusedField: EntryKind? = nil
         ) {
             self.entryWidth = entryWidth
             self.selectedBitWidth = selectedBitWidth
             self.entries = entries
             self.value = value
-            self.signage = signage
             self.focusedField = focusedField
         }
 
-        mutating func updateValues(newValue: BigInt) -> EffectOf<ContentReducer> {
+        mutating func updateValues(newValue: EntryValue) -> EffectOf<ContentReducer> {
             return .merge(
                 entries.ids
                     .compactMap { id in entries[id: id]?.updateValue(newValue) }
@@ -145,7 +149,7 @@ public struct ContentReducer {
             state.focusedField = .exp
             state.entries[id: .exp]?.text = ""
             return .merge(
-                state.updateValues(newValue: 0),
+                state.updateValues(newValue: .init()),
                 state.updateBitWidth(state.selectedBitWidth),
                 state.updateFocusedField(newField: state.focusedField)
             )
@@ -231,11 +235,8 @@ public struct ContentReducer {
             return .none
 
         case .toggleSignage:
-            state.signage = switch state.signage {
-            case .unsigned: .signed
-            case .signed: .unsigned
-            }
-            return state.updateSignage(state.signage)
+            state.value.signage = state.value.signage.toggled()
+            return state.updateSignage(state.value.signage)
         }
 
         func addExpressionToHistory() -> EffectOf<ContentReducer> {

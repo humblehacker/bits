@@ -43,7 +43,7 @@ public struct ContentView: View {
                 Spacer()
             }
             ToolbarItem {
-                Button(store.signage == .signed ? "Signed" : "Unsigned") {
+                Button(store.value.signage == .signed ? "Signed" : "Unsigned") {
                     store.send(.toggleSignage)
                 }
                 .font(.body.smallCaps())

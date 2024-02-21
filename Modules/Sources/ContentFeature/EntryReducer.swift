@@ -3,6 +3,18 @@ import ComposableArchitecture
 import Dependencies
 import Utils
 
+public struct EntryValue: Equatable {
+    var value: BigInt
+    var bits: Bits
+    var signage: Signage
+
+    public init(value: BigInt = 0, bits: Bits = ._8, signage: Signage = .unsigned) {
+        self.value = value
+        self.bits = bits
+        self.signage = signage
+    }
+}
+
 @Reducer
 public struct EntryReducer {
     typealias IdentifiedAction = IdentifiedActionOf<Self>
@@ -11,9 +23,7 @@ public struct EntryReducer {
     public struct State: Equatable, Identifiable {
         let kind: EntryKind
         var text: String
-        var value: BigInt
-        var signage: Signage
-        var bits: Bits
+        var value: EntryValue
         var binText: BinaryTextFieldReducer.State?
         var isFocused: Bool
         var isError: Bool
@@ -24,9 +34,7 @@ public struct EntryReducer {
         public init(
             _ kind: EntryKind,
             text: String = "",
-            value: BigInt = 0,
-            signage: Signage = .unsigned,
-            bits: Bits = ._8,
+            value: EntryValue = .init(),
             binText: BinaryTextFieldReducer.State? = nil,
             isFocused: Bool = false,
             isError: Bool = false
@@ -34,14 +42,12 @@ public struct EntryReducer {
             self.kind = kind
             self.text = text
             self.value = value
-            self.signage = signage
-            self.bits = bits
             self.binText = binText
             self.isFocused = isFocused
             self.isError = isError
         }
 
-        mutating func updateValue(_ value: BigInt) -> Effect<IdentifiedAction> {
+        mutating func updateValue(_ value: EntryValue) -> Effect<IdentifiedAction> {
             guard value != self.value else { return .none }
             return .send(.element(id: id, action: .binding(.set(\.value, value))))
         }
@@ -54,15 +60,16 @@ public struct EntryReducer {
         mutating func updateBitWidth(_ bitWidth: Bits) -> Effect<IdentifiedAction> {
             guard let binText else { return .none }
             guard bitWidth != binText.bitWidth else { return .none }
+            value.bits = bitWidth
             return .merge(
-                .send(.element(id: id, action: .binText(.binding(.set(\.bitWidth, bitWidth))))),
-                .send(.element(id: id, action: .set(\.bits, bitWidth)))
+                .send(.element(id: id, action: .binding(.set(\.value, value)))),
+                .send(.element(id: id, action: .binText(.binding(.set(\.bitWidth, bitWidth)))))
             )
         }
 
         mutating func updateSignage(_ signage: Signage) -> Effect<IdentifiedAction> {
-            self.signage = signage
-            return .none
+            value.signage = signage
+            return .send(.element(id: id, action: .binding(.set(\.value, value))))
         }
 
         func showTitleButton() -> Bool {
@@ -78,7 +85,7 @@ public struct EntryReducer {
 
         @CasePathable
         public enum Delegate: Equatable {
-            case valueUpdated(BigInt)
+            case valueUpdated(EntryValue)
             case focusChanged(EntryKind)
         }
     }
@@ -99,13 +106,14 @@ public struct EntryReducer {
 
             case .binding(\.text): // text --> value
                 state.isError = false
-                let value = try entryConverter.integer(text: state.text, kind: state.kind, bits: state.bits, signage: state.signage) ?? 0
+                guard let value = try entryConverter.value(text: state.text, kind: state.kind, bits: state.value.bits, signage: state.value.signage)
+                else { return .none }
                 state.value = value
                 return .send(.delegate(.valueUpdated(value)))
 
             case .binding(\.value): // value --> text
                 state.isError = false
-                state.text = try entryConverter.text(bigint: state.value, kind: state.kind, bits: state.bits, signage: state.signage)
+                state.text = try entryConverter.text(value: state.value, kind: state.kind)
                 return .none
 
             case .binding:
@@ -116,7 +124,7 @@ public struct EntryReducer {
 
             case .confirmationKeyPressed:
                 state.isError = false
-                state.text = try entryConverter.text(bigint: state.value, kind: state.kind, bits: state.bits, signage: state.signage)
+                state.text = try entryConverter.text(value: state.value, kind: state.kind)
                 return .none
 
             case .delegate:
