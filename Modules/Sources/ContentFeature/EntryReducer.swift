@@ -101,7 +101,7 @@ public struct EntryReducer {
                 state.isError = false
                 state.text = try entryConverter.text(value: state.value, kind: state.kind)
                 let bits = state.value.bits
-                state.binText?.bitWidth = bits
+                state.binText?.bits = bits
                 return .none
 
             case .binding:

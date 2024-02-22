@@ -10,7 +10,7 @@ public let maxBits = Bits._64
 public struct BinaryTextFieldReducer {
     @ObservableState
     public struct State: Equatable {
-        var bitWidth: Bits
+        var bits: Bits
         var digits: IdentifiedArrayOf<BinaryDigit>
         var isFocused: Bool
         var selection: Selection
@@ -18,13 +18,13 @@ public struct BinaryTextFieldReducer {
         var text: String
 
         public init(
-            bitWidth: Bits = ._8,
+            bits: Bits = ._8,
             selection: Selection = .init(bounds: Bits._8.selectionBounds()),
             text: String = "0",
             digits: IdentifiedArrayOf<BinaryDigit> = [],
             isFocused: Bool = false
         ) {
-            self.bitWidth = bitWidth
+            self.bits = bits
             self.selection = selection
             self.text = text
             self.digits = digits
@@ -58,7 +58,7 @@ public struct BinaryTextFieldReducer {
 
         func digitDisabled(_ digit: BinaryDigit) -> Bool {
             let bitIndex = maxBits.rawValue - 1 - digit.index
-            return bitIndex >= bitWidth.rawValue
+            return bitIndex >= bits.rawValue
         }
 
         func spacingForDigit(_ digit: BinaryDigit) -> Double {
@@ -126,10 +126,10 @@ public struct BinaryTextFieldReducer {
                     return .none
                 }
             }
-            .onChange(of: \.bitWidth) { _, _ in
+            .onChange(of: \.bits) { _, _ in
                 Reduce { state, _ in
                     state.updateDigits()
-                    state.selection.setBounds(state.bitWidth.selectionBounds())
+                    state.selection.setBounds(state.bits.selectionBounds())
                     return .none
                 }
             }

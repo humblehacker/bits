@@ -189,7 +189,7 @@ class ContentReducerTests: XCTestCase {
     func testHistoryLaunchAndCancel() async {
         var initialState = ContentReducer.State()
         initialState.focusedField = .exp
-        initialState.selectedBitWidth = ._16
+        initialState.selectedBits = ._16
         initialState.entries[id: .exp]?.apply {
             $0.isFocused = true
             $0.text = "0xff"
@@ -315,7 +315,7 @@ class ContentReducerTests: XCTestCase {
     func testHistoryLaunchAndConfirm() async {
         var initialState = ContentReducer.State()
         initialState.focusedField = .exp
-        initialState.selectedBitWidth = ._16
+        initialState.selectedBits = ._16
         initialState.entries[id: .exp]?.apply {
             $0.isFocused = true
             $0.text = "0xff"

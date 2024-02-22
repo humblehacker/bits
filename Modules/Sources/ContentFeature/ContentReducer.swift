@@ -24,7 +24,7 @@ public struct ContentReducer {
     @ObservableState
     public struct State: Equatable {
         var entryWidth: Double
-        var selectedBitWidth: Bits
+        var selectedBits: Bits
         var expTextTemp: String?
         var entries: IdentifiedArrayOf<EntryReducer.State>
         var value: EntryValue
@@ -33,7 +33,7 @@ public struct ContentReducer {
 
         public init(
             entryWidth: Double = 100.0,
-            selectedBitWidth: Bits = ._8,
+            selectedBits: Bits = ._8,
             entries: IdentifiedArrayOf<EntryReducer.State> = [
                 .init(.bin, binText: .init()), .init(.exp), .init(.dec), .init(.hex),
             ],
@@ -41,7 +41,7 @@ public struct ContentReducer {
             focusedField: EntryKind? = nil
         ) {
             self.entryWidth = entryWidth
-            self.selectedBitWidth = selectedBitWidth
+            self.selectedBits = selectedBits
             self.entries = entries
             self.value = value
             self.focusedField = focusedField
@@ -118,11 +118,11 @@ public struct ContentReducer {
     func reduce(state: inout State, action: Action) -> Effect<Action> {
         switch action {
         case .onAppear:
-            state.selectedBitWidth = loadBits()
+            state.selectedBits = loadBits()
             state.focusedField = .exp
             state.entries[id: .exp]?.text = ""
             return .merge(
-                state.updateEntries(newValue: .init(bits: state.selectedBitWidth)),
+                state.updateEntries(newValue: .init(bits: state.selectedBits)),
                 state.updateFocusedField(newField: state.focusedField)
             )
 
@@ -140,10 +140,10 @@ public struct ContentReducer {
         case .entries:
             return .none
 
-        case .binding(\.selectedBitWidth):
-            let bitWidth = state.selectedBitWidth
-            saveBits(bitWidth)
-            state.value.bits = bitWidth
+        case .binding(\.selectedBits):
+            let bits = state.selectedBits
+            saveBits(bits)
+            state.value.bits = bits
             return state.updateEntries(newValue: state.value)
 
         case .binding(\.focusedField):
