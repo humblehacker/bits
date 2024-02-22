@@ -194,11 +194,11 @@ public struct BinaryTextFieldPreviewContainer: View {
     @FocusState var focused: Int?
 
     @State var binTextFieldStore = {
-        let bitWidth = Bits._16
-        let bounds = bitWidth.selectionBounds()
+        let bits = Bits._16
+        let bounds = bits.selectionBounds()
         return Store(
             initialState: BinaryTextFieldReducer.State(
-                bits: bitWidth,
+                bits: bits,
                 selection: Selection(bounds: bounds, selectedIndexes: bounds.lowerBound ..<+ 4)
             )
         ) {
