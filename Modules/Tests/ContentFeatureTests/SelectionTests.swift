@@ -1,5 +1,6 @@
 @testable import ContentFeature
 import CustomDump
+import Types
 import XCTest
 
 final class SelectionTests: XCTestCase {

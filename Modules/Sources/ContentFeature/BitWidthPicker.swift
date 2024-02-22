@@ -1,4 +1,5 @@
 import SwiftUI
+import Types
 
 struct BitWidthPicker: View {
     @Binding var selectedBitWidth: Bits

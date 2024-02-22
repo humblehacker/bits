@@ -1,6 +1,7 @@
 import BigInt
 import ComposableArchitecture
 import Dependencies
+import Types
 import Utils
 
 public struct EntryValue: Equatable {

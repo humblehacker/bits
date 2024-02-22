@@ -2,6 +2,7 @@ import BigInt
 import Dependencies
 import DependenciesMacros
 import Foundation
+import Types
 import Utils
 
 @DependencyClient

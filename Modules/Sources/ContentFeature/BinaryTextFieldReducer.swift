@@ -1,6 +1,7 @@
 import BigInt
 import ComposableArchitecture
 import SwiftUI
+import Types
 import Utils
 
 public let maxBits = Bits._64

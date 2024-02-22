@@ -1,6 +1,7 @@
 import Dependencies
 import DependenciesMacros
 import Foundation
+import Types
 
 @DependencyClient
 public struct ExpressionEvaluator {

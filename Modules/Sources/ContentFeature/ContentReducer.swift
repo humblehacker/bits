@@ -7,6 +7,7 @@ import ExpressionEvaluator
 import Foundation
 import HistoryFeature
 import Observation
+import Types
 import Utils
 
 private let defaultBits: Bits = ._32

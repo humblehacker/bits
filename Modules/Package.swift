@@ -14,6 +14,7 @@ let package = Package(
         .library(name: "DataStoreLive", targets: ["DataStoreLive"]),
         .library(name: "ExpressionEvaluator", targets: ["ExpressionEvaluator"]),
         .library(name: "HistoryFeature", targets: ["HistoryFeature"]),
+        .library(name: "Types", targets: ["Types"]),
         .library(name: "UI", targets: ["UI"]),
         .library(name: "Utils", targets: ["Utils"]),
     ],
@@ -38,6 +39,7 @@ let package = Package(
             dependencies: [
                 "ExpressionEvaluator",
                 "HistoryFeature",
+                "Types",
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "DependenciesAdditions", package: "swift-dependencies-additions"),
@@ -56,6 +58,8 @@ let package = Package(
         .target(
             name: "ExpressionEvaluator",
             dependencies: [
+                "Types",
+                .product(name: "BigInt", package: "BigInt"),
                 .product(name: "Parsing", package: "swift-parsing"),
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
@@ -76,8 +80,9 @@ let package = Package(
                 .product(name: "GRDB", package: "GRDB.swift"),
             ]
         ),
+        .target(name: "Types"),
         .target(name: "UI"),
-        .target(name: "Utils", dependencies: [ .product(name: "BigInt", package: "BigInt")]),
+        .target(name: "Utils", dependencies: [.product(name: "BigInt", package: "BigInt")]),
         .testTarget(name: "ContentFeatureTests", dependencies: ["ContentFeature"]),
         .testTarget(name: "ExpressionEvaluatorTests", dependencies: ["ExpressionEvaluator"]),
         .testTarget(name: "HistoryFeatureTests", dependencies: ["HistoryFeature"]),
