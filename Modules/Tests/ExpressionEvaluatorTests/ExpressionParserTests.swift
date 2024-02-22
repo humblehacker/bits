@@ -85,4 +85,25 @@ final class ExpressionParserTests: XCTestCase {
         XCTAssertNotNil(actual)
         XCTAssertEqual(4, actual)
     }
+
+    func testInt8_AdditionWraps() throws {
+        var input = "127 + 1"[...].utf8
+        let actual = try ExpressionParser<Int8>().parse(&input)
+        XCTAssertNotNil(actual)
+        XCTAssertEqual(-128, actual)
+    }
+
+    func testInt8_SubtractionWraps() throws {
+        var input = "-128 - 1"[...].utf8
+        let actual = try ExpressionParser<Int8>().parse(&input)
+        XCTAssertNotNil(actual)
+        XCTAssertEqual(127, actual)
+    }
+
+    func testInt8_MultiplicationWraps() throws {
+        var input = "64 * 2"[...].utf8
+        let actual = try ExpressionParser<Int8>().parse(&input)
+        XCTAssertNotNil(actual)
+        XCTAssertEqual(-128, actual)
+    }
 }
