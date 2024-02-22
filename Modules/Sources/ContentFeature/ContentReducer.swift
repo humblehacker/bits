@@ -209,7 +209,12 @@ public struct ContentReducer {
 
         case .toggleSignage:
             state.value.signage = state.value.signage.toggled()
-            return state.updateEntries(newValue: state.value)
+            var effects = [state.updateEntries(newValue: state.value)]
+            // If the focused field has text, that text should be re-evaluated with the new signage
+            if let field = state.focusedField, let text = state.entries[id: field]?.text {
+                effects.append(.send(.entries(.element(id: field, action: .binding(.set(\.text, text))))))
+            }
+            return .merge(effects)
         }
 
         func addExpressionToHistory() -> EffectOf<ContentReducer> {
