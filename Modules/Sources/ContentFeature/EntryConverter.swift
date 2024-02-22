@@ -44,8 +44,8 @@ extension EntryConverter: DependencyKey {
             switch kind {
             case .exp:
                 guard text.isNotEmpty else { return nil }
-                @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
-                let value = try BigInt(evaluateExpression(text))
+                @Dependency(\.expressionEvaluator) var expressionEvaluator
+                let value = try expressionEvaluator.evaluate(expression: text, bits: bits, signage: signage)
                 let entryValue = EntryValue(value, bits: bits, signage: signage)
                 try validateValue(entryValue)
                 return entryValue

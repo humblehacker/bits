@@ -54,8 +54,8 @@ struct AdditionAndSubtraction<Output: FixedWidthInteger>: Parser {
     var body: some Parser<Substring.UTF8View, Output> {
         InfixOperator(associativity: .left) {
             OneOf {
-                "+".utf8.map { (+) as (Output, Output) -> Output }
-                "-".utf8.map { (-) }
+                "+".utf8.map { (&+) as (Output, Output) -> Output }
+                "-".utf8.map { (&-) }
             }
         } follows: {
             MultiplicationAndDivision<Output>()
@@ -67,7 +67,7 @@ struct MultiplicationAndDivision<Output: FixedWidthInteger>: Parser {
     var body: some Parser<Substring.UTF8View, Output> {
         InfixOperator(associativity: .left) {
             OneOf {
-                "*".utf8.map { (*) as (Output, Output) -> Output }
+                "*".utf8.map { (&*) as (Output, Output) -> Output }
                 "/".utf8.map { (/) }
                 "%".utf8.map { (%) }
             }
