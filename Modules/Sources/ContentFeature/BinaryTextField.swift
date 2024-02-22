@@ -198,7 +198,7 @@ public struct BinaryTextFieldPreviewContainer: View {
         let bounds = bitWidth.selectionBounds()
         return Store(
             initialState: BinaryTextFieldReducer.State(
-                bitWidth: bitWidth,
+                bits: bitWidth,
                 selection: Selection(bounds: bounds, selectedIndexes: bounds.lowerBound ..<+ 4)
             )
         ) {
@@ -210,7 +210,7 @@ public struct BinaryTextFieldPreviewContainer: View {
 
     public var body: some View {
         VStack {
-            BitsPicker(selection: $binTextFieldStore.bitWidth)
+            BitsPicker(selection: $binTextFieldStore.bits)
                 .focused($focused, equals: 0)
 
             TextField(text: $binTextFieldStore.text, label: { EmptyView() })
