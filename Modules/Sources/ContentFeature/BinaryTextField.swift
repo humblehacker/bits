@@ -210,7 +210,7 @@ public struct BinaryTextFieldPreviewContainer: View {
 
     public var body: some View {
         VStack {
-            BitWidthPicker(selectedBitWidth: $binTextFieldStore.bitWidth)
+            BitWidthPicker(selection: $binTextFieldStore.bitWidth)
                 .focused($focused, equals: 0)
 
             TextField(text: $binTextFieldStore.text, label: { EmptyView() })

@@ -49,7 +49,7 @@ public struct ContentView: View {
                 .font(.body.smallCaps())
             }
             ToolbarItem {
-                BitWidthPicker(selectedBitWidth: $store.selectedBitWidth)
+                BitWidthPicker(selection: $store.selectedBitWidth)
             }
         }
         .fixedSize()
