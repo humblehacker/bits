@@ -141,9 +141,9 @@ public struct ContentReducer {
             return .none
 
         case .binding(\.selectedBits):
-            let bitWidth = state.selectedBits
-            saveBits(bitWidth)
-            state.value.bits = bitWidth
+            let bits = state.selectedBits
+            saveBits(bits)
+            state.value.bits = bits
             return state.updateEntries(newValue: state.value)
 
         case .binding(\.focusedField):
