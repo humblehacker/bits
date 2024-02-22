@@ -1,7 +1,7 @@
 import SwiftUI
 import Types
 
-struct BitWidthPicker: View {
+struct BitsPicker: View {
     @Binding var selection: Bits
 
     var body: some View {
