@@ -21,32 +21,32 @@ class ContentReducerTests: XCTestCase {
         await store.send(.entries(.element(id: .exp, action: .binding(.set(\.text, "54 + 1"))))) {
             $0.entries[id: .exp]?.apply {
                 $0.text = "54 + 1"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
-        await store.receive(\.entries[id: .exp].delegate.valueUpdated, 55) {
-            $0.value = 55
+        await store.receive(\.entries[id: .exp].delegate.valueUpdated, EntryValue(55)) {
+            $0.value = EntryValue(55)
         }
 
         await store.receive(\.entries[id: .bin].binding) {
             $0.entries[id: .bin]?.apply {
                 $0.text = "110111"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
         await store.receive(\.entries[id: .dec].binding) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "55"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
         await store.receive(\.entries[id: .hex].binding) {
             $0.entries[id: .hex]?.apply {
                 $0.text = "37"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
@@ -65,32 +65,32 @@ class ContentReducerTests: XCTestCase {
         await store.send(.entries(.element(id: .dec, action: .binding(.set(\.text, "55"))))) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "55"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
-        await store.receive(\.entries[id: .dec].delegate.valueUpdated, 55) {
-            $0.value = 55
+        await store.receive(\.entries[id: .dec].delegate.valueUpdated, EntryValue(55)) {
+            $0.value = EntryValue(55)
         }
 
         await store.receive(\.entries[id: .bin].binding) {
             $0.entries[id: .bin]?.apply {
                 $0.text = "110111"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
         await store.receive(\.entries[id: .exp].binding) {
             $0.entries[id: .exp]?.apply {
                 $0.text = "55"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
         await store.receive(\.entries[id: .hex].binding) {
             $0.entries[id: .hex]?.apply {
                 $0.text = "37"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
@@ -109,32 +109,32 @@ class ContentReducerTests: XCTestCase {
         await store.send(.entries(.element(id: .hex, action: .binding(.set(\.text, "37"))))) {
             $0.entries[id: .hex]?.apply {
                 $0.text = "37"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
-        await store.receive(\.entries[id: .hex].delegate.valueUpdated, 55) {
-            $0.value = 55
+        await store.receive(\.entries[id: .hex].delegate.valueUpdated, EntryValue(55)) {
+            $0.value = EntryValue(55)
         }
 
         await store.receive(\.entries[id: .bin].binding) {
             $0.entries[id: .bin]?.apply {
                 $0.text = "110111"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
         await store.receive(\.entries[id: .exp].binding) {
             $0.entries[id: .exp]?.apply {
                 $0.text = "55"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
         await store.receive(\.entries[id: .dec].binding) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "55"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
@@ -153,32 +153,32 @@ class ContentReducerTests: XCTestCase {
         await store.send(.entries(.element(id: .bin, action: .binding(.set(\.text, "110111"))))) {
             $0.entries[id: .bin]?.apply {
                 $0.text = "110111"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
-        await store.receive(\.entries[id: .bin].delegate.valueUpdated, 55) {
-            $0.value = 55
+        await store.receive(\.entries[id: .bin].delegate.valueUpdated, EntryValue(55)) {
+            $0.value = EntryValue(55)
         }
 
         await store.receive(\.entries[id: .exp].binding) {
             $0.entries[id: .exp]?.apply {
                 $0.text = "55"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
         await store.receive(\.entries[id: .dec].binding) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "55"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
         await store.receive(\.entries[id: .hex].binding) {
             $0.entries[id: .hex]?.apply {
                 $0.text = "37"
-                $0.value = 55
+                $0.value = EntryValue(55)
             }
         }
 
@@ -237,34 +237,34 @@ class ContentReducerTests: XCTestCase {
         await store.receive(\.entries[id: .exp].binding) {
             $0.entries[id: .exp]?.apply {
                 $0.text = "123"
-                $0.value = 123
+                $0.value = EntryValue(123)
             }
         }
 
         // The exp entry fires the valueUpdated delegate action which sets the value ...
-        await store.receive(\.entries[id: .exp].delegate.valueUpdated, 123) {
-            $0.value = 123
+        await store.receive(\.entries[id: .exp].delegate.valueUpdated, EntryValue(123)) {
+            $0.value = EntryValue(123)
         }
 
         // ... and causes the rest of the entries to update
         await store.receive(\.entries[id: .bin].binding) {
             $0.entries[id: .bin]?.apply {
                 $0.text = "1111011"
-                $0.value = 123
+                $0.value = EntryValue(123)
             }
         }
 
         await store.receive(\.entries[id: .dec].binding) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "123"
-                $0.value = 123
+                $0.value = EntryValue(123)
             }
         }
 
         await store.receive(\.entries[id: .hex].binding) {
             $0.entries[id: .hex]?.apply {
                 $0.text = "7B"
-                $0.value = 123
+                $0.value = EntryValue(123)
             }
         }
 
@@ -278,33 +278,33 @@ class ContentReducerTests: XCTestCase {
         await store.receive(\.entries[id: .exp].binding) {
             $0.entries[id: .exp]?.apply {
                 $0.text = "0xff"
-                $0.value = 255
+                $0.value = EntryValue(255)
             }
         }
 
         // ... and the other entries update accordingly
-        await store.receive(\.entries[id: .exp].delegate.valueUpdated, 255) {
-            $0.value = 255
+        await store.receive(\.entries[id: .exp].delegate.valueUpdated, EntryValue(255)) {
+            $0.value = EntryValue(255)
         }
 
         await store.receive(\.entries[id: .bin].binding) {
             $0.entries[id: .bin]?.apply {
                 $0.text = "11111111"
-                $0.value = 255
+                $0.value = EntryValue(255)
             }
         }
 
         await store.receive(\.entries[id: .dec].binding) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "255"
-                $0.value = 255
+                $0.value = EntryValue(255)
             }
         }
 
         await store.receive(\.entries[id: .hex].binding) {
             $0.entries[id: .hex]?.apply {
                 $0.text = "FF"
-                $0.value = 255
+                $0.value = EntryValue(255)
             }
         }
 
@@ -363,34 +363,34 @@ class ContentReducerTests: XCTestCase {
         await store.receive(\.entries[id: .exp].binding) {
             $0.entries[id: .exp]?.apply {
                 $0.text = "123"
-                $0.value = 123
+                $0.value = EntryValue(123)
             }
         }
 
         // The exp entry fires the valueUpdated delegate action which sets the value ...
-        await store.receive(\.entries[id: .exp].delegate.valueUpdated, 123) {
-            $0.value = 123
+        await store.receive(\.entries[id: .exp].delegate.valueUpdated, EntryValue(123)) {
+            $0.value = EntryValue(123)
         }
 
         // ... and causes the rest of the entries to update
         await store.receive(\.entries[id: .bin].binding) {
             $0.entries[id: .bin]?.apply {
                 $0.text = "1111011"
-                $0.value = 123
+                $0.value = EntryValue(123)
             }
         }
 
         await store.receive(\.entries[id: .dec].binding) {
             $0.entries[id: .dec]?.apply {
                 $0.text = "123"
-                $0.value = 123
+                $0.value = EntryValue(123)
             }
         }
 
         await store.receive(\.entries[id: .hex].binding) {
             $0.entries[id: .hex]?.apply {
                 $0.text = "7B"
-                $0.value = 123
+                $0.value = EntryValue(123)
             }
         }
 
@@ -425,7 +425,7 @@ class ContentReducerTests: XCTestCase {
         await store.send(.entries(.element(id: .exp, action: .binding(.set(\.text, " 0x55 "))))) {
             $0.entries[id: .exp]?.apply {
                 $0.text = " 0x55 "
-                $0.value = 85
+                $0.value = EntryValue(85)
             }
         }
 

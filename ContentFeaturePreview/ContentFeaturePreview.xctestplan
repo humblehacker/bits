@@ -21,6 +21,20 @@
         "identifier" : "ContentFeatureTests",
         "name" : "ContentFeatureTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Modules",
+        "identifier" : "ExpressionEvaluatorTests",
+        "name" : "ExpressionEvaluatorTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Modules",
+        "identifier" : "HistoryFeatureTests",
+        "name" : "HistoryFeatureTests"
+      }
     }
   ],
   "version" : 1

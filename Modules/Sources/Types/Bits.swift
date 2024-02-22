@@ -6,5 +6,5 @@ public enum Bits: Int, Equatable, CaseIterable, Identifiable {
     case _32 = 32
     case _64 = 64
 
-    public var id: Int { self.rawValue }
+    public var id: Int { rawValue }
 }
