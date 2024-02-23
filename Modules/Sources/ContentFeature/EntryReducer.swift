@@ -58,10 +58,6 @@ public struct EntryReducer {
             guard text != self.text else { return .none }
             return .send(.element(id: id, action: .binding(.set(\.text, text))))
         }
-
-        func showTitleButton() -> Bool {
-            return kind != .bin
-        }
     }
 
     public enum Action: BindableAction, Equatable {
