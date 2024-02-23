@@ -27,22 +27,29 @@ public struct ContentReducer {
         var selectedBits: Bits
         var expTextTemp: String?
         var entries: IdentifiedArrayOf<EntryReducer.State>
+        var variableEntryKeys: [EntryKind]
         var value: EntryValue
         var focusedField: EntryKind?
         @Presents var destination: Destination.State?
+
+        var variableEntries: IdentifiedArrayOf<EntryReducer.State> {
+            entries.filter { variableEntryKeys.contains($0.id) }
+        }
 
         public init(
             entryWidth: Double = 100.0,
             selectedBits: Bits = ._8,
             entries: IdentifiedArrayOf<EntryReducer.State> = [
-                .init(.bin, binText: .init()), .init(.exp), .init(.dec), .init(.hex),
+                .init(.bin, binText: .init()), .init(.exp), .init(.dec), .init(.hex)
             ],
+            variableEntryKeys: [EntryKind] = [.dec, .hex],
             value: EntryValue = .init(),
             focusedField: EntryKind? = nil
         ) {
             self.entryWidth = entryWidth
             self.selectedBits = selectedBits
             self.entries = entries
+            self.variableEntryKeys = variableEntryKeys
             self.value = value
             self.focusedField = focusedField
         }

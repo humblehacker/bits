@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import HistoryFeature
 import SwiftUI
+import UI
 
 public struct ContentView: View {
     @State var store: StoreOf<ContentReducer>
@@ -12,23 +13,30 @@ public struct ContentView: View {
 
     public var body: some View {
         VStack {
-            ForEach(store.scope(state: \.entries, action: \.entries)) { store in
-                if store.kind == .bin {
-                    BinaryTextEntry(store: store)
-                        .padding(.vertical, 8)
-                        .focused($focusedField, equals: store.kind)
-                } else {
+            if let binStore = store.scope(entryKind: .bin) {
+                BinaryTextEntry(store: binStore)
+                    .padding(.vertical, 8)
+                    .focused($focusedField, equals: binStore.kind)
+            }
+
+            if let expStore = store.scope(entryKind: .exp) {
+                Entry(store: expStore)
+                    .focused($focusedField, equals: .exp)
+                    .onKeyPress(.upArrow) {
+                        store.send(.upArrowPressed)
+                        return .handled
+                    }
+                    .overlay {
+                        GeometryReader { geo in
+                            Color.clear.onAppear { store.entryWidth = geo.size.width }
+                        }
+                    }
+            }
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
+                ForEach(store.scope(state: \.variableEntries, action: \.entries)) { store in
                     Entry(store: store)
                         .focused($focusedField, equals: store.kind)
-                }
-            }
-            .onKeyPress(.upArrow) {
-                store.send(.upArrowPressed)
-                return .handled
-            }
-            .overlay {
-                GeometryReader { geo in
-                    Color.clear.onAppear { store.entryWidth = geo.size.width }
                 }
             }
         }
@@ -59,6 +67,12 @@ public struct ContentView: View {
                 .frame(width: self.store.entryWidth)
         }
         .bind($store.focusedField, to: $focusedField)
+    }
+}
+
+extension StoreOf<ContentReducer> {
+    func scope(entryKind: EntryKind) -> StoreOf<EntryReducer>? {
+        scope(state: \.entries[id: entryKind], action: \.entries[id: entryKind])
     }
 }
 
