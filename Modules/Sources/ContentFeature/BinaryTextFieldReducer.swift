@@ -83,7 +83,7 @@ public struct BinaryTextFieldReducer {
 
         mutating
         func applyBitOperation(bitOp: BitOp) -> EffectOf<BinaryTextFieldReducer> {
-            guard let currentValue = Int(text, radix: 2) else { return .none }
+            guard let currentValue = BigInt(text, radix: 2) else { return .none }
 
             var newValue = currentValue
 
