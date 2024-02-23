@@ -13,26 +13,22 @@ public struct ContentView: View {
 
     public var body: some View {
         VStack {
-            if let binStore = store.scope(entryKind: .bin) {
-                BinaryTextEntry(store: binStore)
-                    .padding(.vertical, 8)
-                    .focused($focusedField, equals: binStore.kind)
-                    .onTapGesture { focusedField = .bin }
-            }
+            BinaryTextEntry(store: store.scope(entryKind: .bin))
+                .padding(.vertical, 8)
+                .focused($focusedField, equals: .bin)
+                .onTapGesture { focusedField = .bin }
 
-            if let expStore = store.scope(entryKind: .exp) {
-                Entry(store: expStore)
-                    .focused($focusedField, equals: .exp)
-                    .onKeyPress(.upArrow) {
-                        store.send(.upArrowPressed)
-                        return .handled
+            Entry(store: store.scope(entryKind: .exp))
+                .focused($focusedField, equals: .exp)
+                .onKeyPress(.upArrow) {
+                    store.send(.upArrowPressed)
+                    return .handled
+                }
+                .overlay {
+                    GeometryReader { geo in
+                        Color.clear.onAppear { store.entryWidth = geo.size.width }
                     }
-                    .overlay {
-                        GeometryReader { geo in
-                            Color.clear.onAppear { store.entryWidth = geo.size.width }
-                        }
-                    }
-            }
+                }
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
                 ForEach(store.scope(state: \.variableEntries, action: \.entries)) { store in
@@ -72,8 +68,8 @@ public struct ContentView: View {
 }
 
 extension StoreOf<ContentReducer> {
-    func scope(entryKind: EntryKind) -> StoreOf<EntryReducer>? {
-        scope(state: \.entries[id: entryKind], action: \.entries[id: entryKind])
+    func scope(entryKind: EntryKind) -> StoreOf<EntryReducer> {
+        scope(state: \.entries[id: entryKind]!, action: \.entries[id: entryKind])
     }
 }
 
