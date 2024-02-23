@@ -17,6 +17,7 @@ public struct ContentView: View {
                 BinaryTextEntry(store: binStore)
                     .padding(.vertical, 8)
                     .focused($focusedField, equals: binStore.kind)
+                    .onTapGesture { focusedField = .bin }
             }
 
             if let expStore = store.scope(entryKind: .exp) {
