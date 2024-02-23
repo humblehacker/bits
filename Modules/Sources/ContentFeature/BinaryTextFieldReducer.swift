@@ -102,6 +102,12 @@ public struct BinaryTextFieldReducer {
             updateDigits()
             return .none
         }
+
+        mutating
+        func updateBits(_ bits: Bits) {
+            self.bits = bits
+            selection.setBounds(bits.selectionBounds())
+        }
     }
 
     public enum Action: BindableAction, Equatable {
@@ -128,8 +134,7 @@ public struct BinaryTextFieldReducer {
             }
             .onChange(of: \.bits) { _, _ in
                 Reduce { state, _ in
-                    state.updateDigits()
-                    state.selection.setBounds(state.bits.selectionBounds())
+                    state.updateBits(state.bits)
                     return .none
                 }
             }
