@@ -40,7 +40,7 @@ public struct ContentReducer {
             entryWidth: Double = 100.0,
             selectedBits: Bits = ._8,
             entries: IdentifiedArrayOf<EntryReducer.State> = [
-                .init(.bin, binText: .init()), .init(.exp), .init(.dec), .init(.hex)
+                .init(.bin, binText: .init()), .init(.exp), .init(.dec), .init(.hex),
             ],
             variableEntryKeys: [EntryKind] = [.dec, .hex],
             value: EntryValue = .init(),
@@ -89,14 +89,14 @@ public struct ContentReducer {
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
-        case entries(IdentifiedActionOf<EntryReducer>)
-        case onAppear
-        case upArrowPressed
-        case historyItemSelected(HistoryItem)
-        case historyItemConfirmed(HistoryItem)
-        case historyLoaded([HistoryItem])
         case destination(PresentationAction<Destination.Action>)
+        case entries(IdentifiedActionOf<EntryReducer>)
+        case historyItemConfirmed(HistoryItem)
+        case historyItemSelected(HistoryItem)
+        case historyLoaded([HistoryItem])
+        case onAppear
         case toggleSignage
+        case upArrowPressed
     }
 
     @Dependency(\.expressionEvaluator.evaluate) var evaluateExpression
@@ -124,29 +124,6 @@ public struct ContentReducer {
 
     func reduce(state: inout State, action: Action) -> Effect<Action> {
         switch action {
-        case .onAppear:
-            state.selectedBits = loadBits()
-            state.focusedField = .exp
-            state.entries[id: .exp]?.text = ""
-            return .merge(
-                state.updateEntries(newValue: .init(bits: state.selectedBits)),
-                state.updateFocusedField(newField: state.focusedField)
-            )
-
-        case let .entries(.element(_, .delegate(.focusChanged(newFocusedField)))):
-            state.focusedField = newFocusedField
-            return state.updateFocusedField(newField: state.focusedField)
-
-        case let .entries(.element(id, .delegate(.valueUpdated(value)))):
-            state.value = value
-            return .merge(
-                state.updateEntries(newValue: value),
-                id == .exp ? addExpressionToHistory() : .none
-            )
-
-        case .entries:
-            return .none
-
         case .binding(\.selectedBits):
             let bits = state.selectedBits
             saveBits(bits)
@@ -158,33 +135,6 @@ public struct ContentReducer {
 
         case .binding:
             return .none
-
-        case .upArrowPressed:
-            guard
-                let field = state.focusedField, field == .exp,
-                let text = state.entries[id: field]?.text
-            else { return .none }
-
-            state.expTextTemp = text
-
-            return .run { send in
-                let history = try await historyStore.items()
-                guard history.isNotEmpty else { return }
-                await send(.historyLoaded(history))
-            }
-            .debounce(id: CancelID.upArrow, for: 0.2, scheduler: mainQueue)
-
-        case let .historyLoaded(history):
-            guard state.destination == nil else { return .none }
-            state.destination = .history(HistoryReducer.State(history: history))
-            return .none
-
-        case let .historyItemSelected(item):
-            return state.updateExpressionText(item.text)
-
-        case let .historyItemConfirmed(item):
-            state.expTextTemp = nil
-            return state.updateExpressionText(item.text)
 
         case let .destination(.presented(.history(.delegate(.selectionChanged(id))))):
             return .run { send in
@@ -214,6 +164,41 @@ public struct ContentReducer {
         case .destination:
             return .none
 
+        case let .entries(.element(_, .delegate(.focusChanged(newFocusedField)))):
+            state.focusedField = newFocusedField
+            return state.updateFocusedField(newField: state.focusedField)
+
+        case let .entries(.element(id, .delegate(.valueUpdated(value)))):
+            state.value = value
+            return .merge(
+                state.updateEntries(newValue: value),
+                id == .exp ? addExpressionToHistory() : .none
+            )
+
+        case .entries:
+            return .none
+
+        case let .historyItemConfirmed(item):
+            state.expTextTemp = nil
+            return state.updateExpressionText(item.text)
+
+        case let .historyItemSelected(item):
+            return state.updateExpressionText(item.text)
+
+        case let .historyLoaded(history):
+            guard state.destination == nil else { return .none }
+            state.destination = .history(HistoryReducer.State(history: history))
+            return .none
+
+        case .onAppear:
+            state.selectedBits = loadBits()
+            state.focusedField = .exp
+            state.entries[id: .exp]?.text = ""
+            return .merge(
+                state.updateEntries(newValue: .init(bits: state.selectedBits)),
+                state.updateFocusedField(newField: state.focusedField)
+            )
+
         case .toggleSignage:
             state.value.signage = state.value.signage.toggled()
             var effects = [state.updateEntries(newValue: state.value)]
@@ -222,6 +207,21 @@ public struct ContentReducer {
                 effects.append(.send(.entries(.element(id: field, action: .binding(.set(\.text, text))))))
             }
             return .merge(effects)
+
+        case .upArrowPressed:
+            guard
+                let field = state.focusedField, field == .exp,
+                let text = state.entries[id: field]?.text
+            else { return .none }
+
+            state.expTextTemp = text
+
+            return .run { send in
+                let history = try await historyStore.items()
+                guard history.isNotEmpty else { return }
+                await send(.historyLoaded(history))
+            }
+            .debounce(id: CancelID.upArrow, for: 0.2, scheduler: mainQueue)
         }
 
         func addExpressionToHistory() -> EffectOf<ContentReducer> {
