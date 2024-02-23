@@ -57,6 +57,7 @@
 		6316CC4E2B6595B100EF5095 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6316CC512B6595B100EF5095 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		6316CC532B6595B100EF5095 /* ContentFeaturePreview.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ContentFeaturePreview.entitlements; sourceTree = "<group>"; };
+		63BE84EF2B892AF40019FF97 /* Bits-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Bits-Info.plist"; sourceTree = "<group>"; };
 		63CE98892B72A89800D2398A /* ContentFeaturePreview.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = ContentFeaturePreview.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -110,6 +111,7 @@
 		631047132B488DA600AC4460 = {
 			isa = PBXGroup;
 			children = (
+				63BE84EF2B892AF40019FF97 /* Bits-Info.plist */,
 				630503CE2B58457000879FAE /* Bits.xctestplan */,
 				630503C72B58370E00879FAE /* Modules */,
 				630503C82B58381000879FAE /* App */,
@@ -485,6 +487,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Bits-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -517,6 +520,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Bits-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
