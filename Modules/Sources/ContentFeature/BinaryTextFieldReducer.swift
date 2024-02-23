@@ -83,7 +83,7 @@ public struct BinaryTextFieldReducer {
 
         mutating
         func applyBitOperation(bitOp: BitOp) -> EffectOf<BinaryTextFieldReducer> {
-            guard let currentValue = Int(text, radix: 2) else { return .none }
+            guard let currentValue = BigInt(text, radix: 2) else { return .none }
 
             var newValue = currentValue
 
@@ -101,6 +101,12 @@ public struct BinaryTextFieldReducer {
             text = String(newValue, radix: 2)
             updateDigits()
             return .none
+        }
+
+        mutating
+        func updateBits(_ bits: Bits) {
+            self.bits = bits
+            selection.setBounds(bits.selectionBounds())
         }
     }
 
@@ -128,8 +134,7 @@ public struct BinaryTextFieldReducer {
             }
             .onChange(of: \.bits) { _, _ in
                 Reduce { state, _ in
-                    state.updateDigits()
-                    state.selection.setBounds(state.bits.selectionBounds())
+                    state.updateBits(state.bits)
                     return .none
                 }
             }

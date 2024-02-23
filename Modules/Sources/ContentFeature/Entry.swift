@@ -8,15 +8,13 @@ struct Entry: View {
 
     var body: some View {
         HStack {
-            if store.state.showTitleButton() {
-                Button(store.title) { store.isFocused = true }
-                    .frame(width: 45, height: 20)
-                    .buttonStyle(.plain)
-                    .background(buttonBackgroundColor(store.isFocused))
-                    .foregroundColor(buttonForegroundColor(store.isFocused))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                    .focusable(false)
-            }
+            Button(store.title) { store.isFocused = true }
+                .frame(width: 45, height: 20)
+                .buttonStyle(.plain)
+                .background(buttonBackgroundColor(store.isFocused))
+                .foregroundColor(buttonForegroundColor(store.isFocused))
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .focusable(false)
 
             TextField(text: $store.text, label: { EmptyView() })
                 .entryTextStyle()

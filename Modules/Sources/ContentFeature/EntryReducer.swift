@@ -50,16 +50,13 @@ public struct EntryReducer {
 
         mutating func updateValue(_ value: EntryValue) -> Effect<IdentifiedAction> {
             guard value != self.value else { return .none }
+            binText?.updateBits(value.bits)
             return .send(.element(id: id, action: .binding(.set(\.value, value))))
         }
 
         mutating func updateText(_ text: String) -> Effect<IdentifiedAction> {
             guard text != self.text else { return .none }
             return .send(.element(id: id, action: .binding(.set(\.text, text))))
-        }
-
-        func showTitleButton() -> Bool {
-            return kind != .bin
         }
     }
 
