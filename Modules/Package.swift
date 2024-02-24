@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "Modules",
     platforms: [
-        .macOS(.v14),
+        .macOS("14.1"), // _logChanges() is only available on macOS 14.1
     ],
     products: [
         .library(name: "AppFeature", targets: ["AppFeature"]),
