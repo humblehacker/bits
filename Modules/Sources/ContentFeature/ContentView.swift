@@ -12,7 +12,9 @@ public struct ContentView: View {
     }
 
     public var body: some View {
-        VStack {
+        logChanges()
+
+        return VStack {
             BinaryTextEntry(store: store.scope(entryKind: .bin))
                 .padding(.vertical, 8)
                 .focused($focusedField, equals: .bin)

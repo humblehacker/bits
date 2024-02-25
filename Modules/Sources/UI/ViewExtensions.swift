@@ -14,3 +14,13 @@ public extension View {
         }
     }
 }
+
+public extension View {
+    func logChanges() {
+#if DEBUG
+        if #available(macOS 14.1, *) {
+            Self._logChanges()
+        }
+#endif
+    }
+}
