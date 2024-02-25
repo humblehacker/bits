@@ -1,16 +1,19 @@
 import ComposableArchitecture
 import SwiftUI
+import UI
 
 struct BinaryTextEntry: View {
     @Bindable var store: StoreOf<EntryReducer>
 
     var body: some View {
-        let _ = Self._printChanges()
-        if let binStore = store.scope(state: \.binText, action: \.binText) {
-            BinaryTextField(text: $store.text, store: binStore)
-                .entryTextStyle()
-                .focusEffectDisabled()
-        }
+        logChanges()
+
+        return BinaryTextField(
+            text: $store.text,
+            store: store.scope(state: \.binText, action: \.binText)!
+        )
+        .entryTextStyle()
+        .focusEffectDisabled()
     }
 }
 
