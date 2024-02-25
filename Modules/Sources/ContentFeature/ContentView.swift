@@ -40,25 +40,7 @@ public struct ContentView: View {
             }
         }
         .padding([.horizontal, .bottom])
-        .toolbar {
-            ToolbarItem {
-                Text(Bundle.main.appName ?? "")
-                    .font(.system(size: 13))
-                    .fontWeight(.bold)
-            }
-            ToolbarItem {
-                Spacer()
-            }
-            ToolbarItem {
-                Button(store.value.signage == .signed ? "Signed" : "Unsigned") {
-                    store.send(.toggleSignage)
-                }
-                .font(.body.smallCaps())
-            }
-            ToolbarItem {
-                BitsPicker(selection: $store.selectedBits)
-            }
-        }
+        .toolbar { Toolbar(store: store) }
         .fixedSize()
         .onAppear { store.send(.onAppear) }
         .popover(item: $store.scope(state: \.destination?.history, action: \.destination.history)) { store in
@@ -66,6 +48,30 @@ public struct ContentView: View {
                 .frame(width: self.store.entryWidth)
         }
         .bind($store.focusedField, to: $focusedField)
+    }
+}
+
+struct Toolbar: ToolbarContent {
+    @Bindable var store: StoreOf<ContentReducer>
+
+    var body: some ToolbarContent {
+        ToolbarItem {
+            Text(Bundle.main.appName ?? "")
+                .font(.system(size: 13))
+                .fontWeight(.bold)
+        }
+        ToolbarItem {
+            Spacer()
+        }
+        ToolbarItem {
+            Button(store.value.signage == .signed ? "Signed" : "Unsigned") {
+                store.send(.toggleSignage)
+            }
+            .font(.body.smallCaps())
+        }
+        ToolbarItem {
+            BitsPicker(selection: $store.selectedBits)
+        }
     }
 }
 
