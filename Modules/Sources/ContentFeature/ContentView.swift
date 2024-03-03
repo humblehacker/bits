@@ -82,7 +82,7 @@ extension StoreOf<ContentReducer> {
 }
 
 #Preview {
-    ContentView(store: Store(initialState: ContentReducer.State()) {
+    ContentView(store: Store(initialState: .init(value: .init())) {
         ContentReducer()
     })
 }

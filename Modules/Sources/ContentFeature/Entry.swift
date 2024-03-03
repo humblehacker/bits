@@ -24,6 +24,8 @@ struct Entry: View {
                     return .handled
                 }
         }
+        .onAppear { store.send(.onAppear) }
+        .onDisappear { store.send(.onDisappear) }
     }
 
     func buttonBackgroundColor(_ isFocused: Bool) -> Color {
@@ -60,11 +62,9 @@ extension View {
 }
 
 #Preview {
-    Entry(
-        store: Store(initialState: .init(.hex, text: "FF00")) {
-            EntryReducer()
-        }
-    )
+    Entry(store: Store(initialState: .init(.hex, value: Shared(.init()))) {
+        EntryReducer()
+    })
     .padding()
     .frame(maxWidth: .infinity)
 }

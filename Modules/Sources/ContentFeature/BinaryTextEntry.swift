@@ -14,12 +14,14 @@ struct BinaryTextEntry: View {
         )
         .entryTextStyle()
         .focusEffectDisabled()
+        .onAppear { store.send(.onAppear) }
+        .onDisappear { store.send(.onDisappear) }
     }
 }
 
 #Preview {
     BinaryTextEntry(
-        store: Store(initialState: .init(.bin, binText: .init(bits: ._16))) {
+        store: Store(initialState: .init(.bin, value: Shared(.init()))) {
             EntryReducer()
         } withDependencies: {
             $0.userDefaults = .ephemeral()

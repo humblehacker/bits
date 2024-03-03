@@ -28,7 +28,7 @@ public struct ContentReducer {
         var expTextTemp: String?
         var entries: IdentifiedArrayOf<EntryReducer.State>
         var variableEntryKeys: [EntryKind]
-        var value: EntryValue
+        @Shared var value: EntryValue
         var focusedField: EntryKind?
         @Presents var destination: Destination.State?
 
@@ -39,33 +39,22 @@ public struct ContentReducer {
         public init(
             entryWidth: Double = 100.0,
             selectedBits: Bits = ._8,
-            entries: IdentifiedArrayOf<EntryReducer.State> = [
-                .init(.bin, binText: .init()), .init(.exp), .init(.dec), .init(.hex),
-            ],
             variableEntryKeys: [EntryKind] = [.dec, .hex],
             value: EntryValue = .init(),
             focusedField: EntryKind? = nil
         ) {
             self.entryWidth = entryWidth
             self.selectedBits = selectedBits
-            self.entries = entries
             self.variableEntryKeys = variableEntryKeys
-            self.value = value
             self.focusedField = focusedField
-        }
 
-        mutating func updateEntries(newValue: EntryValue) -> EffectOf<ContentReducer> {
-            return .merge(
-                entries.ids
-                    .compactMap { id in entries[id: id]?.updateValue(newValue) }
-                    .map { effect in effect.map(ContentReducer.Action.entries) }
-            )
-        }
-
-        mutating func updateEntriesFromExpression() -> EffectOf<ContentReducer> {
-            guard let value = entries[id: .exp]?.value else { return .none }
-            print("Updating from value: \(value)")
-            return updateEntries(newValue: value)
+            _value = Shared(.init())
+            entries = [
+                .init(.bin, value: _value, binText: .init()),
+                .init(.exp, value: _value),
+                .init(.dec, value: _value),
+                .init(.hex, value: _value),
+            ]
         }
 
         mutating func updateFocusedField(newField: EntryKind?) -> EffectOf<ContentReducer> {
@@ -80,10 +69,7 @@ public struct ContentReducer {
         }
 
         mutating func updateExpressionText(_ text: String) -> EffectOf<ContentReducer> {
-            .merge(
-                entries[id: .exp]?.updateText(text).map(Action.entries) ?? .none,
-                updateEntriesFromExpression()
-            )
+            entries[id: .exp]?.updateText(text).map(Action.entries) ?? .none
         }
     }
 
@@ -128,7 +114,7 @@ public struct ContentReducer {
             let bits = state.selectedBits
             saveBits(bits)
             state.value.bits = bits
-            return state.updateEntries(newValue: state.value)
+            return .none
 
         case .binding(\.focusedField):
             return state.updateFocusedField(newField: state.focusedField)
@@ -168,12 +154,13 @@ public struct ContentReducer {
             state.focusedField = newFocusedField
             return state.updateFocusedField(newField: state.focusedField)
 
-        case let .entries(.element(id, .delegate(.valueUpdated(value)))):
-            state.value = value
-            return .merge(
-                state.updateEntries(newValue: value),
-                id == .exp ? addExpressionToHistory() : .none
-            )
+        case let .entries(.element(id, .valueUpdated)):
+            guard id == .exp else { return .none }
+            guard let text = state.entries[id: .exp]?.text else { return .none }
+            return .run { _ in
+                try await historyStore.addItem(text: text.trimmingCharacters(in: .whitespacesAndNewlines))
+            }
+            .debounce(id: CancelID.history, for: 1.0, scheduler: mainQueue)
 
         case .entries:
             return .none
@@ -194,19 +181,13 @@ public struct ContentReducer {
             state.selectedBits = loadBits()
             state.focusedField = .exp
             state.entries[id: .exp]?.text = ""
-            return .merge(
-                state.updateEntries(newValue: .init(bits: state.selectedBits)),
-                state.updateFocusedField(newField: state.focusedField)
-            )
+            return state.updateFocusedField(newField: state.focusedField)
 
         case .toggleSignage:
             state.value.signage = state.value.signage.toggled()
-            var effects = [state.updateEntries(newValue: state.value)]
             // If the focused field has text, that text should be re-evaluated with the new signage
-            if let field = state.focusedField, let text = state.entries[id: field]?.text {
-                effects.append(.send(.entries(.element(id: field, action: .binding(.set(\.text, text))))))
-            }
-            return .merge(effects)
+            guard let field = state.focusedField, let text = state.entries[id: field]?.text else { return .none }
+            return .send(.entries(.element(id: field, action: .binding(.set(\.text, text)))))
 
         case .upArrowPressed:
             guard
@@ -222,14 +203,6 @@ public struct ContentReducer {
                 await send(.historyLoaded(history))
             }
             .debounce(id: CancelID.upArrow, for: 0.2, scheduler: mainQueue)
-        }
-
-        func addExpressionToHistory() -> EffectOf<ContentReducer> {
-            guard let text = state.entries[id: .exp]?.text else { return .none }
-            return .run { _ in
-                try await historyStore.addItem(text: text.trimmingCharacters(in: .whitespacesAndNewlines))
-            }
-            .debounce(id: CancelID.history, for: 1.0, scheduler: mainQueue)
         }
     }
 

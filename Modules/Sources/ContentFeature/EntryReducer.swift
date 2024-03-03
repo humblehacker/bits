@@ -1,4 +1,5 @@
 import BigInt
+import Combine
 import ComposableArchitecture
 import Dependencies
 import Types
@@ -24,10 +25,12 @@ public struct EntryReducer {
     public struct State: Equatable, Identifiable {
         let kind: EntryKind
         var text: String
-        var value: EntryValue
+        @Shared var value: EntryValue
+        var lastValue: EntryValue?
         var binText: BinaryTextFieldReducer.State?
         var isFocused: Bool
         var isError: Bool
+        var cancellable: AnyCancellable?
 
         public var id: EntryKind { kind }
         var title: String { kind.title }
@@ -35,23 +38,19 @@ public struct EntryReducer {
         public init(
             _ kind: EntryKind,
             text: String = "",
-            value: EntryValue = .init(),
+            value: Shared<EntryValue>,
             binText: BinaryTextFieldReducer.State? = nil,
             isFocused: Bool = false,
             isError: Bool = false
         ) {
             self.kind = kind
             self.text = text
-            self.value = value
+            _value = value
+            lastValue = nil
             self.binText = binText
             self.isFocused = isFocused
             self.isError = isError
-        }
-
-        mutating func updateValue(_ value: EntryValue) -> Effect<IdentifiedAction> {
-            guard value != self.value else { return .none }
-            binText?.updateBits(value.bits)
-            return .send(.element(id: id, action: .binding(.set(\.value, value))))
+            cancellable = nil
         }
 
         mutating func updateText(_ text: String) -> Effect<IdentifiedAction> {
@@ -65,15 +64,19 @@ public struct EntryReducer {
         case binText(BinaryTextFieldReducer.Action)
         case confirmationKeyPressed
         case delegate(Delegate)
+        case onAppear
+        case onDisappear
+        case valueUpdated(newValue: EntryValue)
 
         @CasePathable
         public enum Delegate: Equatable {
-            case valueUpdated(EntryValue)
             case focusChanged(EntryKind)
         }
     }
 
     @Dependency(\.entryConverter) var entryConverter
+
+    enum CancelID { case valuePublisher }
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -92,13 +95,15 @@ public struct EntryReducer {
                 guard let value = try entryConverter.value(text: state.text, kind: state.kind, bits: state.value.bits, signage: state.value.signage)
                 else { return .none }
                 state.value = value
-                return .send(.delegate(.valueUpdated(value)))
+                state.lastValue = value
+                return .none
 
-            case .binding(\.value): // value --> text
+            case let .valueUpdated(newValue): // value --> text
+                guard newValue != state.lastValue else { return .none }
                 state.isError = false
-                state.text = try entryConverter.text(value: state.value, kind: state.kind)
-                let bits = state.value.bits
-                state.binText?.bits = bits
+                state.text = try entryConverter.text(value: newValue, kind: state.kind)
+                state.binText?.updateBits(newValue.bits)
+                state.lastValue = newValue
                 return .none
 
             case .binding:
@@ -114,6 +119,14 @@ public struct EntryReducer {
 
             case .delegate:
                 return .none
+
+            case .onAppear:
+                let publisher = state.$value.publisher.map { Action.valueUpdated(newValue: $0) }
+                return .publisher { publisher }
+                    .cancellable(id: CancelID.valuePublisher, cancelInFlight: true)
+
+            case .onDisappear:
+                return .cancel(id: CancelID.valuePublisher)
             }
         } catch {
             print("unhandled error: \(error)")
