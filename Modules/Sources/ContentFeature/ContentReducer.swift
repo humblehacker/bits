@@ -10,8 +10,6 @@ import Observation
 import Types
 import Utils
 
-private let defaultBits: Bits = ._32
-
 public enum EntryKind: Equatable {
     case exp
     case bin
@@ -38,7 +36,7 @@ public struct ContentReducer {
 
         public init(
             entryWidth: Double = 100.0,
-            selectedBits: Bits = ._8,
+            selectedBits: Bits = .default,
             variableEntryKeys: [EntryKind] = [.dec, .hex],
             value: EntryValue = .init(),
             focusedField: EntryKind? = nil
@@ -216,7 +214,7 @@ public struct ContentReducer {
     }
 
     func loadBits() -> Bits {
-        guard let bits = userDefaults.integer(forKey: "bits") else { return defaultBits }
-        return Bits(rawValue: bits) ?? defaultBits
+        guard let bits = userDefaults.integer(forKey: "bits") else { return .default }
+        return Bits(rawValue: bits) ?? .default
     }
 }

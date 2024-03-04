@@ -122,7 +122,7 @@ struct BinaryTextFieldRow: View {
                         .overlay(alignment: .bottomLeading) {
                             Group {
                                 let indexesToShow = [63, 47, 32, 31, 15, 0]
-                                let bitIndex = maxBits.rawValue - digit.index - 1
+                                let bitIndex = Bits.max.rawValue - digit.index - 1
                                 if indexesToShow.contains(bitIndex) {
                                     Text("\(bitIndex)")
                                         .font(.caption)

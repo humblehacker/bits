@@ -4,8 +4,6 @@ import SwiftUI
 import Types
 import Utils
 
-public let maxBits = Bits._64
-
 @Reducer
 public struct BinaryTextFieldReducer {
     @ObservableState
@@ -18,8 +16,8 @@ public struct BinaryTextFieldReducer {
         var text: String
 
         public init(
-            bits: Bits = ._8,
-            selection: Selection = .init(bounds: Bits._8.selectionBounds()),
+            bits: Bits = .default,
+            selection: Selection = .init(bounds: Bits.default.selectionBounds()),
             text: String = "0",
             digits: IdentifiedArrayOf<BinaryDigit> = [],
             isFocused: Bool = false
@@ -57,7 +55,7 @@ public struct BinaryTextFieldReducer {
         }
 
         func digitDisabled(_ digit: BinaryDigit) -> Bool {
-            let bitIndex = maxBits.rawValue - 1 - digit.index
+            let bitIndex = Bits.max.rawValue - 1 - digit.index
             return bitIndex >= bits.rawValue
         }
 
@@ -202,7 +200,7 @@ public struct BinaryTextFieldReducer {
 }
 
 public extension Bits {
-    func selectionBounds(within bits: Bits = maxBits) -> Range<Int> {
+    func selectionBounds(within bits: Bits = .max) -> Range<Int> {
         return bits.rawValue - rawValue ..< bits.rawValue
     }
 }

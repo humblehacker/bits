@@ -7,4 +7,7 @@ public enum Bits: Int, Equatable, CaseIterable, Identifiable {
     case _64 = 64
 
     public var id: Int { rawValue }
+    
+    public static let `default`: Self = ._16
+    public static let max: Self = ._64
 }
