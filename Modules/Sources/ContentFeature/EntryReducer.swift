@@ -64,8 +64,7 @@ public struct EntryReducer {
         case binText(BinaryTextFieldReducer.Action)
         case confirmationKeyPressed
         case delegate(Delegate)
-        case onAppear
-        case onDisappear
+        case task
         case valueUpdated(newValue: EntryValue)
 
         @CasePathable
@@ -75,8 +74,6 @@ public struct EntryReducer {
     }
 
     @Dependency(\.entryConverter) var entryConverter
-
-    enum CancelID { case valuePublisher }
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -120,13 +117,13 @@ public struct EntryReducer {
             case .delegate:
                 return .none
 
-            case .onAppear:
-                let publisher = state.$value.publisher.map { Action.valueUpdated(newValue: $0) }
-                return .publisher { publisher }
-                    .cancellable(id: CancelID.valuePublisher, cancelInFlight: true)
-
-            case .onDisappear:
-                return .cancel(id: CancelID.valuePublisher)
+            case .task:
+                let valueStream = state.$value.publisher.values
+                return .run { send in
+                    for await value in valueStream {
+                        await send(.valueUpdated(newValue: value))
+                    }
+                }
             }
         } catch {
             print("unhandled error: \(error)")

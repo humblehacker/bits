@@ -24,8 +24,7 @@ struct Entry: View {
                     return .handled
                 }
         }
-        .onAppear { store.send(.onAppear) }
-        .onDisappear { store.send(.onDisappear) }
+        .task { store.send(.task) }
     }
 
     func buttonBackgroundColor(_ isFocused: Bool) -> Color {

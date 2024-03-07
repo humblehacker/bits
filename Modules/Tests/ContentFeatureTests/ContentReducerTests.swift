@@ -9,6 +9,20 @@ import XCTest
 class ContentReducerTests: XCTestCase {
     let entryIDs: [EntryKind] = [.exp, .dec, .hex, .bin]
 
+    func startEntryTasks(store: TestStoreOf<ContentReducer>) async -> [TestStoreTask] {
+        var tasks = [TestStoreTask]()
+        for id in entryIDs {
+            tasks.append(await store.send(\.entries[id: id].task))
+        }
+        return tasks
+    }
+
+    func cancelEntryTasks(_ tasks: [TestStoreTask]) async {
+        for task in tasks {
+            await task.cancel()
+        }
+    }
+
     @MainActor
     func testExpEntryUpdatesOtherEntries() async {
         let store = TestStore(initialState: ContentReducer.State()) {
@@ -20,9 +34,7 @@ class ContentReducerTests: XCTestCase {
             $0.historyStore.addItem = { _ in }
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onAppear)
-        }
+        let tasks = await startEntryTasks(store: store)
 
         await store.send(\.entries[id: .exp].binding.text, "54 + 1") {
             $0.entries[id: .exp]?.apply {
@@ -59,9 +71,7 @@ class ContentReducerTests: XCTestCase {
             }
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onDisappear)
-        }
+        await cancelEntryTasks(tasks)
 
         await store.finish()
     }
@@ -77,9 +87,7 @@ class ContentReducerTests: XCTestCase {
             $0.historyStore.addItem = { _ in }
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onAppear)
-        }
+        let tasks = await startEntryTasks(store: store)
 
         await store.send(\.entries[id: .dec].binding.text, "55") {
             $0.entries[id: .dec]?.apply {
@@ -116,9 +124,7 @@ class ContentReducerTests: XCTestCase {
             }
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onDisappear)
-        }
+        await cancelEntryTasks(tasks)
 
         await store.finish()
     }
@@ -134,9 +140,7 @@ class ContentReducerTests: XCTestCase {
             $0.historyStore.addItem = { _ in }
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onAppear)
-        }
+        let tasks = await startEntryTasks(store: store)
 
         await store.send(\.entries[id: .hex].binding.text, "37") {
             $0.entries[id: .hex]?.apply {
@@ -173,9 +177,7 @@ class ContentReducerTests: XCTestCase {
             }
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onDisappear)
-        }
+        await cancelEntryTasks(tasks)
 
         await store.finish()
     }
@@ -191,9 +193,7 @@ class ContentReducerTests: XCTestCase {
             $0.historyStore.addItem = { _ in }
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onAppear)
-        }
+        let tasks = await startEntryTasks(store: store)
 
         await store.send(\.entries[id: .bin].binding.text, "110111") {
             $0.entries[id: .bin]?.apply {
@@ -230,9 +230,7 @@ class ContentReducerTests: XCTestCase {
 
         await store.receive(\.entries[id: .bin].valueUpdated)
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onDisappear)
-        }
+        await cancelEntryTasks(tasks)
 
         await store.finish()
     }
@@ -266,9 +264,7 @@ class ContentReducerTests: XCTestCase {
             $0.uuid = .incrementing
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onAppear)
-        }
+        let tasks = await startEntryTasks(store: store)
 
         await store.send(.upArrowPressed) {
             $0.expTextTemp = "0xff"
@@ -364,9 +360,7 @@ class ContentReducerTests: XCTestCase {
             }
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onDisappear)
-        }
+        await cancelEntryTasks(tasks)
 
         await store.finish()
     }
@@ -400,9 +394,7 @@ class ContentReducerTests: XCTestCase {
             $0.uuid = .incrementing
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onAppear)
-        }
+        let tasks = await startEntryTasks(store: store)
 
         await store.send(.upArrowPressed) {
             $0.expTextTemp = "0xff"
@@ -466,9 +458,7 @@ class ContentReducerTests: XCTestCase {
             $0.expTextTemp = nil
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onDisappear)
-        }
+        await cancelEntryTasks(tasks)
 
         await store.finish()
     }
@@ -492,9 +482,7 @@ class ContentReducerTests: XCTestCase {
 
         store.exhaustivity = .off
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onAppear)
-        }
+        let tasks = await startEntryTasks(store: store)
 
         await store.send(\.entries[id: .exp].binding.text, " 0x55 ") {
             $0.entries[id: .exp]?.apply {
@@ -504,9 +492,7 @@ class ContentReducerTests: XCTestCase {
             }
         }
 
-        for id in entryIDs {
-            await store.send(\.entries[id: id].onDisappear)
-        }
+        await cancelEntryTasks(tasks)
 
         XCTAssertNoDifference("0x55", itemAdded)
     }

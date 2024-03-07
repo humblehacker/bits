@@ -14,8 +14,7 @@ struct BinaryTextEntry: View {
         )
         .entryTextStyle()
         .focusEffectDisabled()
-        .onAppear { store.send(.onAppear) }
-        .onDisappear { store.send(.onDisappear) }
+        .task { store.send(.task) }
     }
 }
 
