@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-case-paths",
       "state" : {
-        "revision" : "551150d5e60e3be78972607d89cd69069cca3e7c",
-        "version" : "1.2.4"
+        "revision" : "e593aba2c6222daad7c4f2732a431eed2c09bb07",
+        "version" : "1.3.0"
       }
     },
     {
@@ -60,7 +60,7 @@
       "location" : "https://github.com/pointfreeco/swift-composable-architecture",
       "state" : {
         "branch" : "shared-state-beta",
-        "revision" : "c0b516b87a5031cd48f2053aea33568dd6102ceb"
+        "revision" : "a50f9c165447518535237a101dbf6b53144c2b00"
       }
     },
     {
