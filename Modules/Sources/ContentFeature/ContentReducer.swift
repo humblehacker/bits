@@ -17,12 +17,18 @@ public enum EntryKind: Equatable {
     case hex
 }
 
+extension PersistenceKey where Self == AppStorageKey<Bits> {
+    static var bits: Self {
+        appStorage("bits")
+    }
+}
+
 @Reducer
 public struct ContentReducer {
     @ObservableState
     public struct State: Equatable {
         var entryWidth: Double
-        var selectedBits: Bits
+        @Shared var selectedBits: Bits
         var expTextTemp: String?
         var entries: IdentifiedArrayOf<EntryReducer.State>
         var variableEntryKeys: [EntryKind]
@@ -42,7 +48,7 @@ public struct ContentReducer {
             focusedField: EntryKind? = nil
         ) {
             self.entryWidth = entryWidth
-            self.selectedBits = selectedBits
+            _selectedBits = Shared(wrappedValue: selectedBits, .bits)
             self.variableEntryKeys = variableEntryKeys
             self.focusedField = focusedField
 
@@ -87,7 +93,6 @@ public struct ContentReducer {
     @Dependency(\.dismiss) var dismiss
     @Dependency(\.historyStore) var historyStore
     @Dependency(\.mainQueue) var mainQueue
-    @Dependency(\.userDefaults) var userDefaults
 
     enum CancelID { case history, upArrow }
 
@@ -108,14 +113,12 @@ public struct ContentReducer {
 
     func reduce(state: inout State, action: Action) -> Effect<Action> {
         switch action {
-        case .binding(\.selectedBits):
-            let bits = state.selectedBits
-            saveBits(bits)
-            state.value.bits = bits
-            return .none
-
         case .binding(\.focusedField):
             return state.updateFocusedField(newField: state.focusedField)
+
+        case .binding(\.selectedBits):
+            state.value.bits = state.selectedBits
+            return .none
 
         case .binding:
             return .none
@@ -176,7 +179,7 @@ public struct ContentReducer {
             return .none
 
         case .onAppear:
-            state.selectedBits = loadBits()
+            UserDefaults.standard.dump()
             state.focusedField = .exp
             state.entries[id: .exp]?.text = ""
             return state.updateFocusedField(newField: state.focusedField)
@@ -207,14 +210,5 @@ public struct ContentReducer {
     @Reducer(state: .equatable, action: .equatable)
     public enum Destination {
         case history(HistoryReducer)
-    }
-
-    func saveBits(_ bits: Bits) {
-        userDefaults.set(bits.rawValue, forKey: "bits")
-    }
-
-    func loadBits() -> Bits {
-        guard let bits = userDefaults.integer(forKey: "bits") else { return .default }
-        return Bits(rawValue: bits) ?? .default
     }
 }

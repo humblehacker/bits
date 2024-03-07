@@ -26,6 +26,7 @@ public struct EntryReducer {
         let kind: EntryKind
         var text: String
         @Shared var value: EntryValue
+        @Shared var bits: Bits
         var lastValue: EntryValue?
         var binText: BinaryTextFieldReducer.State?
         var isFocused: Bool
@@ -39,6 +40,7 @@ public struct EntryReducer {
             _ kind: EntryKind,
             text: String = "",
             value: Shared<EntryValue>,
+            bits: Bits = .default,
             binText: BinaryTextFieldReducer.State? = nil,
             isFocused: Bool = false,
             isError: Bool = false
@@ -46,6 +48,7 @@ public struct EntryReducer {
             self.kind = kind
             self.text = text
             _value = value
+            _bits = Shared(wrappedValue: bits, .bits)
             lastValue = nil
             self.binText = binText
             self.isFocused = isFocused
@@ -89,7 +92,7 @@ public struct EntryReducer {
 
             case .binding(\.text): // text --> value
                 state.isError = false
-                guard let value = try entryConverter.value(text: state.text, kind: state.kind, bits: state.value.bits, signage: state.value.signage)
+                guard let value = try entryConverter.value(text: state.text, kind: state.kind, bits: state.bits, signage: state.value.signage)
                 else { return .none }
                 state.value = value
                 state.lastValue = value
@@ -99,7 +102,6 @@ public struct EntryReducer {
                 guard newValue != state.lastValue else { return .none }
                 state.isError = false
                 state.text = try entryConverter.text(value: newValue, kind: state.kind)
-                state.binText?.updateBits(newValue.bits)
                 state.lastValue = newValue
                 return .none
 

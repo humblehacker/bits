@@ -63,6 +63,7 @@ struct BinaryTextField: View {
         .onChange(of: store.text) {
             self.text = store.text
         }
+        .task { store.send(.task) }
     }
 
     func digit(at point: CGPoint) -> BinaryDigit? {

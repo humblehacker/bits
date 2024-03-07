@@ -236,6 +236,70 @@ class ContentReducerTests: XCTestCase {
     }
 
     @MainActor
+    func testBitsReductionRevalidatesEntries() async {
+        var initialState = ContentReducer.State()
+        initialState.focusedField = .exp
+        initialState.selectedBits = ._16
+        initialState.value = EntryValue(21845, bits: ._16)
+        initialState.entries[id: .exp]?.apply {
+            $0.isFocused = true
+            $0.text = "0x5555"
+        }
+
+        let store = TestStore(initialState: initialState) {
+            ContentReducer()
+        } withDependencies: {
+            $0.date.now = Date(timeIntervalSinceReferenceDate: 1_234_567_890)
+            $0.entryConverter = .liveValue
+            $0.historyStore.items = { [] }
+            $0.historyStore.item = { _ in nil }
+            $0.historyStore.addItem = { _ in }
+            $0.mainQueue = .immediate
+            $0.userDefaults = .ephemeral()
+            $0.uuid = .incrementing
+        }
+
+        let tasks = await startEntryTasks(store: store)
+
+        await store.send(\.binding.selectedBits, ._8) {
+            $0.selectedBits = ._8
+            $0.value.bits = ._8
+        }
+
+        await store.receive(\.entries[id: .exp].valueUpdated) {
+            $0.entries[id: .exp]?.apply {
+                $0.bits = ._8
+                $0.isError = true
+            }
+        }
+
+        await store.receive(\.entries[id: .dec].valueUpdated) {
+            $0.entries[id: .dec]?.apply {
+                $0.bits = ._8
+                $0.isError = true
+            }
+        }
+
+        await store.receive(\.entries[id: .hex].valueUpdated) {
+            $0.entries[id: .hex]?.apply {
+                $0.bits = ._8
+                $0.isError = true
+            }
+        }
+
+        await store.receive(\.entries[id: .bin].valueUpdated) {
+            $0.entries[id: .bin]?.apply {
+                $0.bits = ._8
+                $0.isError = true
+            }
+        }
+
+        await cancelEntryTasks(tasks)
+
+        await store.finish()
+    }
+
+    @MainActor
     func testHistoryLaunchAndCancel() async {
         var initialState = ContentReducer.State()
         initialState.focusedField = .exp
