@@ -17,7 +17,8 @@ public struct Selection: Equatable {
     mutating
     func setBounds(_ bounds: Range<Int>) {
         self.bounds = bounds
-        self.cursorIndex = cursorIndex.clamped(to: bounds)
+        cursorIndex = cursorIndex.clamped(to: bounds)
+        selectedIndexes = selectedIndexes?.clamped(to: bounds)
     }
 
     mutating
