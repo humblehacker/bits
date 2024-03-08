@@ -13,9 +13,6 @@
   },
   "testTargets" : [
     {
-      "skippedTests" : [
-        "ContentFeatureTests"
-      ],
       "target" : {
         "containerPath" : "container:Modules",
         "identifier" : "ContentFeatureTests",

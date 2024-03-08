@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "Modules",
     platforms: [
-        .macOS(.v14),
+        .macOS("14.1"), // _logChanges() is only available on macOS 14.1
     ],
     products: [
         .library(name: "AppFeature", targets: ["AppFeature"]),
@@ -20,7 +20,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/attaswift/BigInt", from: "5.3.0"),
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.8.0"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", branch: "shared-state-beta"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.2.0"),
         .package(url: "https://github.com/pointfreeco/swift-parsing", from: "0.13.0"),
         .package(url: "https://github.com/groue/GRDB.swift", from: "6.24.2"),

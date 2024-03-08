@@ -63,6 +63,7 @@ struct BinaryTextField: View {
         .onChange(of: store.text) {
             self.text = store.text
         }
+        .task { store.send(.task) }
     }
 
     func digit(at point: CGPoint) -> BinaryDigit? {
@@ -76,6 +77,7 @@ struct BinaryTextFieldRow: View {
     @Binding var digitFrames: [Int: CGRect]
     @State var textHeight: Double = 0.0
     let cspace: NamedCoordinateSpace = .named("BinaryTextField")
+    let indexesToShow = Set([63, 47, 32, 31, 15, 0])
 
     enum RowID { case first; case last }
     let rowID: RowID
@@ -121,8 +123,7 @@ struct BinaryTextFieldRow: View {
                         }
                         .overlay(alignment: .bottomLeading) {
                             Group {
-                                let indexesToShow = [63, 47, 32, 31, 15, 0]
-                                let bitIndex = maxBits.rawValue - digit.index - 1
+                                let bitIndex = Bits.max.rawValue - digit.index - 1
                                 if indexesToShow.contains(bitIndex) {
                                     Text("\(bitIndex)")
                                         .font(.caption)

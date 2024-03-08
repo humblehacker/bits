@@ -4,13 +4,11 @@ import SwiftUI
 import Types
 import Utils
 
-public let maxBits = Bits._64
-
 @Reducer
 public struct BinaryTextFieldReducer {
     @ObservableState
     public struct State: Equatable {
-        var bits: Bits
+        @Shared var bits: Bits
         var digits: IdentifiedArrayOf<BinaryDigit>
         var isFocused: Bool
         var selection: Selection
@@ -18,13 +16,13 @@ public struct BinaryTextFieldReducer {
         var text: String
 
         public init(
-            bits: Bits = ._8,
-            selection: Selection = .init(bounds: Bits._8.selectionBounds()),
+            bits: Bits = .default,
+            selection: Selection = .init(bounds: Bits.default.selectionBounds()),
             text: String = "0",
             digits: IdentifiedArrayOf<BinaryDigit> = [],
             isFocused: Bool = false
         ) {
-            self.bits = bits
+            _bits = Shared(wrappedValue: bits, .bits)
             self.selection = selection
             self.text = text
             self.digits = digits
@@ -57,7 +55,7 @@ public struct BinaryTextFieldReducer {
         }
 
         func digitDisabled(_ digit: BinaryDigit) -> Bool {
-            let bitIndex = maxBits.rawValue - 1 - digit.index
+            let bitIndex = Bits.max.rawValue - 1 - digit.index
             return bitIndex >= bits.rawValue
         }
 
@@ -102,17 +100,12 @@ public struct BinaryTextFieldReducer {
             updateDigits()
             return .none
         }
-
-        mutating
-        func updateBits(_ bits: Bits) {
-            self.bits = bits
-            selection.setBounds(bits.selectionBounds())
-        }
     }
 
     public enum Action: BindableAction, Equatable {
         case binding(BindingAction<State>)
         case digitClicked(BinaryDigit, select: Bool)
+        case bitsUpdated(Bits)
         case bitTyped(String)
         case cancelTypeoverKeyPressed
         case cursorMovementKeyPressed(CursorDirection, extend: Bool)
@@ -120,6 +113,7 @@ public struct BinaryTextFieldReducer {
         case dragSelectDigit(_ digit: BinaryDigit)
         case endDragSelection
         case toggleBitKeyPressed
+        case task
     }
 
     public init() {}
@@ -129,12 +123,6 @@ public struct BinaryTextFieldReducer {
             .onChange(of: \.text) { _, _ in
                 Reduce { state, _ in
                     state.updateDigits()
-                    return .none
-                }
-            }
-            .onChange(of: \.bits) { _, _ in
-                Reduce { state, _ in
-                    state.updateBits(state.bits)
                     return .none
                 }
             }
@@ -156,6 +144,10 @@ public struct BinaryTextFieldReducer {
             } else {
                 state.selection.setCursor(digit.index)
             }
+            return .none
+
+        case let .bitsUpdated(bits):
+            state.selection.setBounds(bits.selectionBounds())
             return .none
 
         case let .bitTyped(bit):
@@ -189,6 +181,14 @@ public struct BinaryTextFieldReducer {
             state.selectingDigit = nil
             return .none
 
+        case .task:
+            let valueStream = state.$bits.publisher.values
+            return .run { send in
+                for await value in valueStream {
+                    await send(.bitsUpdated(value))
+                }
+            }
+
         case .toggleBitKeyPressed:
             return state.applyBitOperation(bitOp: .toggle)
         }
@@ -202,7 +202,7 @@ public struct BinaryTextFieldReducer {
 }
 
 public extension Bits {
-    func selectionBounds(within bits: Bits = maxBits) -> Range<Int> {
+    func selectionBounds(within bits: Bits = .max) -> Range<Int> {
         return bits.rawValue - rawValue ..< bits.rawValue
     }
 }

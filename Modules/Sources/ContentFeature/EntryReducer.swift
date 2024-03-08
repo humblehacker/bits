@@ -1,4 +1,5 @@
 import BigInt
+import Combine
 import ComposableArchitecture
 import Dependencies
 import Types
@@ -9,7 +10,7 @@ public struct EntryValue: Equatable {
     var bits: Bits
     var signage: Signage
 
-    public init(_ value: BigInt = 0, bits: Bits = ._8, signage: Signage = .unsigned) {
+    public init(_ value: BigInt = 0, bits: Bits = .default, signage: Signage = .unsigned) {
         self.value = value
         self.bits = bits
         self.signage = signage
@@ -24,10 +25,13 @@ public struct EntryReducer {
     public struct State: Equatable, Identifiable {
         let kind: EntryKind
         var text: String
-        var value: EntryValue
+        @Shared var value: EntryValue
+        @Shared var bits: Bits
+        var lastValue: EntryValue?
         var binText: BinaryTextFieldReducer.State?
         var isFocused: Bool
         var isError: Bool
+        var cancellable: AnyCancellable?
 
         public var id: EntryKind { kind }
         var title: String { kind.title }
@@ -35,23 +39,21 @@ public struct EntryReducer {
         public init(
             _ kind: EntryKind,
             text: String = "",
-            value: EntryValue = .init(),
+            value: Shared<EntryValue>,
+            bits: Bits = .default,
             binText: BinaryTextFieldReducer.State? = nil,
             isFocused: Bool = false,
             isError: Bool = false
         ) {
             self.kind = kind
             self.text = text
-            self.value = value
+            _value = value
+            _bits = Shared(wrappedValue: bits, .bits)
+            lastValue = nil
             self.binText = binText
             self.isFocused = isFocused
             self.isError = isError
-        }
-
-        mutating func updateValue(_ value: EntryValue) -> Effect<IdentifiedAction> {
-            guard value != self.value else { return .none }
-            binText?.updateBits(value.bits)
-            return .send(.element(id: id, action: .binding(.set(\.value, value))))
+            cancellable = nil
         }
 
         mutating func updateText(_ text: String) -> Effect<IdentifiedAction> {
@@ -65,10 +67,11 @@ public struct EntryReducer {
         case binText(BinaryTextFieldReducer.Action)
         case confirmationKeyPressed
         case delegate(Delegate)
+        case task
+        case valueUpdated(newValue: EntryValue)
 
         @CasePathable
         public enum Delegate: Equatable {
-            case valueUpdated(EntryValue)
             case focusChanged(EntryKind)
         }
     }
@@ -89,16 +92,17 @@ public struct EntryReducer {
 
             case .binding(\.text): // text --> value
                 state.isError = false
-                guard let value = try entryConverter.value(text: state.text, kind: state.kind, bits: state.value.bits, signage: state.value.signage)
+                guard let value = try entryConverter.value(text: state.text, kind: state.kind, bits: state.bits, signage: state.value.signage)
                 else { return .none }
                 state.value = value
-                return .send(.delegate(.valueUpdated(value)))
+                state.lastValue = value
+                return .none
 
-            case .binding(\.value): // value --> text
+            case let .valueUpdated(newValue): // value --> text
+                guard newValue != state.lastValue else { return .none }
                 state.isError = false
-                state.text = try entryConverter.text(value: state.value, kind: state.kind)
-                let bits = state.value.bits
-                state.binText?.bits = bits
+                state.text = try entryConverter.text(value: newValue, kind: state.kind)
+                state.lastValue = newValue
                 return .none
 
             case .binding:
@@ -114,6 +118,14 @@ public struct EntryReducer {
 
             case .delegate:
                 return .none
+
+            case .task:
+                let valueStream = state.$value.publisher.values
+                return .run { send in
+                    for await value in valueStream {
+                        await send(.valueUpdated(newValue: value))
+                    }
+                }
             }
         } catch {
             print("unhandled error: \(error)")

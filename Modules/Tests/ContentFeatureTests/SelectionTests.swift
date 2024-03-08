@@ -332,4 +332,18 @@ final class SelectionTests: XCTestCase {
         XCTAssertNoDifference(selection.selectedIndexes, 4 ..< 5)
         XCTAssertNoDifference(selection.cursorIndex, 4)
     }
+
+    func testBoundsChangeClampsSelection() {
+        var selection = Selection(bounds: Bits._32.selectionBounds(within: ._32))
+        XCTAssertNoDifference(selection.bounds, 0 ..< 32)
+
+        selection.selectAll() // all 32 bits selected
+        XCTAssertNoDifference(selection.selectedIndexes, 0 ..< 32)
+
+        selection.setBounds(Bits._16.selectionBounds(within: ._32))
+        XCTAssertNoDifference(selection.bounds, 16 ..< 32)
+
+        // now only lower 16 bits should be selected
+        XCTAssertNoDifference(selection.selectedIndexes, 16 ..< 32)
+    }
 }
